@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -8,88 +9,195 @@
 <title>レパートリーリスト</title>
 <style>
 :root{--bg:#f6f3ee;--paper:#fff;--ink:#292722;--muted:#77736b;--line:#e8e2d9;--accent:#667b70;--soft:#edf1ed;--danger:#a34e46}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;font-size:14px}
-header{padding:18px 16px 12px;max-width:1100px;margin:auto}h1{font-size:21px;margin:0 0 5px;font-weight:700}.sub{color:var(--muted);font-size:12px}
-main{max-width:1100px;margin:auto;padding:0 12px 36px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;font-size:14px}
+header{padding:18px 16px 12px;max-width:1100px;margin:auto}
+h1{font-size:21px;margin:0 0 5px;font-weight:700}
+.sub{color:var(--muted);font-size:12px}
+main{max-width:1100px;margin:auto;padding:0 12px 36px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
 button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;font-size:13px;cursor:pointer}
-button.primary{background:var(--accent);color:white;border-color:var(--accent)}button.danger{color:var(--danger)}
+button.primary{background:var(--accent);color:white;border-color:var(--accent)}
+button.danger{color:var(--danger)}
+button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
 input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);padding:10px;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{outline:2px solid #b9c9bf;border-color:var(--accent)}
-.search{flex:1;min-width:180px}.toolbar select{width:auto;max-width:190px}
+.search{flex:1;min-width:180px}
+.toolbar select{width:auto;max-width:190px}
 .panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
-.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.field.full{grid-column:1/-1}label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}.req{color:var(--danger)}
-fieldset{border:0;padding:0;margin:0}.choices{display:flex;gap:7px;flex-wrap:wrap}.choices label{display:flex;align-items:center;gap:5px;background:#f7f6f3;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);margin:0}.choices input{width:auto;margin:0}
-.formactions{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}.hidden{display:none!important}
-.listhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 2px 8px}.count{color:var(--muted);font-size:12px}
+.formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.field.full{grid-column:1/-1}
+label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}
+.req{color:var(--danger)}
+fieldset{border:0;padding:0;margin:0}
+.choices{display:flex;gap:7px;flex-wrap:wrap}
+.choices label{display:flex;align-items:center;gap:5px;background:#f7f6f3;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);margin:0}
+.choices input{width:auto;margin:0}
+.formactions{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.hidden{display:none!important}
+.listhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 2px 8px}
+.count{color:var(--muted);font-size:12px}
 .tablewrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:11px}
-table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;font-size:12px}th{color:var(--muted);font-weight:600;background:#faf9f7;position:sticky;top:0}tbody tr:last-child td{border-bottom:0}tbody tr:hover{background:#fbfcfa}.song{font-weight:650;font-size:13px}.subline{color:var(--muted);font-size:11px;margin-top:3px}.pill{display:inline-block;background:var(--soft);border-radius:20px;padding:3px 7px;margin:1px;color:#46594e;font-size:11px}.status{color:#555}.rowbtn{padding:5px 8px;font-size:11px}
-.tagfilters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.tagfilters button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
-.note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:8px}.empty{text-align:center;color:var(--muted);padding:30px}
-@media(max-width:560px){header{padding-top:14px}.formgrid{grid-template-columns:1fr}.field.full{grid-column:auto}.toolbar select{flex:1;max-width:none}.panel{padding:12px}}
+table{border-collapse:collapse;width:100%;min-width:760px}
+th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;font-size:12px}
+th{color:var(--muted);font-weight:600;background:#faf9f7;position:sticky;top:0}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#fbfcfa}
+.song{font-weight:650;font-size:13px}
+.subline{color:var(--muted);font-size:11px;margin-top:3px}
+.pill{display:inline-block;background:var(--soft);border-radius:20px;padding:3px 7px;margin:1px;color:#46594e;font-size:11px}
+.status{color:#555}
+.rowbtn{padding:5px 8px;font-size:11px}
+.tagfilters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tagfilters button{padding:6px 9px;font-size:12px}
+.tagfilters button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
+.note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:8px}
+.empty{text-align:center;color:var(--muted);padding:30px}
+.tagmanage{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
+.tagrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid #f0ede8}
+.tagrow:last-child{border-bottom:0}
+.tagname{flex:1;min-width:80px}
+@media(max-width:560px){
+ header{padding-top:14px}
+ .formgrid{grid-template-columns:1fr}
+ .field.full{grid-column:auto}
+ .toolbar select{flex:1;max-width:none}
+ .panel{padding:12px}
+}
 </style>
 </head>
 <body>
-<header><h1>レパートリーリスト</h1><div class="sub">曲・キー・演奏方法・練習状況をまとめて管理</div></header>
+<header>
+<h1>レパートリーリスト</h1>
+<div class="sub">曲・キー・演奏方法・練習状況をまとめて管理</div>
+</header>
+
 <main>
-  <div class="toolbar">
-    <input id="search" class="search" placeholder="曲名・アーティスト・メモを検索">
-    <button class="primary" id="newBtn">＋ 曲を追加</button>
-    <button id="exportBtn">バックアップ保存</button>
-    <button id="importBtn">読み込み</button><input type="file" id="fileInput" accept=".json,application/json" class="hidden">
-  </div>
-  <section id="editor" class="panel hidden">
-    <h2 id="formTitle" style="font-size:16px;margin:0 0 12px">曲を追加</h2>
-    <form id="songForm">
-      <input type="hidden" id="editId">
-      <div class="formgrid">
-        <div class="field full"><label>① 曲名 <span class="req">＊必須</span></label><input id="title" required maxlength="160" placeholder="曲名"></div>
-        <div class="field full"><label>② 曲名の読み仮名</label><input id="reading" placeholder="並べ替えに使う読み仮名（必要に応じて編集）"></div>
-        <div class="field"><label>③ キー1</label><select id="key1"></select></div>
-        <div class="field"><label>④ キー2</label><select id="key2"></select></div>
-        <div class="field full"><label>⑤ 演奏可能項目（複数選択）</label><div class="choices" id="instruments"></div></div>
-        <div class="field full"><label>⑥ 現状</label><div class="choices" id="statuses"></div></div>
-        <div class="field full"><label>⑦ タグ（複数選択・新しいタグも追加可能）</label><div id="tagChoices" class="choices"></div><div style="display:flex;gap:7px;margin-top:8px"><input id="newTag" placeholder="新しいタグ名"><button type="button" id="addTagBtn">タグを追加</button></div></div>
-        <div class="field"><label>⑧ アーティスト</label><input id="artist" placeholder="アーティスト名"></div>
-        <div class="field"><label>⑨ アーティストのよみ</label><input id="artistReading" placeholder="並べ替え用の読み仮名"></div>
-        <div class="field"><label>⑩ リリース年</label><input id="year" inputmode="numeric" maxlength="4" placeholder="例：1985"></div>
-        <div class="field full"><label>⑪ フリーメモ・備考</label><textarea id="memo" rows="3" placeholder="自由にメモ"></textarea></div>
-      </div>
-      <div class="formactions"><button class="primary" type="submit">保存する</button><button type="button" id="cancelBtn">キャンセル</button></div>
-      <div class="note">読み仮名は日本語の漢字から正確に自動判定できないため、ここで確認・修正できるようにしています。曲名がひらがな・カタカナの場合は自動で読み欄に反映します。</div>
-    </form>
-  </section>
-  <div class="panel">
-    <div class="toolbar" style="margin:0">
-      <label style="margin:0;white-space:nowrap">並べ替え</label>
-      <select id="sort"><option value="reading">曲名の読み</option><option value="artistReading">アーティストの読み</option><option value="added">追加順</option><option value="title">曲名</option><option value="year">リリース年</option></select>
-      <select id="direction"><option value="asc">昇順</option><option value="desc">降順</option></select>
-      <button id="clearFilter">絞り込み解除</button>
-    </div>
+<div class="toolbar">
+<input id="search" class="search" placeholder="曲名・アーティスト・メモを検索">
+<button class="primary" id="newBtn">＋ 曲を追加</button>
+<button id="exportBtn">バックアップ保存</button>
+<button id="importBtn">読み込み</button>
+<input type="file" id="fileInput" accept=".json,application/json" class="hidden">
+</div>
 
-    <div style="font-size:12px;color:var(--muted);margin-top:9px">演奏可能項目で絞り込み（どれか一つでもOK）</div>
-    <div id="instrumentFilters" class="tagfilters"></div>
+<section id="editor" class="panel hidden">
+<h2 id="formTitle" style="font-size:16px;margin:0 0 12px">曲を追加</h2>
+<form id="songForm">
+<input type="hidden" id="editId">
+<div class="formgrid">
+<div class="field full">
+<label>① 曲名 <span class="req">＊必須</span></label>
+<input id="title" required maxlength="160" placeholder="曲名">
+</div>
+<div class="field full">
+<label>② 曲名の読み仮名</label>
+<input id="reading" placeholder="並べ替えに使う読み仮名（必要に応じて編集）">
+</div>
+<div class="field"><label>③ キー1</label><select id="key1"></select></div>
+<div class="field"><label>④ キー2</label><select id="key2"></select></div>
+<div class="field full">
+<label>⑤ 演奏可能項目（複数選択）</label>
+<div class="choices" id="instruments"></div>
+</div>
+<div class="field full" style="margin-top:11px">
+<label>⑥ 現状（1つ選択）</label>
+<div class="choices" id="statuses"></div>
+</div>
+<div class="field full" style="margin-top:11px">
+<label>⑦ タグ（複数選択・新しいタグも追加可能）</label>
+<div id="tagChoices" class="choices"></div>
+<div style="display:flex;gap:7px;margin-top:8px">
+<input id="newTag" placeholder="新しいタグ名">
+<button type="button" id="addTagBtn">タグを追加</button>
+</div>
+</div>
+<div class="formgrid" style="margin-top:11px">
+<div class="field"><label>⑧ アーティスト</label><input id="artist" placeholder="アーティスト名"></div>
+<div class="field"><label>⑨ アーティストのよみ</label><input id="artistReading" placeholder="並べ替え用の読み仮名"></div>
+<div class="field"><label>⑩ リリース年</label><input id="year" inputmode="numeric" maxlength="4" placeholder="例：1985"></div>
+<div class="field full"><label>⑪ フリーメモ・備考</label><textarea id="memo" rows="3" placeholder="自由にメモ"></textarea></div>
+</div>
+<div class="formactions">
+<button class="primary" type="submit">保存する</button>
+<button type="button" id="cancelBtn">キャンセル</button>
+</div>
+<div class="note">読み仮名は日本語の漢字から正確に自動判定できないため、ここで確認・修正できるようにしています。曲名がひらがな・カタカナの場合は自動で読み欄に反映します。</div>
+</form>
+</section>
 
-    <div style="font-size:12px;color:var(--muted);margin-top:12px">タグで絞り込み</div>
-    <div id="tagFilters" class="tagfilters"></div>
-  </div>
-  <div class="listhead"><strong>曲リスト</strong><span id="count" class="count">0曲</span></div>
-  <div class="tablewrap"><table><thead><tr><th>曲名</th><th>キー</th><th>演奏可能</th><th>現状</th><th>タグ</th><th>アーティスト</th><th>年</th><th>操作</th></tr></thead><tbody id="songRows"></tbody></table><div id="empty" class="empty">まだ曲が登録されていません。<br>「＋ 曲を追加」から登録してね。</div></div>
-  <div class="note">データはこのブラウザ内に自動保存されます。機種変更・別端末への移行時は「バックアップ保存」でJSONファイルを作り、移行先で「読み込み」をしてください。ブラウザのデータ消去前にもバックアップを保存してください。</div>
+<section class="panel">
+<div class="toolbar" style="margin:0">
+<label style="margin:0;white-space:nowrap">並べ替え</label>
+<select id="sort">
+<option value="reading">曲名の読み</option>
+<option value="artistReading">アーティストの読み</option>
+<option value="added">追加順</option>
+<option value="title">曲名</option>
+<option value="year">リリース年</option>
+</select>
+<select id="direction"><option value="asc">昇順</option><option value="desc">降順</option></select>
+<button id="clearFilter">絞り込み解除</button>
+</div>
+
+<div class="filtergroup">
+<div style="font-size:12px;color:var(--muted);margin-top:12px">現状で絞り込み</div>
+<div id="statusFilters" class="tagfilters"></div>
+</div>
+
+<div class="filtergroup">
+<div style="font-size:12px;color:var(--muted);margin-top:12px">演奏可能項目で絞り込み（どれか一つでもOK）</div>
+<div id="instrumentFilters" class="tagfilters"></div>
+</div>
+
+<div class="filtergroup">
+<div style="font-size:12px;color:var(--muted);margin-top:12px">タグで絞り込み</div>
+<div id="tagFilters" class="tagfilters"></div>
+</div>
+
+<div class="note">各絞り込み内も、異なる種類の絞り込みも「いずれかに該当すれば表示」の追加方式（OR）だよ。検索文字は別途適用されるよ。</div>
+
+<div class="tagmanage">
+<button id="manageTagsBtn">🏷️ タグ管理を表示</button>
+<div id="tagManagement" class="hidden" style="margin-top:9px"></div>
+</div>
+</section>
+
+<div class="listhead"><strong>曲リスト</strong><span id="count" class="count">0曲</span></div>
+<div class="tablewrap">
+<table>
+<thead><tr>
+<th>曲名</th><th>キー</th><th>演奏可能</th><th>現状</th><th>タグ</th><th>アーティスト</th><th>年</th><th>操作</th>
+</tr></thead>
+<tbody id="songRows"></tbody>
+</table>
+<div id="empty" class="empty">まだ曲が登録されていません。<br>「＋ 曲を追加」から登録してね。</div>
+</div>
+
+<div class="note">データはこのブラウザ内に自動保存されます。機種変更・別端末への移行時は「バックアップ保存」でJSONファイルを作り、移行先で「読み込み」をしてください。ブラウザのデータ消去前にもバックアップを保存してください。</div>
 </main>
+
 <script>
 (()=>{
 const $=id=>document.getElementById(id);
 const KEYS=['','C(±0)','D♭(+1-11)','D(+2-10)','E♭(+3-9)','E(+4-8)','F(+5-7)','G♭(+6-6)','G(+7-5)','A♭(+8-4)','A(+9-3)','B♭(+10-2)','B(+11-1)'];
 const INSTR=['歌','ギター','ピアノ','生ピアノ','三味線','笛','その他'];
 const STATUS=['歌える','練習中','歌いたい'];
-let songs=[],tags=[],activeTag='',activeInstruments=[];
 const STORE='mySongList_v1';
+
+let songs=[],tags=[];
+let activeStatuses=[],activeInstruments=[],activeTags=[];
 
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(STORE)||'{}');
     songs=Array.isArray(d.songs)?d.songs:[];
     tags=Array.isArray(d.tags)?d.tags:[];
+    songs.forEach(s=>{
+      if(!Array.isArray(s.instruments))s.instruments=[];
+      if(!Array.isArray(s.tags))s.tags=[];
+      if(!s.status)s.status='';
+    });
   }catch(e){
     songs=[];
     tags=[];
@@ -120,16 +228,44 @@ function setChecks(name,values){
   document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=values.includes(x.value));
 }
 
+function norm(s){
+  return (s||'').trim().toLocaleLowerCase();
+}
+
 function renderTags(){
   $('tagChoices').innerHTML=tags.map(t=>`<label><input type="checkbox" name="songTags" value="${esc(t)}">${esc(t)}</label>`).join('')||'<span class="note">タグはまだありません</span>';
 
-  $('tagFilters').innerHTML=tags.map(t=>`
-    <button type="button" data-tag="${esc(t)}" class="${activeTag===t?'active':''}">${esc(t)}</button>
-  `).join('');
+  renderFilterButtons();
+  renderTagManagement();
+}
 
-  $('instrumentFilters').innerHTML=INSTR.map(t=>`
-    <button type="button" data-instrument="${esc(t)}" class="${activeInstruments.includes(t)?'active':''}">${esc(t)}</button>
-  `).join('');
+function makeFilterButtons(id,values,selected,kind){
+  $(id).innerHTML=values.map(v=>`
+    <button type="button" data-filter-kind="${kind}" data-filter-value="${esc(v)}" class="${selected.includes(v)?'active':''}">${esc(v)}</button>
+  `).join('')||'<span class="note">項目がありません</span>';
+}
+
+function renderFilterButtons(){
+  makeFilterButtons('statusFilters',STATUS,activeStatuses,'status');
+  makeFilterButtons('instrumentFilters',INSTR,activeInstruments,'instrument');
+  makeFilterButtons('tagFilters',tags,activeTags,'tag');
+}
+
+function renderTagManagement(){
+  const box=$('tagManagement');
+  if(!tags.length){
+    box.innerHTML='<div class="note">登録タグはありません。</div>';
+    return;
+  }
+
+  box.innerHTML=tags.map(t=>{
+    const count=songs.filter(s=>(s.tags||[]).includes(t)).length;
+    return `<div class="tagrow">
+      <span class="tagname"><span class="pill">${esc(t)}</span> <small>${count}曲</small></span>
+      <button type="button" data-renametag="${esc(t)}">名前変更</button>
+      <button type="button" class="danger" data-deletetag="${esc(t)}">削除</button>
+    </div>`;
+  }).join('');
 }
 
 function openForm(song){
@@ -138,10 +274,12 @@ function openForm(song){
   $('editId').value=song?.id||'';
   $('title').value=song?.title||'';
   $('reading').value=song?.reading||'';
+  $('reading').dataset.touched=song?.reading?'1':'';
   $('key1').value=song?.key1||'';
   $('key2').value=song?.key2||'';
   $('artist').value=song?.artist||'';
   $('artistReading').value=song?.artistReading||'';
+  $('artistReading').dataset.touched=song?.artistReading?'1':'';
   $('year').value=song?.year||'';
   $('memo').value=song?.memo||'';
   setChecks('instrument',song?.instruments||[]);
@@ -154,24 +292,33 @@ function closeForm(){
   $('editor').classList.add('hidden');
   $('songForm').reset();
   $('editId').value='';
+  $('reading').dataset.touched='';
+  $('artistReading').dataset.touched='';
 }
 
-function norm(s){
-  return (s||'').trim().toLocaleLowerCase();
+function filteredSongs(){
+  const q=norm($('search').value);
+  const hasFilters=activeStatuses.length||activeInstruments.length||activeTags.length;
+
+  return songs.filter(s=>{
+    const searchMatch=!q||[s.title,s.reading,s.artist,s.artistReading,s.memo].some(v=>norm(v).includes(q));
+    if(!searchMatch)return false;
+    if(!hasFilters)return true;
+
+    const statusMatch=activeStatuses.length&&activeStatuses.includes(s.status);
+    const instrumentMatch=activeInstruments.length&&(s.instruments||[]).some(x=>activeInstruments.includes(x));
+    const tagMatch=activeTags.length&&(s.tags||[]).some(x=>activeTags.includes(x));
+
+    return !!(statusMatch||instrumentMatch||tagMatch);
+  });
 }
 
 function render(){
   renderTags();
 
-  let q=norm($('search').value);
+  let data=filteredSongs();
   let sort=$('sort').value;
   let dir=$('direction').value==='asc'?1:-1;
-
-  let data=songs.filter(s=>
-    (!activeTag||(s.tags||[]).includes(activeTag)) &&
-    (!activeInstruments.length||activeInstruments.some(i=>(s.instruments||[]).includes(i))) &&
-    (!q||[s.title,s.reading,s.artist,s.artistReading,s.memo].some(v=>norm(v).includes(q)))
-  );
 
   data.sort((a,b)=>{
     let x=sort==='added'?(a.created||0):sort==='artistReading'?norm(a.artistReading||a.artist):sort==='title'?norm(a.title):sort==='year'?Number(a.year||0):norm(a.reading||a.title);
@@ -182,7 +329,31 @@ function render(){
   $('count').textContent=`${data.length}曲 / 全${songs.length}曲`;
   $('empty').style.display=data.length?'none':'block';
 
-  $('songRows').innerHTML=data.map(s=>`<tr><td><div class="song">${esc(s.title)}</div></td><td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td><td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td><td class="status">${esc(s.status||'－')}</td><td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td><td>${esc(s.artist||'－')}<div class="subline">${esc(s.artistReading||'')}</div></td><td>${esc(s.year||'－')}</td><td><button class="rowbtn" data-edit="${s.id}">編集</button> <button class="rowbtn danger" data-delete="${s.id}">削除</button></td></tr>`).join('');
+  $('songRows').innerHTML=data.map(s=>`<tr>
+    <td><div class="song">${esc(s.title)}</div></td>
+    <td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
+    <td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
+    <td class="status">${esc(s.status||'－')}</td>
+    <td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
+    <td>${esc(s.artist||'－')}<div class="subline">${esc(s.artistReading||'')}</div></td>
+    <td>${esc(s.year||'－')}</td>
+    <td><button class="rowbtn" data-edit="${esc(s.id)}">編集</button> <button class="rowbtn danger" data-delete="${esc(s.id)}">削除</button></td>
+  </tr>`).join('');
+}
+
+function handleFilterClick(e){
+  const b=e.target.closest('button[data-filter-kind]');
+  if(!b)return;
+
+  const kind=b.dataset.filterKind;
+  const value=b.dataset.filterValue;
+  const arr=kind==='status'?activeStatuses:kind==='instrument'?activeInstruments:activeTags;
+  const i=arr.indexOf(value);
+
+  if(i>=0)arr.splice(i,1);
+  else arr.push(value);
+
+  render();
 }
 
 fillSelect('key1',KEYS);
@@ -190,12 +361,12 @@ fillSelect('key2',KEYS);
 checks('instruments',INSTR,'instrument');
 checks('statuses',STATUS,'status');
 
-$('newBtn').onclick=()=>{openForm(null)};
+$('newBtn').onclick=()=>openForm(null);
 $('cancelBtn').onclick=closeForm;
 
 $('title').addEventListener('input',()=>{
   const v=$('title').value.trim();
-  if(!$('reading').dataset.touched && /^[ぁ-ゖァ-ヺー\s]+$/.test(v))$('reading').value=v;
+  if(!$('reading').dataset.touched&&/^[ぁ-ゖァ-ヺー\s]+$/.test(v))$('reading').value=v;
 });
 
 $('reading').addEventListener('input',()=>{
@@ -206,6 +377,15 @@ $('artistReading').addEventListener('input',()=>{
   $('artistReading').dataset.touched='1';
 });
 
+// 現状は1曲につき1つだけ選べるようにする
+$('statuses').addEventListener('change',e=>{
+  if(e.target.name==='status'&&e.target.checked){
+    document.querySelectorAll('input[name="status"]').forEach(x=>{
+      if(x!==e.target)x.checked=false;
+    });
+  }
+});
+
 $('addTagBtn').onclick=()=>{
   let t=$('newTag').value.trim();
   if(t&&!tags.includes(t)){
@@ -213,6 +393,8 @@ $('addTagBtn').onclick=()=>{
     persist();
     renderTags();
     $('newTag').value='';
+  }else if(t){
+    alert('そのタグはすでに登録されているよ');
   }
 };
 
@@ -268,31 +450,60 @@ $('songRows').onclick=e=>{
   }
 };
 
-$('tagFilters').onclick=e=>{
-  let t=e.target.dataset.tag;
-  if(t!==undefined){
-    activeTag=activeTag===t?'':t;
-    render();
-  }
-};
-
-$('instrumentFilters').onclick=e=>{
-  let t=e.target.dataset.instrument;
-  if(t!==undefined){
-    if(activeInstruments.includes(t)){
-      activeInstruments=activeInstruments.filter(i=>i!==t);
-    }else{
-      activeInstruments.push(t);
-    }
-    render();
-  }
-};
+$('statusFilters').onclick=handleFilterClick;
+$('instrumentFilters').onclick=handleFilterClick;
+$('tagFilters').onclick=handleFilterClick;
 
 $('clearFilter').onclick=()=>{
-  activeTag='';
+  activeStatuses=[];
   activeInstruments=[];
+  activeTags=[];
   $('search').value='';
   render();
+};
+
+$('manageTagsBtn').onclick=()=>{
+  const box=$('tagManagement');
+  box.classList.toggle('hidden');
+  $('manageTagsBtn').textContent=box.classList.contains('hidden')?'🏷️ タグ管理を表示':'🏷️ タグ管理を閉じる';
+};
+
+$('tagManagement').onclick=e=>{
+  const rename=e.target.dataset.renametag;
+  const del=e.target.dataset.deletetag;
+
+  if(rename!==undefined){
+    const newName=prompt(`「${rename}」の新しい名前`,rename);
+    if(newName===null)return;
+    const n=newName.trim();
+    if(!n||n===rename)return;
+
+    if(tags.includes(n)){
+      alert('同じ名前のタグがすでにあるよ');
+      return;
+    }
+
+    tags=tags.map(t=>t===rename?n:t);
+    songs.forEach(s=>{
+      s.tags=(s.tags||[]).map(t=>t===rename?n:t);
+    });
+    activeTags=activeTags.map(t=>t===rename?n:t);
+    persist();
+    render();
+  }
+
+  if(del!==undefined){
+    const count=songs.filter(s=>(s.tags||[]).includes(del)).length;
+    if(!confirm(`「${del}」を削除する？\n${count}曲からもこのタグが外れるよ。`))return;
+
+    tags=tags.filter(t=>t!==del);
+    songs.forEach(s=>{
+      s.tags=(s.tags||[]).filter(t=>t!==del);
+    });
+    activeTags=activeTags.filter(t=>t!==del);
+    persist();
+    render();
+  }
 };
 
 $('search').oninput=render;
@@ -300,12 +511,12 @@ $('sort').onchange=render;
 $('direction').onchange=render;
 
 $('exportBtn').onclick=()=>{
-  let blob=new Blob([JSON.stringify({app:'わたしの曲リスト',version:1,songs,tags},null,2)],{type:'application/json'});
+  let blob=new Blob([JSON.stringify({app:'レパートリーリスト',version:1,songs,tags},null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
-  a.download='わたしの曲リスト_バックアップ.json';
+  a.download='レパートリーリスト_バックアップ.json';
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
 $('importBtn').onclick=()=>$('fileInput').click();
@@ -322,8 +533,9 @@ $('fileInput').onchange=async e=>{
 
     songs=d.songs;
     tags=d.tags;
-    activeTag='';
+    activeStatuses=[];
     activeInstruments=[];
+    activeTags=[];
     persist();
     render();
     alert('読み込みが完了したよ');
