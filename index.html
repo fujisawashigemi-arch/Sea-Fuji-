@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="ja">
 <head>
@@ -20,6 +19,7 @@ button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border
 button.primary{background:var(--accent);color:white;border-color:var(--accent)}
 button.danger{color:var(--danger)}
 button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
+button:disabled{opacity:.4;cursor:default}
 input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);padding:10px;width:100%;min-width:0}
 input:focus,select:focus,textarea:focus{outline:2px solid #b9c9bf;border-color:var(--accent)}
 .search{flex:1;min-width:180px}
@@ -57,12 +57,26 @@ tbody tr:hover{background:#fbfcfa}
 .tagrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid #f0ede8}
 .tagrow:last-child{border-bottom:0}
 .tagname{flex:1;min-width:80px}
+.bulkbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;background:#f5f7f5;border:1px solid var(--line);border-radius:10px;padding:9px;margin:8px 0}
+.bulkbar select{width:auto;flex:1;min-width:130px}
+.selectcell{width:36px;text-align:center}
+.selectcell input{width:18px;height:18px;padding:0;margin:0;vertical-align:middle}
+.playlistrow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}
+.playlistrow:last-child{border-bottom:0}
+.playlistname{flex:1;min-width:100px;font-weight:600}
+.playlistrow button{padding:5px 8px;font-size:11px}
+.playlistsongs{margin-top:10px}
+.playlistsongs table{min-width:400px}
+.playlistsongs td{white-space:normal}
+.playlist-song-title{font-weight:600}
+.playlist-actions{white-space:nowrap}
 @media(max-width:560px){
  header{padding-top:14px}
  .formgrid{grid-template-columns:1fr}
  .field.full{grid-column:auto}
  .toolbar select{flex:1;max-width:none}
  .panel{padding:12px}
+ .bulkbar select{width:100%;flex:1 1 100%}
 }
 </style>
 </head>
@@ -126,6 +140,20 @@ tbody tr:hover{background:#fbfcfa}
 </form>
 </section>
 
+<!-- プレイリスト -->
+<section class="panel">
+<h2 style="font-size:16px;margin:0 0 10px">🎵 プレイリスト</h2>
+<div class="toolbar" style="margin:0">
+<button class="primary" id="createPlaylistBtn">＋ プレイリスト作成</button>
+<select id="activePlaylistSelect" style="flex:1;min-width:150px">
+<option value="">プレイリストを選択</option>
+</select>
+</div>
+<div id="playlistManagement" style="margin-top:8px"></div>
+<div id="playlistDetail" class="playlistsongs hidden"></div>
+<div class="note">曲リストで曲を選択して「選択曲をプレイリストに追加」すると登録できるよ。プレイリスト内の曲順は上下ボタンで変更できます。</div>
+</section>
+
 <section class="panel">
 <div class="toolbar" style="margin:0">
 <label style="margin:0;white-space:nowrap">並べ替え</label>
@@ -163,10 +191,28 @@ tbody tr:hover{background:#fbfcfa}
 </div>
 </section>
 
-<div class="listhead"><strong>曲リスト</strong><span id="count" class="count">0曲</span></div>
+<div class="listhead">
+<strong>曲リスト</strong>
+<span id="count" class="count">0曲</span>
+</div>
+
+<!-- 一括操作 -->
+<div class="bulkbar">
+<span id="selectedCount">0曲選択中</span>
+<button id="selectVisibleBtn">表示中を全選択</button>
+<button id="deselectBtn">選択解除</button>
+<select id="bulkTagSelect">
+<option value="">操作するタグを選択</option>
+</select>
+<button id="bulkAddTagBtn">タグ追加</button>
+<button id="bulkRemoveTagBtn">タグ削除</button>
+<button id="addToPlaylistBtn">選択曲をプレイリストに追加</button>
+</div>
+
 <div class="tablewrap">
 <table>
 <thead><tr>
+<th class="selectcell"><input type="checkbox" id="selectAllVisible" title="表示中を全選択"></th>
 <th>曲名</th><th>キー</th><th>演奏可能</th><th>現状</th><th>タグ</th><th>アーティスト</th><th>年</th><th>操作</th>
 </tr></thead>
 <tbody id="songRows"></tbody>
@@ -185,27 +231,35 @@ const INSTR=['歌','ギター','ピアノ','生ピアノ','三味線','笛','そ
 const STATUS=['歌える','練習中','歌いたい'];
 const STORE='mySongList_v1';
 
-let songs=[],tags=[];
+let songs=[],tags=[],playlists=[];
 let activeStatuses=[],activeInstruments=[],activeTags=[];
+let selectedSongIds=new Set();
+let activePlaylistId='';
 
 function load(){
   try{
     const d=JSON.parse(localStorage.getItem(STORE)||'{}');
     songs=Array.isArray(d.songs)?d.songs:[];
     tags=Array.isArray(d.tags)?d.tags:[];
+    playlists=Array.isArray(d.playlists)?d.playlists:[];
     songs.forEach(s=>{
       if(!Array.isArray(s.instruments))s.instruments=[];
       if(!Array.isArray(s.tags))s.tags=[];
       if(!s.status)s.status='';
     });
+    playlists.forEach(p=>{
+      if(!Array.isArray(p.songIds))p.songIds=[];
+      if(!p.created)p.created=Date.now();
+    });
   }catch(e){
     songs=[];
     tags=[];
+    playlists=[];
   }
 }
 
 function persist(){
-  localStorage.setItem(STORE,JSON.stringify({songs,tags}));
+  localStorage.setItem(STORE,JSON.stringify({songs,tags,playlists}));
 }
 
 function fillSelect(id,values){
@@ -233,10 +287,22 @@ function norm(s){
 }
 
 function renderTags(){
+  // タグ再描画時にも登録フォームでチェックしていたタグを保持
+  const previouslyChecked=checked('songTags');
+
   $('tagChoices').innerHTML=tags.map(t=>`<label><input type="checkbox" name="songTags" value="${esc(t)}">${esc(t)}</label>`).join('')||'<span class="note">タグはまだありません</span>';
 
+  setChecks('songTags',previouslyChecked);
   renderFilterButtons();
   renderTagManagement();
+  renderBulkTagOptions();
+}
+
+function renderBulkTagOptions(){
+  const select=$('bulkTagSelect');
+  const previous=select.value;
+  select.innerHTML='<option value="">操作するタグを選択</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  if(tags.includes(previous))select.value=previous;
 }
 
 function makeFilterButtons(id,values,selected,kind){
@@ -315,6 +381,7 @@ function filteredSongs(){
 
 function render(){
   renderTags();
+  renderPlaylists();
 
   let data=filteredSongs();
   let sort=$('sort').value;
@@ -330,6 +397,7 @@ function render(){
   $('empty').style.display=data.length?'none':'block';
 
   $('songRows').innerHTML=data.map(s=>`<tr>
+    <td class="selectcell"><input type="checkbox" class="songSelect" data-selectsong="${esc(s.id)}" ${selectedSongIds.has(s.id)?'checked':''}></td>
     <td><div class="song">${esc(s.title)}</div></td>
     <td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
     <td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
@@ -339,6 +407,15 @@ function render(){
     <td>${esc(s.year||'－')}</td>
     <td><button class="rowbtn" data-edit="${esc(s.id)}">編集</button> <button class="rowbtn danger" data-delete="${esc(s.id)}">削除</button></td>
   </tr>`).join('');
+
+  renderSelectionInfo(data);
+}
+
+function renderSelectionInfo(visibleData){
+  $('selectedCount').textContent=`${selectedSongIds.size}曲選択中`;
+  const allVisibleSelected=visibleData.length>0&&visibleData.every(s=>selectedSongIds.has(s.id));
+  $('selectAllVisible').checked=allVisibleSelected;
+  $('selectAllVisible').indeterminate=visibleData.some(s=>selectedSongIds.has(s.id))&&!allVisibleSelected;
 }
 
 function handleFilterClick(e){
@@ -354,6 +431,76 @@ function handleFilterClick(e){
   else arr.push(value);
 
   render();
+}
+
+function renderPlaylists(){
+  const select=$('activePlaylistSelect');
+  const prev=activePlaylistId;
+  select.innerHTML='<option value="">プレイリストを選択</option>'+playlists.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  if(playlists.some(p=>p.id===prev)){
+    activePlaylistId=prev;
+    select.value=prev;
+  }else{
+    activePlaylistId='';
+    select.value='';
+  }
+
+  $('playlistManagement').innerHTML=playlists.map((p,i)=>`
+    <div class="playlistrow">
+      <span class="playlistname">${esc(p.name)} <small style="color:var(--muted)">(${p.songIds.length}曲)</small></span>
+      <button type="button" data-openplaylist="${esc(p.id)}">開く</button>
+      <button type="button" data-playlistup="${esc(p.id)}" ${i===0?'disabled':''}>↑</button>
+      <button type="button" data-playlistdown="${esc(p.id)}" ${i===playlists.length-1?'disabled':''}>↓</button>
+      <button type="button" data-renameplaylist="${esc(p.id)}">名前変更</button>
+      <button type="button" class="danger" data-deleteplaylist="${esc(p.id)}">削除</button>
+    </div>
+  `).join('')||'<div class="note">プレイリストはまだありません。</div>';
+
+  renderPlaylistDetail();
+}
+
+function renderPlaylistDetail(){
+  const box=$('playlistDetail');
+  const p=playlists.find(x=>x.id===activePlaylistId);
+  if(!p){
+    box.classList.add('hidden');
+    box.innerHTML='';
+    return;
+  }
+
+  box.classList.remove('hidden');
+  const playlistSongs=p.songIds.map(id=>songs.find(s=>s.id===id)).filter(Boolean);
+
+  box.innerHTML=`
+    <h3 style="font-size:14px;margin:12px 0 8px">「${esc(p.name)}」の曲順</h3>
+    ${playlistSongs.length?`
+      <div class="tablewrap">
+      <table>
+      <thead><tr><th>順番</th><th>曲名</th><th>アーティスト</th><th>操作</th></tr></thead>
+      <tbody>
+      ${playlistSongs.map((s,i)=>`
+        <tr>
+          <td>${i+1}</td>
+          <td><div class="playlist-song-title">${esc(s.title)}</div></td>
+          <td>${esc(s.artist||'－')}</td>
+          <td class="playlist-actions">
+            <button type="button" data-plsongup="${esc(s.id)}" ${i===0?'disabled':''}>↑</button>
+            <button type="button" data-plsongdown="${esc(s.id)}" ${i===playlistSongs.length-1?'disabled':''}>↓</button>
+            <button type="button" class="danger" data-plsongremove="${esc(s.id)}">外す</button>
+          </td>
+        </tr>
+      `).join('')}
+      </tbody>
+      </table>
+      </div>
+    `:'<div class="empty">このプレイリストにはまだ曲がありません。</div>'}
+  `;
+}
+
+function moveItem(arr,index,delta){
+  const target=index+delta;
+  if(target<0||target>=arr.length)return;
+  [arr[index],arr[target]]=[arr[target],arr[index]];
 }
 
 fillSelect('key1',KEYS);
@@ -386,12 +533,15 @@ $('statuses').addEventListener('change',e=>{
   }
 });
 
+// タグ追加時、既にチェックされているタグを解除しない
 $('addTagBtn').onclick=()=>{
   let t=$('newTag').value.trim();
   if(t&&!tags.includes(t)){
+    const keep=checked('songTags');
     tags.push(t);
     persist();
     renderTags();
+    setChecks('songTags',[...keep,t]);
     $('newTag').value='';
   }else if(t){
     alert('そのタグはすでに登録されているよ');
@@ -445,9 +595,83 @@ $('songRows').onclick=e=>{
 
   if(del&&confirm('この曲を削除する？')){
     songs=songs.filter(x=>x.id!==del);
+    selectedSongIds.delete(del);
+    playlists.forEach(p=>p.songIds=p.songIds.filter(id=>id!==del));
     persist();
     render();
   }
+};
+
+$('songRows').onchange=e=>{
+  const id=e.target.dataset.selectsong;
+  if(!id)return;
+  if(e.target.checked)selectedSongIds.add(id);
+  else selectedSongIds.delete(id);
+  renderSelectionInfo(filteredSongs());
+};
+
+$('selectVisibleBtn').onclick=()=>{
+  filteredSongs().forEach(s=>selectedSongIds.add(s.id));
+  render();
+};
+
+$('selectAllVisible').onchange=e=>{
+  filteredSongs().forEach(s=>{
+    if(e.target.checked)selectedSongIds.add(s.id);
+    else selectedSongIds.delete(s.id);
+  });
+  render();
+};
+
+$('deselectBtn').onclick=()=>{
+  selectedSongIds.clear();
+  render();
+};
+
+$('bulkAddTagBtn').onclick=()=>{
+  const tag=$('bulkTagSelect').value;
+  if(!tag){alert('タグを選んでね');return;}
+  if(!selectedSongIds.size){alert('曲を選択してね');return;}
+
+  songs.forEach(s=>{
+    if(selectedSongIds.has(s.id)){
+      if(!s.tags.includes(tag))s.tags.push(tag);
+    }
+  });
+  persist();
+  render();
+  alert(`選択した${selectedSongIds.size}曲に「${tag}」を追加したよ`);
+};
+
+$('bulkRemoveTagBtn').onclick=()=>{
+  const tag=$('bulkTagSelect').value;
+  if(!tag){alert('タグを選んでね');return;}
+  if(!selectedSongIds.size){alert('曲を選択してね');return;}
+
+  songs.forEach(s=>{
+    if(selectedSongIds.has(s.id))s.tags=s.tags.filter(t=>t!==tag);
+  });
+  persist();
+  render();
+  alert(`選択した曲から「${tag}」を外したよ`);
+};
+
+$('addToPlaylistBtn').onclick=()=>{
+  if(!selectedSongIds.size){alert('曲を選択してね');return;}
+  if(!activePlaylistId){alert('先にプレイリストを選択してね');return;}
+  const p=playlists.find(x=>x.id===activePlaylistId);
+  if(!p)return;
+
+  let added=0;
+  songs.forEach(s=>{
+    if(selectedSongIds.has(s.id)&&!p.songIds.includes(s.id)){
+      p.songIds.push(s.id);
+      added++;
+    }
+  });
+  persist();
+  render();
+  alert(`${added}曲を「${p.name}」に追加したよ`);
 };
 
 $('statusFilters').onclick=handleFilterClick;
@@ -506,12 +730,98 @@ $('tagManagement').onclick=e=>{
   }
 };
 
+// プレイリスト作成
+$('createPlaylistBtn').onclick=()=>{
+  const name=prompt('プレイリスト名を入力してね');
+  if(name===null)return;
+  const n=name.trim();
+  if(!n)return;
+
+  const p={id:'pl_'+Date.now()+Math.random().toString(16).slice(2),name:n,songIds:[],created:Date.now()};
+  playlists.push(p);
+  activePlaylistId=p.id;
+  persist();
+  render();
+};
+
+// プレイリスト選択
+$('activePlaylistSelect').onchange=e=>{
+  activePlaylistId=e.target.value;
+  renderPlaylistDetail();
+};
+
+// プレイリスト操作
+$('playlistManagement').onclick=e=>{
+  const open=e.target.dataset.openplaylist;
+  const up=e.target.dataset.playlistup;
+  const down=e.target.dataset.playlistdown;
+  const rename=e.target.dataset.renameplaylist;
+  const del=e.target.dataset.deleteplaylist;
+
+  if(open){
+    activePlaylistId=open;
+    render();
+  }
+
+  if(up||down){
+    const id=up||down;
+    const i=playlists.findIndex(p=>p.id===id);
+    moveItem(playlists,i,up?-1:1);
+    persist();
+    render();
+  }
+
+  if(rename){
+    const p=playlists.find(x=>x.id===rename);
+    if(!p)return;
+    const name=prompt('新しいプレイリスト名',p.name);
+    if(name===null)return;
+    const n=name.trim();
+    if(n)p.name=n;
+    persist();
+    render();
+  }
+
+  if(del){
+    const p=playlists.find(x=>x.id===del);
+    if(!p)return;
+    if(!confirm(`「${p.name}」を削除する？\nプレイリストだけ削除され、曲自体は消えないよ。`))return;
+    playlists=playlists.filter(x=>x.id!==del);
+    if(activePlaylistId===del)activePlaylistId='';
+    persist();
+    render();
+  }
+};
+
+// プレイリスト内の曲の並べ替え・削除
+$('playlistDetail').onclick=e=>{
+  const up=e.target.dataset.plsongup;
+  const down=e.target.dataset.plsongdown;
+  const remove=e.target.dataset.plsongremove;
+  const p=playlists.find(x=>x.id===activePlaylistId);
+  if(!p)return;
+
+  if(up||down){
+    const id=up||down;
+    const i=p.songIds.indexOf(id);
+    moveItem(p.songIds,i,up?-1:1);
+    persist();
+    renderPlaylistDetail();
+  }
+
+  if(remove){
+    p.songIds=p.songIds.filter(id=>id!==remove);
+    persist();
+    renderPlaylistDetail();
+  }
+};
+
 $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
 $('exportBtn').onclick=()=>{
-  let blob=new Blob([JSON.stringify({app:'レパートリーリスト',version:1,songs,tags},null,2)],{type:'application/json'});
+  let blob=new Blob([JSON.stringify({app:'レパートリーリスト',version:2,songs,tags,playlists},null,2)],{type:'application/json'});
   let a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
   a.download='レパートリーリスト_バックアップ.json';
@@ -533,9 +843,12 @@ $('fileInput').onchange=async e=>{
 
     songs=d.songs;
     tags=d.tags;
+    playlists=Array.isArray(d.playlists)?d.playlists:[];
     activeStatuses=[];
     activeInstruments=[];
     activeTags=[];
+    selectedSongIds.clear();
+    activePlaylistId='';
     persist();
     render();
     alert('読み込みが完了したよ');
