@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -7,45 +8,84 @@
 <meta name="theme-color" content="#f6f3ee">
 <title>レパートリーリスト</title>
 <style>
-:root{--bg:#f6f3ee;--paper:#fff;--ink:#292722;--muted:#77736b;--line:#e8e2d9;--accent:#667b70;--soft:#edf1ed;--danger:#a34e46}
+:root{
+--bg:#f6f3ee;--paper:#fff;--ink:#292722;
+--muted:#77736b;--line:#e8e2d9;--accent:#667b70;
+--soft:#edf1ed;--danger:#a34e46;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;font-size:14px}
+body{
+margin:0;background:var(--bg);color:var(--ink);
+font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+font-size:14px
+}
 header{padding:18px 16px 12px;max-width:1100px;margin:auto}
 h1{font-size:21px;margin:0 0 5px;font-weight:700}
 .sub{color:var(--muted);font-size:12px}
 main{max-width:1100px;margin:auto;padding:0 12px 36px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
-button,.btn{border:1px solid var(--line);background:#fff;color:var(--ink);border-radius:9px;padding:9px 12px;font-size:13px;cursor:pointer}
+button,.btn{
+border:1px solid var(--line);background:#fff;color:var(--ink);
+border-radius:9px;padding:9px 12px;font-size:13px;cursor:pointer
+}
 button.primary{background:var(--accent);color:white;border-color:var(--accent)}
 button.danger{color:var(--danger)}
 button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
 button:disabled{opacity:.4;cursor:default}
-input,select,textarea{font:inherit;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);padding:10px;width:100%;min-width:0}
-input:focus,select:focus,textarea:focus{outline:2px solid #b9c9bf;border-color:var(--accent)}
-.search{flex:1;min-width:180px}
-.toolbar select{width:auto;max-width:190px}
-.panel{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}
+input,select,textarea{
+font:inherit;border:1px solid var(--line);border-radius:8px;
+background:white;color:var(--ink);padding:10px;width:100%;min-width:0
+}
+input:focus,select:focus,textarea:focus{
+outline:2px solid #b9c9bf;border-color:var(--accent)
+}
+.search{width:100%;min-width:0}
+.panel{
+background:var(--paper);border:1px solid var(--line);
+border-radius:12px;padding:14px;margin:12px 0
+}
 .formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
 .field.full{grid-column:1/-1}
 label{display:block;font-size:12px;color:var(--muted);margin:0 0 5px}
 .req{color:var(--danger)}
 fieldset{border:0;padding:0;margin:0}
 .choices{display:flex;gap:7px;flex-wrap:wrap}
-.choices label{display:flex;align-items:center;gap:5px;background:#f7f6f3;border:1px solid var(--line);border-radius:8px;padding:7px 9px;color:var(--ink);margin:0}
+.choices label{
+display:flex;align-items:center;gap:5px;background:#f7f6f3;
+border:1px solid var(--line);border-radius:8px;padding:7px 9px;
+color:var(--ink);margin:0
+}
 .choices input{width:auto;margin:0}
 .formactions{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
 .hidden{display:none!important}
-.listhead{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:18px 2px 8px}
+.listhead{
+display:flex;justify-content:space-between;align-items:center;
+gap:8px;margin:18px 2px 8px
+}
 .count{color:var(--muted);font-size:12px}
-.tablewrap{overflow-x:auto;background:white;border:1px solid var(--line);border-radius:11px}
-table{border-collapse:collapse;width:100%;min-width:760px}
-th,td{padding:6px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;font-size:12px}
-th{color:var(--muted);font-weight:600;background:#faf9f7;position:sticky;top:0}
+.tablewrap{
+overflow:auto;background:white;border:1px solid var(--line);
+border-radius:11px;position:relative;
+-webkit-overflow-scrolling:touch
+}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px}
+th,td{
+padding:6px 10px;border-bottom:1px solid var(--line);
+border-right:0;text-align:left;white-space:nowrap;font-size:12px;
+background:white
+}
+th{
+color:var(--muted);font-weight:600;background:#faf9f7;
+position:sticky;top:0;z-index:3
+}
 tbody tr:last-child td{border-bottom:0}
-tbody tr:hover{background:#fbfcfa}
+tbody tr:hover td{background:#fbfcfa}
 .song{font-weight:650;font-size:13px}
 .subline{color:var(--muted);font-size:11px;margin-top:3px}
-.pill{display:inline-block;background:var(--soft);border-radius:20px;padding:3px 7px;margin:1px;color:#46594e;font-size:11px}
+.pill{
+display:inline-block;background:var(--soft);border-radius:20px;
+padding:3px 7px;margin:1px;color:#46594e;font-size:11px
+}
 .status{color:#555}
 .rowbtn{padding:5px 8px;font-size:11px}
 .tagfilters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
@@ -54,14 +94,24 @@ tbody tr:hover{background:#fbfcfa}
 .note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:8px}
 .empty{text-align:center;color:var(--muted);padding:30px}
 .tagmanage{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
-.tagrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:7px 0;border-bottom:1px solid #f0ede8}
+.tagrow{
+display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+padding:7px 0;border-bottom:1px solid #f0ede8
+}
 .tagrow:last-child{border-bottom:0}
 .tagname{flex:1;min-width:80px}
-.bulkbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;background:#f5f7f5;border:1px solid var(--line);border-radius:10px;padding:9px;margin:8px 0}
+.bulkbar{
+display:flex;gap:7px;align-items:center;flex-wrap:wrap;
+background:#f5f7f5;border:1px solid var(--line);
+border-radius:10px;padding:9px;margin:8px 0
+}
 .bulkbar select{width:auto;flex:1;min-width:130px}
-.selectcell{width:36px;text-align:center}
+.selectcell{width:36px;min-width:36px;text-align:center}
 .selectcell input{width:18px;height:18px;padding:0;margin:0;vertical-align:middle}
-.playlistrow{display:flex;align-items:center;gap:7px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line)}
+.playlistrow{
+display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+padding:8px 0;border-bottom:1px solid var(--line)
+}
 .playlistrow:last-child{border-bottom:0}
 .playlistname{flex:1;min-width:100px;font-weight:600}
 .playlistrow button{padding:5px 8px;font-size:11px}
@@ -70,13 +120,46 @@ tbody tr:hover{background:#fbfcfa}
 .playlistsongs td{white-space:normal}
 .playlist-song-title{font-weight:600}
 .playlist-actions{white-space:nowrap}
+.section-toggle{
+width:100%;display:flex;justify-content:space-between;
+align-items:center;text-align:left;font-weight:650;
+background:transparent;border:0;padding:2px 0;
+font-size:15px
+}
+.section-toggle .arrow{color:var(--muted);font-size:12px}
+.section-content{margin-top:12px}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.top-actions button{flex:1}
+.save-status{font-size:11px;color:var(--muted);margin-left:auto}
+.save-status.dirty{color:#a34e46;font-weight:650}
+.filter-title{font-size:12px;color:var(--muted);margin-top:12px}
+.playlist-tags{flex-basis:100%;margin-left:0}
+.playlist-tag-filter{margin-top:10px}
+.tablewrap th:first-child,.tablewrap td:first-child{
+position:sticky;left:0;z-index:4;min-width:36px;width:36px
+}
+.tablewrap th:first-child{z-index:6;background:#faf9f7}
+.tablewrap td:first-child{background:white}
+.tablewrap th:nth-child(2),.tablewrap td:nth-child(2){
+position:sticky;left:36px;z-index:4;
+min-width:130px;background:white;
+box-shadow:2px 0 3px rgba(0,0,0,.04)
+}
+.tablewrap th:nth-child(2){
+z-index:6;background:#faf9f7
+}
+.tablewrap tbody tr:hover td:nth-child(2){background:#fbfcfa}
+.playlistsongs th:first-child,.playlistsongs td:first-child,
+.playlistsongs th:nth-child(2),.playlistsongs td:nth-child(2){
+position:static;box-shadow:none
+}
 @media(max-width:560px){
- header{padding-top:14px}
- .formgrid{grid-template-columns:1fr}
- .field.full{grid-column:auto}
- .toolbar select{flex:1;max-width:none}
- .panel{padding:12px}
- .bulkbar select{width:100%;flex:1 1 100%}
+header{padding-top:14px}
+.formgrid{grid-template-columns:1fr}
+.field.full{grid-column:auto}
+.panel{padding:12px}
+.bulkbar select{width:100%;flex:1 1 100%}
+.top-actions button{flex:1 1 40%}
 }
 </style>
 </head>
@@ -87,14 +170,17 @@ tbody tr:hover{background:#fbfcfa}
 </header>
 
 <main>
-<div class="toolbar">
-<input id="search" class="search" placeholder="曲名・アーティスト・メモを検索">
+
+<!-- 上部操作 -->
+<div class="top-actions">
 <button class="primary" id="newBtn">＋ 曲を追加</button>
 <button id="exportBtn">バックアップ保存</button>
 <button id="importBtn">読み込み</button>
-<input type="file" id="fileInput" accept=".json,application/json" class="hidden">
 </div>
+<div class="save-status" id="saveStatus">保存済み</div>
+<input type="file" id="fileInput" accept=".json,application/json" class="hidden">
 
+<!-- 曲編集 -->
 <section id="editor" class="panel hidden">
 <h2 id="formTitle" style="font-size:16px;margin:0 0 12px">曲を追加</h2>
 <form id="songForm">
@@ -106,7 +192,7 @@ tbody tr:hover{background:#fbfcfa}
 </div>
 <div class="field full">
 <label>② 曲名の読み仮名</label>
-<input id="reading" placeholder="並べ替えに使う読み仮名（必要に応じて編集）">
+<input id="reading" placeholder="並べ替えに使う読み仮名">
 </div>
 <div class="field"><label>③ キー1</label><select id="key1"></select></div>
 <div class="field"><label>④ キー2</label><select id="key2"></select></div>
@@ -136,26 +222,44 @@ tbody tr:hover{background:#fbfcfa}
 <button class="primary" type="submit">保存する</button>
 <button type="button" id="cancelBtn">キャンセル</button>
 </div>
-<div class="note">読み仮名は日本語の漢字から正確に自動判定できないため、ここで確認・修正できるようにしています。曲名がひらがな・カタカナの場合は自動で読み欄に反映します。</div>
+<div class="note">読み仮名は必要に応じて編集できます。ひらがな・カタカナの曲名は自動で読み欄に反映します。</div>
 </form>
 </section>
 
 <!-- プレイリスト -->
 <section class="panel">
-<h2 style="font-size:16px;margin:0 0 10px">🎵 プレイリスト</h2>
+<button class="section-toggle" id="playlistToggle">
+<span>🎵 プレイリスト</span><span class="arrow" id="playlistArrow">▼ 開く</span>
+</button>
+<div id="playlistContent" class="section-content hidden">
 <div class="toolbar" style="margin:0">
 <button class="primary" id="createPlaylistBtn">＋ プレイリスト作成</button>
 <select id="activePlaylistSelect" style="flex:1;min-width:150px">
 <option value="">プレイリストを選択</option>
 </select>
 </div>
+
+<div class="filter-title playlist-tag-filter">プレイリストをタグで絞り込み</div>
+<div id="playlistTagFilters" class="tagfilters"></div>
+<button id="clearPlaylistTagFilter" class="rowbtn" style="margin-top:7px">タグ絞り込み解除</button>
+
 <div id="playlistManagement" style="margin-top:8px"></div>
 <div id="playlistDetail" class="playlistsongs hidden"></div>
-<div class="note">曲リストで曲を選択して「選択曲をプレイリストに追加」すると登録できるよ。プレイリスト内の曲順は上下ボタンで変更できます。</div>
+<div class="note">プレイリストのタグは曲のタグとは別に管理されます。タグでプレイリストを絞り込めます。</div>
+</div>
 </section>
 
+<!-- 絞り込み -->
 <section class="panel">
-<div class="toolbar" style="margin:0">
+<button class="section-toggle" id="filterToggle">
+<span>🔎 検索・絞り込み</span><span class="arrow" id="filterArrow">▼ 開く</span>
+</button>
+<div id="filterContent" class="section-content hidden">
+
+<label>曲名・アーティスト・メモを検索</label>
+<input id="search" class="search" placeholder="検索したい文字を入力">
+
+<div class="toolbar">
 <label style="margin:0;white-space:nowrap">並べ替え</label>
 <select id="sort">
 <option value="reading">曲名の読み</option>
@@ -169,25 +273,24 @@ tbody tr:hover{background:#fbfcfa}
 </div>
 
 <div class="filtergroup">
-<div style="font-size:12px;color:var(--muted);margin-top:12px">現状で絞り込み</div>
+<div class="filter-title">現状で絞り込み</div>
 <div id="statusFilters" class="tagfilters"></div>
 </div>
-
 <div class="filtergroup">
-<div style="font-size:12px;color:var(--muted);margin-top:12px">演奏可能項目で絞り込み（どれか一つでもOK）</div>
+<div class="filter-title">演奏可能項目で絞り込み（どれか一つでもOK）</div>
 <div id="instrumentFilters" class="tagfilters"></div>
 </div>
-
 <div class="filtergroup">
-<div style="font-size:12px;color:var(--muted);margin-top:12px">タグで絞り込み</div>
+<div class="filter-title">タグで絞り込み</div>
 <div id="tagFilters" class="tagfilters"></div>
 </div>
 
-<div class="note">各絞り込み内も、異なる種類の絞り込みも「いずれかに該当すれば表示」の追加方式（OR）だよ。検索文字は別途適用されるよ。</div>
+<div class="note">各絞り込み内も異なる種類の絞り込みも「いずれかに該当すれば表示」の追加方式（OR）です。検索文字は別途適用されます。</div>
 
 <div class="tagmanage">
 <button id="manageTagsBtn">🏷️ タグ管理を表示</button>
 <div id="tagManagement" class="hidden" style="margin-top:9px"></div>
+</div>
 </div>
 </section>
 
@@ -206,7 +309,10 @@ tbody tr:hover{background:#fbfcfa}
 </select>
 <button id="bulkAddTagBtn">タグ追加</button>
 <button id="bulkRemoveTagBtn">タグ削除</button>
-<button id="addToPlaylistBtn">選択曲をプレイリストに追加</button>
+<select id="addTargetPlaylist">
+<option value="">追加先プレイリストを選択</option>
+</select>
+<button id="addToPlaylistBtn" class="primary">選択曲をプレイリストに追加</button>
 </div>
 
 <div class="tablewrap">
@@ -233,634 +339,688 @@ const STORE='mySongList_v1';
 
 let songs=[],tags=[],playlists=[];
 let activeStatuses=[],activeInstruments=[],activeTags=[];
+let activePlaylistTags=[];
 let selectedSongIds=new Set();
 let activePlaylistId='';
+let editingDirty=false;
 
 function load(){
-  try{
-    const d=JSON.parse(localStorage.getItem(STORE)||'{}');
-    songs=Array.isArray(d.songs)?d.songs:[];
-    tags=Array.isArray(d.tags)?d.tags:[];
-    playlists=Array.isArray(d.playlists)?d.playlists:[];
-    songs.forEach(s=>{
-      if(!Array.isArray(s.instruments))s.instruments=[];
-      if(!Array.isArray(s.tags))s.tags=[];
-      if(!s.status)s.status='';
-    });
-    playlists.forEach(p=>{
-      if(!Array.isArray(p.songIds))p.songIds=[];
-      if(!p.created)p.created=Date.now();
-    });
-  }catch(e){
-    songs=[];
-    tags=[];
-    playlists=[];
-  }
+try{
+const d=JSON.parse(localStorage.getItem(STORE)||'{}');
+songs=Array.isArray(d.songs)?d.songs:[];
+tags=Array.isArray(d.tags)?d.tags:[];
+playlists=Array.isArray(d.playlists)?d.playlists:[];
+songs.forEach(s=>{
+if(!Array.isArray(s.instruments))s.instruments=[];
+if(!Array.isArray(s.tags))s.tags=[];
+if(!s.status)s.status='';
+});
+playlists.forEach(p=>{
+if(!Array.isArray(p.songIds))p.songIds=[];
+if(!Array.isArray(p.tags))p.tags=[];
+if(!p.created)p.created=Date.now();
+});
+}catch(e){
+songs=[];tags=[];playlists=[];
+}
 }
 
 function persist(){
-  localStorage.setItem(STORE,JSON.stringify({songs,tags,playlists}));
+localStorage.setItem(STORE,JSON.stringify({songs,tags,playlists}));
+setSaveStatus(false);
+}
+
+function setSaveStatus(dirty){
+editingDirty=dirty;
+$('saveStatus').textContent=dirty?'● 編集中（未保存）':'✓ 保存済み';
+$('saveStatus').classList.toggle('dirty',dirty);
+}
+
+function markDirty(){
+setSaveStatus(true);
 }
 
 function fillSelect(id,values){
-  $(id).innerHTML=values.map(v=>`<option value="${esc(v)}">${v||'未設定'}</option>`).join('');
+$(id).innerHTML=values.map(v=>`<option value="${esc(v)}">${v||'未設定'}</option>`).join('');
 }
 
 function esc(s){
-  return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function checks(id,values,name){
-  $(id).innerHTML=values.map(v=>`<label><input type="checkbox" name="${name}" value="${esc(v)}">${esc(v)}</label>`).join('');
+$(id).innerHTML=values.map(v=>`<label><input type="checkbox" name="${name}" value="${esc(v)}">${esc(v)}</label>`).join('');
 }
 
 function checked(name){
-  return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value);
+return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(x=>x.value);
 }
 
 function setChecks(name,values){
-  document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=values.includes(x.value));
+document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=values.includes(x.value));
 }
 
 function norm(s){
-  return (s||'').trim().toLocaleLowerCase();
+return (s||'').trim().toLocaleLowerCase();
 }
 
 function renderTags(){
-  // タグ再描画時にも登録フォームでチェックしていたタグを保持
-  const previouslyChecked=checked('songTags');
-
-  $('tagChoices').innerHTML=tags.map(t=>`<label><input type="checkbox" name="songTags" value="${esc(t)}">${esc(t)}</label>`).join('')||'<span class="note">タグはまだありません</span>';
-
-  setChecks('songTags',previouslyChecked);
-  renderFilterButtons();
-  renderTagManagement();
-  renderBulkTagOptions();
+const previouslyChecked=checked('songTags');
+$('tagChoices').innerHTML=tags.map(t=>`<label><input type="checkbox" name="songTags" value="${esc(t)}">${esc(t)}</label>`).join('')||'<span class="note">タグはまだありません</span>';
+setChecks('songTags',previouslyChecked);
+renderFilterButtons();
+renderTagManagement();
+renderBulkTagOptions();
 }
 
 function renderBulkTagOptions(){
-  const select=$('bulkTagSelect');
-  const previous=select.value;
-  select.innerHTML='<option value="">操作するタグを選択</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
-  if(tags.includes(previous))select.value=previous;
+const select=$('bulkTagSelect');
+const previous=select.value;
+select.innerHTML='<option value="">操作するタグを選択</option>'+tags.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+if(tags.includes(previous))select.value=previous;
+}
+
+function renderPlaylistTargetOptions(){
+const select=$('addTargetPlaylist');
+const previous=select.value;
+select.innerHTML='<option value="">追加先プレイリストを選択</option>'+playlists.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+if(playlists.some(p=>p.id===previous))select.value=previous;
 }
 
 function makeFilterButtons(id,values,selected,kind){
-  $(id).innerHTML=values.map(v=>`
-    <button type="button" data-filter-kind="${kind}" data-filter-value="${esc(v)}" class="${selected.includes(v)?'active':''}">${esc(v)}</button>
-  `).join('')||'<span class="note">項目がありません</span>';
+$(id).innerHTML=values.map(v=>`
+<button type="button" data-filter-kind="${kind}" data-filter-value="${esc(v)}" class="${selected.includes(v)?'active':''}">${esc(v)}</button>
+`).join('')||'<span class="note">項目がありません</span>';
 }
 
 function renderFilterButtons(){
-  makeFilterButtons('statusFilters',STATUS,activeStatuses,'status');
-  makeFilterButtons('instrumentFilters',INSTR,activeInstruments,'instrument');
-  makeFilterButtons('tagFilters',tags,activeTags,'tag');
+makeFilterButtons('statusFilters',STATUS,activeStatuses,'status');
+makeFilterButtons('instrumentFilters',INSTR,activeInstruments,'instrument');
+makeFilterButtons('tagFilters',tags,activeTags,'tag');
 }
 
 function renderTagManagement(){
-  const box=$('tagManagement');
-  if(!tags.length){
-    box.innerHTML='<div class="note">登録タグはありません。</div>';
-    return;
-  }
-
-  box.innerHTML=tags.map(t=>{
-    const count=songs.filter(s=>(s.tags||[]).includes(t)).length;
-    return `<div class="tagrow">
-      <span class="tagname"><span class="pill">${esc(t)}</span> <small>${count}曲</small></span>
-      <button type="button" data-renametag="${esc(t)}">名前変更</button>
-      <button type="button" class="danger" data-deletetag="${esc(t)}">削除</button>
-    </div>`;
-  }).join('');
+const box=$('tagManagement');
+if(!tags.length){
+box.innerHTML='<div class="note">登録タグはありません。</div>';
+return;
+}
+box.innerHTML=tags.map(t=>{
+const count=songs.filter(s=>(s.tags||[]).includes(t)).length;
+return `<div class="tagrow">
+<span class="tagname"><span class="pill">${esc(t)}</span> <small>${count}曲</small></span>
+<button type="button" data-renametag="${esc(t)}">名前変更</button>
+<button type="button" class="danger" data-deletetag="${esc(t)}">削除</button>
+</div>`;
+}).join('');
 }
 
 function openForm(song){
-  $('editor').classList.remove('hidden');
-  $('formTitle').textContent=song?'曲を編集':'曲を追加';
-  $('editId').value=song?.id||'';
-  $('title').value=song?.title||'';
-  $('reading').value=song?.reading||'';
-  $('reading').dataset.touched=song?.reading?'1':'';
-  $('key1').value=song?.key1||'';
-  $('key2').value=song?.key2||'';
-  $('artist').value=song?.artist||'';
-  $('artistReading').value=song?.artistReading||'';
-  $('artistReading').dataset.touched=song?.artistReading?'1':'';
-  $('year').value=song?.year||'';
-  $('memo').value=song?.memo||'';
-  setChecks('instrument',song?.instruments||[]);
-  setChecks('status',song?.status?[song.status]:[]);
-  setChecks('songTags',song?.tags||[]);
-  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+$('editor').classList.remove('hidden');
+$('formTitle').textContent=song?'曲を編集':'曲を追加';
+$('editId').value=song?.id||'';
+$('title').value=song?.title||'';
+$('reading').value=song?.reading||'';
+$('reading').dataset.touched=song?.reading?'1':'';
+$('key1').value=song?.key1||'';
+$('key2').value=song?.key2||'';
+$('artist').value=song?.artist||'';
+$('artistReading').value=song?.artistReading||'';
+$('artistReading').dataset.touched=song?.artistReading?'1':'';
+$('year').value=song?.year||'';
+$('memo').value=song?.memo||'';
+setChecks('instrument',song?.instruments||[]);
+setChecks('status',song?.status?[song.status]:[]);
+setChecks('songTags',song?.tags||[]);
+setSaveStatus(false);
+$('editor').scrollIntoView({behavior:'smooth',block:'start'});
 }
 
 function closeForm(){
-  $('editor').classList.add('hidden');
-  $('songForm').reset();
-  $('editId').value='';
-  $('reading').dataset.touched='';
-  $('artistReading').dataset.touched='';
+$('editor').classList.add('hidden');
+$('songForm').reset();
+$('editId').value='';
+$('reading').dataset.touched='';
+$('artistReading').dataset.touched='';
+setSaveStatus(false);
 }
 
 function filteredSongs(){
-  const q=norm($('search').value);
-  const hasFilters=activeStatuses.length||activeInstruments.length||activeTags.length;
-
-  return songs.filter(s=>{
-    const searchMatch=!q||[s.title,s.reading,s.artist,s.artistReading,s.memo].some(v=>norm(v).includes(q));
-    if(!searchMatch)return false;
-    if(!hasFilters)return true;
-
-    const statusMatch=activeStatuses.length&&activeStatuses.includes(s.status);
-    const instrumentMatch=activeInstruments.length&&(s.instruments||[]).some(x=>activeInstruments.includes(x));
-    const tagMatch=activeTags.length&&(s.tags||[]).some(x=>activeTags.includes(x));
-
-    return !!(statusMatch||instrumentMatch||tagMatch);
-  });
+const q=norm($('search').value);
+const hasFilters=activeStatuses.length||activeInstruments.length||activeTags.length;
+return songs.filter(s=>{
+const searchMatch=!q||[s.title,s.reading,s.artist,s.artistReading,s.memo].some(v=>norm(v).includes(q));
+if(!searchMatch)return false;
+if(!hasFilters)return true;
+const statusMatch=activeStatuses.length&&activeStatuses.includes(s.status);
+const instrumentMatch=activeInstruments.length&&(s.instruments||[]).some(x=>activeInstruments.includes(x));
+const tagMatch=activeTags.length&&(s.tags||[]).some(x=>activeTags.includes(x));
+return !!(statusMatch||instrumentMatch||tagMatch);
+});
 }
 
 function render(){
-  renderTags();
-  renderPlaylists();
+renderTags();
+renderPlaylists();
+renderPlaylistTargetOptions();
 
-  let data=filteredSongs();
-  let sort=$('sort').value;
-  let dir=$('direction').value==='asc'?1:-1;
+let data=filteredSongs();
+let sort=$('sort').value;
+let dir=$('direction').value==='asc'?1:-1;
 
-  data.sort((a,b)=>{
-    let x=sort==='added'?(a.created||0):sort==='artistReading'?norm(a.artistReading||a.artist):sort==='title'?norm(a.title):sort==='year'?Number(a.year||0):norm(a.reading||a.title);
-    let y=sort==='added'?(b.created||0):sort==='artistReading'?norm(b.artistReading||b.artist):sort==='title'?norm(b.title):sort==='year'?Number(b.year||0):norm(b.reading||b.title);
-    return (x<y?-1:x>y?1:0)*dir;
-  });
+data.sort((a,b)=>{
+let x=sort==='added'?(a.created||0):sort==='artistReading'?norm(a.artistReading||a.artist):sort==='title'?norm(a.title):sort==='year'?Number(a.year||0):norm(a.reading||a.title);
+let y=sort==='added'?(b.created||0):sort==='artistReading'?norm(b.artistReading||b.artist):sort==='title'?norm(b.title):sort==='year'?Number(b.year||0):norm(b.reading||b.title);
+return (x<y?-1:x>y?1:0)*dir;
+});
 
-  $('count').textContent=`${data.length}曲 / 全${songs.length}曲`;
-  $('empty').style.display=data.length?'none':'block';
+$('count').textContent=`${data.length}曲 / 全${songs.length}曲`;
+$('empty').style.display=data.length?'none':'block';
 
-  $('songRows').innerHTML=data.map(s=>`<tr>
-    <td class="selectcell"><input type="checkbox" class="songSelect" data-selectsong="${esc(s.id)}" ${selectedSongIds.has(s.id)?'checked':''}></td>
-    <td><div class="song">${esc(s.title)}</div></td>
-    <td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
-    <td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
-    <td class="status">${esc(s.status||'－')}</td>
-    <td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
-    <td>${esc(s.artist||'－')}<div class="subline">${esc(s.artistReading||'')}</div></td>
-    <td>${esc(s.year||'－')}</td>
-    <td><button class="rowbtn" data-edit="${esc(s.id)}">編集</button> <button class="rowbtn danger" data-delete="${esc(s.id)}">削除</button></td>
-  </tr>`).join('');
+$('songRows').innerHTML=data.map(s=>`<tr>
+<td class="selectcell"><input type="checkbox" class="songSelect" data-selectsong="${esc(s.id)}" ${selectedSongIds.has(s.id)?'checked':''}></td>
+<td><div class="song">${esc(s.title)}</div></td>
+<td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
+<td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
+<td class="status">${esc(s.status||'－')}</td>
+<td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
+<td>${esc(s.artist||'－')}<div class="subline">${esc(s.artistReading||'')}</div></td>
+<td>${esc(s.year||'－')}</td>
+<td><button class="rowbtn" data-edit="${esc(s.id)}">編集</button> <button class="rowbtn danger" data-delete="${esc(s.id)}">削除</button></td>
+</tr>`).join('');
 
-  renderSelectionInfo(data);
+renderSelectionInfo(data);
 }
 
 function renderSelectionInfo(visibleData){
-  $('selectedCount').textContent=`${selectedSongIds.size}曲選択中`;
-  const allVisibleSelected=visibleData.length>0&&visibleData.every(s=>selectedSongIds.has(s.id));
-  $('selectAllVisible').checked=allVisibleSelected;
-  $('selectAllVisible').indeterminate=visibleData.some(s=>selectedSongIds.has(s.id))&&!allVisibleSelected;
+$('selectedCount').textContent=`${selectedSongIds.size}曲選択中`;
+const allVisibleSelected=visibleData.length>0&&visibleData.every(s=>selectedSongIds.has(s.id));
+$('selectAllVisible').checked=allVisibleSelected;
+$('selectAllVisible').indeterminate=visibleData.some(s=>selectedSongIds.has(s.id))&&!allVisibleSelected;
 }
 
 function handleFilterClick(e){
-  const b=e.target.closest('button[data-filter-kind]');
-  if(!b)return;
-
-  const kind=b.dataset.filterKind;
-  const value=b.dataset.filterValue;
-  const arr=kind==='status'?activeStatuses:kind==='instrument'?activeInstruments:activeTags;
-  const i=arr.indexOf(value);
-
-  if(i>=0)arr.splice(i,1);
-  else arr.push(value);
-
-  render();
+const b=e.target.closest('button[data-filter-kind]');
+if(!b)return;
+const kind=b.dataset.filterKind;
+const value=b.dataset.filterValue;
+const arr=kind==='status'?activeStatuses:kind==='instrument'?activeInstruments:activeTags;
+const i=arr.indexOf(value);
+if(i>=0)arr.splice(i,1);
+else arr.push(value);
+render();
 }
 
 function renderPlaylists(){
-  const select=$('activePlaylistSelect');
-  const prev=activePlaylistId;
-  select.innerHTML='<option value="">プレイリストを選択</option>'+playlists.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
-  if(playlists.some(p=>p.id===prev)){
-    activePlaylistId=prev;
-    select.value=prev;
-  }else{
-    activePlaylistId='';
-    select.value='';
-  }
+const select=$('activePlaylistSelect');
+const prev=activePlaylistId;
+select.innerHTML='<option value="">プレイリストを選択</option>'+playlists.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+if(playlists.some(p=>p.id===prev)){
+activePlaylistId=prev;
+select.value=prev;
+}else{
+activePlaylistId='';
+select.value='';
+}
 
-  $('playlistManagement').innerHTML=playlists.map((p,i)=>`
-    <div class="playlistrow">
-      <span class="playlistname">${esc(p.name)} <small style="color:var(--muted)">(${p.songIds.length}曲)</small></span>
-      <button type="button" data-openplaylist="${esc(p.id)}">開く</button>
-      <button type="button" data-playlistup="${esc(p.id)}" ${i===0?'disabled':''}>↑</button>
-      <button type="button" data-playlistdown="${esc(p.id)}" ${i===playlists.length-1?'disabled':''}>↓</button>
-      <button type="button" data-renameplaylist="${esc(p.id)}">名前変更</button>
-      <button type="button" class="danger" data-deleteplaylist="${esc(p.id)}">削除</button>
-    </div>
-  `).join('')||'<div class="note">プレイリストはまだありません。</div>';
+const allPlaylistTags=[...new Set(playlists.flatMap(p=>p.tags||[]))];
+$('playlistTagFilters').innerHTML=allPlaylistTags.map(t=>`
+<button type="button" data-playlist-filter="${esc(t)}" class="${activePlaylistTags.includes(t)?'active':''}">${esc(t)}</button>
+`).join('')||'<span class="note">プレイリストタグはまだありません</span>';
 
-  renderPlaylistDetail();
+const filteredPlaylists=playlists.filter(p=>{
+return !activePlaylistTags.length||(p.tags||[]).some(t=>activePlaylistTags.includes(t));
+});
+
+$('playlistManagement').innerHTML=filteredPlaylists.map(p=>{
+const i=playlists.indexOf(p);
+return `<div class="playlistrow">
+<span class="playlistname">${esc(p.name)} <small style="color:var(--muted)">(${p.songIds.length}曲)</small>
+<div class="playlist-tags">${(p.tags||[]).map(t=>`<span class="pill">${esc(t)}</span>`).join('')}</div>
+</span>
+<button type="button" data-openplaylist="${esc(p.id)}">開く</button>
+<button type="button" data-playlisttags="${esc(p.id)}">タグ編集</button>
+<button type="button" data-playlistup="${esc(p.id)}" ${i===0?'disabled':''}>↑</button>
+<button type="button" data-playlistdown="${esc(p.id)}" ${i===playlists.length-1?'disabled':''}>↓</button>
+<button type="button" data-renameplaylist="${esc(p.id)}">名前変更</button>
+<button type="button" class="danger" data-deleteplaylist="${esc(p.id)}">削除</button>
+</div>`;
+}).join('')||'<div class="note">該当するプレイリストはありません。</div>';
+
+renderPlaylistDetail();
 }
 
 function renderPlaylistDetail(){
-  const box=$('playlistDetail');
-  const p=playlists.find(x=>x.id===activePlaylistId);
-  if(!p){
-    box.classList.add('hidden');
-    box.innerHTML='';
-    return;
-  }
-
-  box.classList.remove('hidden');
-  const playlistSongs=p.songIds.map(id=>songs.find(s=>s.id===id)).filter(Boolean);
-
-  box.innerHTML=`
-    <h3 style="font-size:14px;margin:12px 0 8px">「${esc(p.name)}」の曲順</h3>
-    ${playlistSongs.length?`
-      <div class="tablewrap">
-      <table>
-      <thead><tr><th>順番</th><th>曲名</th><th>アーティスト</th><th>操作</th></tr></thead>
-      <tbody>
-      ${playlistSongs.map((s,i)=>`
-        <tr>
-          <td>${i+1}</td>
-          <td><div class="playlist-song-title">${esc(s.title)}</div></td>
-          <td>${esc(s.artist||'－')}</td>
-          <td class="playlist-actions">
-            <button type="button" data-plsongup="${esc(s.id)}" ${i===0?'disabled':''}>↑</button>
-            <button type="button" data-plsongdown="${esc(s.id)}" ${i===playlistSongs.length-1?'disabled':''}>↓</button>
-            <button type="button" class="danger" data-plsongremove="${esc(s.id)}">外す</button>
-          </td>
-        </tr>
-      `).join('')}
-      </tbody>
-      </table>
-      </div>
-    `:'<div class="empty">このプレイリストにはまだ曲がありません。</div>'}
-  `;
+const box=$('playlistDetail');
+const p=playlists.find(x=>x.id===activePlaylistId);
+if(!p){
+box.classList.add('hidden');
+box.innerHTML='';
+return;
+}
+box.classList.remove('hidden');
+const playlistSongs=p.songIds.map(id=>songs.find(s=>s.id===id)).filter(Boolean);
+box.innerHTML=`
+<h3 style="font-size:14px;margin:12px 0 8px">「${esc(p.name)}」の曲順</h3>
+${playlistSongs.length?`
+<div class="tablewrap">
+<table>
+<thead><tr><th>順番</th><th>曲名</th><th>アーティスト</th><th>操作</th></tr></thead>
+<tbody>
+${playlistSongs.map((s,i)=>`
+<tr>
+<td>${i+1}</td>
+<td><div class="playlist-song-title">${esc(s.title)}</div></td>
+<td>${esc(s.artist||'－')}</td>
+<td class="playlist-actions">
+<button type="button" data-plsongup="${esc(s.id)}" ${i===0?'disabled':''}>↑</button>
+<button type="button" data-plsongdown="${esc(s.id)}" ${i===playlistSongs.length-1?'disabled':''}>↓</button>
+<button type="button" class="danger" data-plsongremove="${esc(s.id)}">外す</button>
+</td>
+</tr>
+`).join('')}
+</tbody></table></div>
+`:'<div class="empty">このプレイリストにはまだ曲がありません。</div>'}
+`;
 }
 
 function moveItem(arr,index,delta){
-  const target=index+delta;
-  if(target<0||target>=arr.length)return;
-  [arr[index],arr[target]]=[arr[target],arr[index]];
+const target=index+delta;
+if(target<0||target>=arr.length)return;
+[arr[index],arr[target]]=[arr[target],arr[index]];
 }
 
+// 初期設定
 fillSelect('key1',KEYS);
 fillSelect('key2',KEYS);
 checks('instruments',INSTR,'instrument');
 checks('statuses',STATUS,'status');
 
+// 折りたたみ
+function toggleSection(contentId,arrowId){
+const box=$(contentId);
+box.classList.toggle('hidden');
+$(arrowId).textContent=box.classList.contains('hidden')?'▼ 開く':'▲ 閉じる';
+}
+$('playlistToggle').onclick=()=>toggleSection('playlistContent','playlistArrow');
+$('filterToggle').onclick=()=>toggleSection('filterContent','filterArrow');
+
+// 曲編集
 $('newBtn').onclick=()=>openForm(null);
 $('cancelBtn').onclick=closeForm;
 
-$('title').addEventListener('input',()=>{
-  const v=$('title').value.trim();
-  if(!$('reading').dataset.touched&&/^[ぁ-ゖァ-ヺー\s]+$/.test(v))$('reading').value=v;
+$('songForm').addEventListener('input',e=>{
+if(e.target.id==='title'){
+const v=$('title').value.trim();
+if(!$('reading').dataset.touched&&/^[ぁ-ゖァ-ヺー\s]+$/.test(v))$('reading').value=v;
+}
+markDirty();
 });
+$('songForm').addEventListener('change',markDirty);
 
 $('reading').addEventListener('input',()=>{
-  $('reading').dataset.touched='1';
+$('reading').dataset.touched='1';
 });
-
 $('artistReading').addEventListener('input',()=>{
-  $('artistReading').dataset.touched='1';
+$('artistReading').dataset.touched='1';
 });
 
-// 現状は1曲につき1つだけ選べるようにする
+// 現状は1曲につき1つ
 $('statuses').addEventListener('change',e=>{
-  if(e.target.name==='status'&&e.target.checked){
-    document.querySelectorAll('input[name="status"]').forEach(x=>{
-      if(x!==e.target)x.checked=false;
-    });
-  }
+if(e.target.name==='status'&&e.target.checked){
+document.querySelectorAll('input[name="status"]').forEach(x=>{
+if(x!==e.target)x.checked=false;
+});
+}
 });
 
-// タグ追加時、既にチェックされているタグを解除しない
+// 曲タグ追加
 $('addTagBtn').onclick=()=>{
-  let t=$('newTag').value.trim();
-  if(t&&!tags.includes(t)){
-    const keep=checked('songTags');
-    tags.push(t);
-    persist();
-    renderTags();
-    setChecks('songTags',[...keep,t]);
-    $('newTag').value='';
-  }else if(t){
-    alert('そのタグはすでに登録されているよ');
-  }
+let t=$('newTag').value.trim();
+if(t&&!tags.includes(t)){
+const keep=checked('songTags');
+tags.push(t);
+persist();
+renderTags();
+setChecks('songTags',[...keep,t]);
+$('newTag').value='';
+}else if(t){
+alert('そのタグはすでに登録されているよ');
+}
 };
 
+// 曲保存
 $('songForm').onsubmit=e=>{
-  e.preventDefault();
-  let title=$('title').value.trim();
-  if(!title)return;
-
-  let id=$('editId').value;
-  let old=songs.find(s=>s.id===id);
-
-  let s={
-    id:id||String(Date.now())+Math.random().toString(16).slice(2),
-    title,
-    reading:$('reading').value.trim(),
-    key1:$('key1').value,
-    key2:$('key2').value,
-    instruments:checked('instrument'),
-    status:checked('status')[0]||'',
-    tags:checked('songTags'),
-    artist:$('artist').value.trim(),
-    artistReading:$('artistReading').value.trim(),
-    year:$('year').value.trim(),
-    memo:$('memo').value.trim(),
-    created:old?.created||Date.now()
-  };
-
-  s.tags.forEach(t=>{
-    if(!tags.includes(t))tags.push(t);
-  });
-
-  if(old)songs=songs.map(x=>x.id===id?s:x);
-  else songs.push(s);
-
-  persist();
-  closeForm();
-  render();
+e.preventDefault();
+let title=$('title').value.trim();
+if(!title)return;
+let id=$('editId').value;
+let old=songs.find(s=>s.id===id);
+let s={
+id:id||String(Date.now())+Math.random().toString(16).slice(2),
+title,
+reading:$('reading').value.trim(),
+key1:$('key1').value,
+key2:$('key2').value,
+instruments:checked('instrument'),
+status:checked('status')[0]||'',
+tags:checked('songTags'),
+artist:$('artist').value.trim(),
+artistReading:$('artistReading').value.trim(),
+year:$('year').value.trim(),
+memo:$('memo').value.trim(),
+created:old?.created||Date.now()
+};
+s.tags.forEach(t=>{
+if(!tags.includes(t))tags.push(t);
+});
+if(old)songs=songs.map(x=>x.id===id?s:x);
+else songs.push(s);
+persist();
+closeForm();
+render();
 };
 
+// 曲一覧操作
 $('songRows').onclick=e=>{
-  let ed=e.target.dataset.edit;
-  let del=e.target.dataset.delete;
-
-  if(ed){
-    let s=songs.find(x=>x.id===ed);
-    if(s)openForm(s);
-  }
-
-  if(del&&confirm('この曲を削除する？')){
-    songs=songs.filter(x=>x.id!==del);
-    selectedSongIds.delete(del);
-    playlists.forEach(p=>p.songIds=p.songIds.filter(id=>id!==del));
-    persist();
-    render();
-  }
+let ed=e.target.dataset.edit;
+let del=e.target.dataset.delete;
+if(ed){
+let s=songs.find(x=>x.id===ed);
+if(s)openForm(s);
+}
+if(del&&confirm('この曲を削除する？')){
+songs=songs.filter(x=>x.id!==del);
+selectedSongIds.delete(del);
+playlists.forEach(p=>p.songIds=p.songIds.filter(id=>id!==del));
+persist();
+render();
+}
 };
 
 $('songRows').onchange=e=>{
-  const id=e.target.dataset.selectsong;
-  if(!id)return;
-  if(e.target.checked)selectedSongIds.add(id);
-  else selectedSongIds.delete(id);
-  renderSelectionInfo(filteredSongs());
+const id=e.target.dataset.selectsong;
+if(!id)return;
+if(e.target.checked)selectedSongIds.add(id);
+else selectedSongIds.delete(id);
+renderSelectionInfo(filteredSongs());
 };
 
 $('selectVisibleBtn').onclick=()=>{
-  filteredSongs().forEach(s=>selectedSongIds.add(s.id));
-  render();
+filteredSongs().forEach(s=>selectedSongIds.add(s.id));
+render();
 };
-
 $('selectAllVisible').onchange=e=>{
-  filteredSongs().forEach(s=>{
-    if(e.target.checked)selectedSongIds.add(s.id);
-    else selectedSongIds.delete(s.id);
-  });
-  render();
+filteredSongs().forEach(s=>{
+if(e.target.checked)selectedSongIds.add(s.id);
+else selectedSongIds.delete(s.id);
+});
+render();
 };
-
 $('deselectBtn').onclick=()=>{
-  selectedSongIds.clear();
-  render();
+selectedSongIds.clear();
+render();
 };
 
+// 一括タグ操作
 $('bulkAddTagBtn').onclick=()=>{
-  const tag=$('bulkTagSelect').value;
-  if(!tag){alert('タグを選んでね');return;}
-  if(!selectedSongIds.size){alert('曲を選択してね');return;}
-
-  songs.forEach(s=>{
-    if(selectedSongIds.has(s.id)){
-      if(!s.tags.includes(tag))s.tags.push(tag);
-    }
-  });
-  persist();
-  render();
-  alert(`選択した${selectedSongIds.size}曲に「${tag}」を追加したよ`);
+const tag=$('bulkTagSelect').value;
+if(!tag){alert('タグを選んでね');return;}
+if(!selectedSongIds.size){alert('曲を選択してね');return;}
+songs.forEach(s=>{
+if(selectedSongIds.has(s.id)){
+if(!s.tags.includes(tag))s.tags.push(tag);
+}
+});
+persist();
+render();
+alert(`選択した${selectedSongIds.size}曲に「${tag}」を追加したよ`);
 };
 
 $('bulkRemoveTagBtn').onclick=()=>{
-  const tag=$('bulkTagSelect').value;
-  if(!tag){alert('タグを選んでね');return;}
-  if(!selectedSongIds.size){alert('曲を選択してね');return;}
-
-  songs.forEach(s=>{
-    if(selectedSongIds.has(s.id))s.tags=s.tags.filter(t=>t!==tag);
-  });
-  persist();
-  render();
-  alert(`選択した曲から「${tag}」を外したよ`);
+const tag=$('bulkTagSelect').value;
+if(!tag){alert('タグを選んでね');return;}
+if(!selectedSongIds.size){alert('曲を選択してね');return;}
+songs.forEach(s=>{
+if(selectedSongIds.has(s.id))s.tags=s.tags.filter(t=>t!==tag);
+});
+persist();
+render();
+alert(`選択した曲から「${tag}」を外したよ`);
 };
 
+// プレイリスト追加先を個別に選択
 $('addToPlaylistBtn').onclick=()=>{
-  if(!selectedSongIds.size){alert('曲を選択してね');return;}
-  if(!activePlaylistId){alert('先にプレイリストを選択してね');return;}
-  const p=playlists.find(x=>x.id===activePlaylistId);
-  if(!p)return;
-
-  let added=0;
-  songs.forEach(s=>{
-    if(selectedSongIds.has(s.id)&&!p.songIds.includes(s.id)){
-      p.songIds.push(s.id);
-      added++;
-    }
-  });
-  persist();
-  render();
-  alert(`${added}曲を「${p.name}」に追加したよ`);
+if(!selectedSongIds.size){alert('曲を選択してね');return;}
+const targetId=$('addTargetPlaylist').value;
+if(!targetId){alert('追加先プレイリストを選んでね');return;}
+const p=playlists.find(x=>x.id===targetId);
+if(!p)return;
+let added=0;
+songs.forEach(s=>{
+if(selectedSongIds.has(s.id)&&!p.songIds.includes(s.id)){
+p.songIds.push(s.id);
+added++;
+}
+});
+persist();
+render();
+alert(`${added}曲を「${p.name}」に追加したよ`);
 };
 
+// 曲絞り込み
 $('statusFilters').onclick=handleFilterClick;
 $('instrumentFilters').onclick=handleFilterClick;
 $('tagFilters').onclick=handleFilterClick;
 
 $('clearFilter').onclick=()=>{
-  activeStatuses=[];
-  activeInstruments=[];
-  activeTags=[];
-  $('search').value='';
-  render();
+activeStatuses=[];
+activeInstruments=[];
+activeTags=[];
+$('search').value='';
+render();
 };
 
+// タグ管理
 $('manageTagsBtn').onclick=()=>{
-  const box=$('tagManagement');
-  box.classList.toggle('hidden');
-  $('manageTagsBtn').textContent=box.classList.contains('hidden')?'🏷️ タグ管理を表示':'🏷️ タグ管理を閉じる';
+const box=$('tagManagement');
+box.classList.toggle('hidden');
+$('manageTagsBtn').textContent=box.classList.contains('hidden')?'🏷️ タグ管理を表示':'🏷️ タグ管理を閉じる';
 };
 
 $('tagManagement').onclick=e=>{
-  const rename=e.target.dataset.renametag;
-  const del=e.target.dataset.deletetag;
-
-  if(rename!==undefined){
-    const newName=prompt(`「${rename}」の新しい名前`,rename);
-    if(newName===null)return;
-    const n=newName.trim();
-    if(!n||n===rename)return;
-
-    if(tags.includes(n)){
-      alert('同じ名前のタグがすでにあるよ');
-      return;
-    }
-
-    tags=tags.map(t=>t===rename?n:t);
-    songs.forEach(s=>{
-      s.tags=(s.tags||[]).map(t=>t===rename?n:t);
-    });
-    activeTags=activeTags.map(t=>t===rename?n:t);
-    persist();
-    render();
-  }
-
-  if(del!==undefined){
-    const count=songs.filter(s=>(s.tags||[]).includes(del)).length;
-    if(!confirm(`「${del}」を削除する？\n${count}曲からもこのタグが外れるよ。`))return;
-
-    tags=tags.filter(t=>t!==del);
-    songs.forEach(s=>{
-      s.tags=(s.tags||[]).filter(t=>t!==del);
-    });
-    activeTags=activeTags.filter(t=>t!==del);
-    persist();
-    render();
-  }
+const rename=e.target.dataset.renametag;
+const del=e.target.dataset.deletetag;
+if(rename!==undefined){
+const newName=prompt(`「${rename}」の新しい名前`,rename);
+if(newName===null)return;
+const n=newName.trim();
+if(!n||n===rename)return;
+if(tags.includes(n)){alert('同じ名前のタグがすでにあるよ');return;}
+tags=tags.map(t=>t===rename?n:t);
+songs.forEach(s=>s.tags=(s.tags||[]).map(t=>t===rename?n:t));
+activeTags=activeTags.map(t=>t===rename?n:t);
+persist();
+render();
+}
+if(del!==undefined){
+const count=songs.filter(s=>(s.tags||[]).includes(del)).length;
+if(!confirm(`「${del}」を削除する？\n${count}曲からもこのタグが外れるよ。`))return;
+tags=tags.filter(t=>t!==del);
+songs.forEach(s=>s.tags=(s.tags||[]).filter(t=>t!==del));
+activeTags=activeTags.filter(t=>t!==del);
+persist();
+render();
+}
 };
 
 // プレイリスト作成
 $('createPlaylistBtn').onclick=()=>{
-  const name=prompt('プレイリスト名を入力してね');
-  if(name===null)return;
-  const n=name.trim();
-  if(!n)return;
-
-  const p={id:'pl_'+Date.now()+Math.random().toString(16).slice(2),name:n,songIds:[],created:Date.now()};
-  playlists.push(p);
-  activePlaylistId=p.id;
-  persist();
-  render();
+const name=prompt('プレイリスト名を入力してね');
+if(name===null)return;
+const n=name.trim();
+if(!n)return;
+const p={
+id:'pl_'+Date.now()+Math.random().toString(16).slice(2),
+name:n,songIds:[],tags:[],created:Date.now()
+};
+playlists.push(p);
+activePlaylistId=p.id;
+persist();
+render();
 };
 
 // プレイリスト選択
 $('activePlaylistSelect').onchange=e=>{
-  activePlaylistId=e.target.value;
-  renderPlaylistDetail();
+activePlaylistId=e.target.value;
+renderPlaylistDetail();
+};
+
+// プレイリストタグ絞り込み
+$('playlistTagFilters').onclick=e=>{
+const b=e.target.closest('[data-playlist-filter]');
+if(!b)return;
+const tag=b.dataset.playlistFilter;
+const i=activePlaylistTags.indexOf(tag);
+if(i>=0)activePlaylistTags.splice(i,1);
+else activePlaylistTags.push(tag);
+renderPlaylists();
+};
+
+$('clearPlaylistTagFilter').onclick=()=>{
+activePlaylistTags=[];
+renderPlaylists();
 };
 
 // プレイリスト操作
 $('playlistManagement').onclick=e=>{
-  const open=e.target.dataset.openplaylist;
-  const up=e.target.dataset.playlistup;
-  const down=e.target.dataset.playlistdown;
-  const rename=e.target.dataset.renameplaylist;
-  const del=e.target.dataset.deleteplaylist;
+const open=e.target.dataset.openplaylist;
+const up=e.target.dataset.playlistup;
+const down=e.target.dataset.playlistdown;
+const rename=e.target.dataset.renameplaylist;
+const del=e.target.dataset.deleteplaylist;
+const editTags=e.target.dataset.playlisttags;
 
-  if(open){
-    activePlaylistId=open;
-    render();
-  }
+if(open){
+activePlaylistId=open;
+render();
+}
 
-  if(up||down){
-    const id=up||down;
-    const i=playlists.findIndex(p=>p.id===id);
-    moveItem(playlists,i,up?-1:1);
-    persist();
-    render();
-  }
+if(editTags){
+const p=playlists.find(x=>x.id===editTags);
+if(!p)return;
+const current=(p.tags||[]).join(', ');
+const input=prompt('プレイリストのタグを入力してね。\n複数ある場合はカンマ（,）で区切ってね。',current);
+if(input===null)return;
+p.tags=[...new Set(input.split(',').map(t=>t.trim()).filter(Boolean))];
+persist();
+render();
+}
 
-  if(rename){
-    const p=playlists.find(x=>x.id===rename);
-    if(!p)return;
-    const name=prompt('新しいプレイリスト名',p.name);
-    if(name===null)return;
-    const n=name.trim();
-    if(n)p.name=n;
-    persist();
-    render();
-  }
+if(up||down){
+const id=up||down;
+const i=playlists.findIndex(p=>p.id===id);
+moveItem(playlists,i,up?-1:1);
+persist();
+render();
+}
 
-  if(del){
-    const p=playlists.find(x=>x.id===del);
-    if(!p)return;
-    if(!confirm(`「${p.name}」を削除する？\nプレイリストだけ削除され、曲自体は消えないよ。`))return;
-    playlists=playlists.filter(x=>x.id!==del);
-    if(activePlaylistId===del)activePlaylistId='';
-    persist();
-    render();
-  }
+if(rename){
+const p=playlists.find(x=>x.id===rename);
+if(!p)return;
+const name=prompt('新しいプレイリスト名',p.name);
+if(name===null)return;
+const n=name.trim();
+if(n)p.name=n;
+persist();
+render();
+}
+
+if(del){
+const p=playlists.find(x=>x.id===del);
+if(!p)return;
+if(!confirm(`「${p.name}」を削除する？\nプレイリストだけ削除され、曲自体は消えないよ。`))return;
+playlists=playlists.filter(x=>x.id!==del);
+if(activePlaylistId===del)activePlaylistId='';
+persist();
+render();
+}
 };
 
 // プレイリスト内の曲の並べ替え・削除
 $('playlistDetail').onclick=e=>{
-  const up=e.target.dataset.plsongup;
-  const down=e.target.dataset.plsongdown;
-  const remove=e.target.dataset.plsongremove;
-  const p=playlists.find(x=>x.id===activePlaylistId);
-  if(!p)return;
-
-  if(up||down){
-    const id=up||down;
-    const i=p.songIds.indexOf(id);
-    moveItem(p.songIds,i,up?-1:1);
-    persist();
-    renderPlaylistDetail();
-  }
-
-  if(remove){
-    p.songIds=p.songIds.filter(id=>id!==remove);
-    persist();
-    renderPlaylistDetail();
-  }
+const up=e.target.dataset.plsongup;
+const down=e.target.dataset.plsongdown;
+const remove=e.target.dataset.plsongremove;
+const p=playlists.find(x=>x.id===activePlaylistId);
+if(!p)return;
+if(up||down){
+const id=up||down;
+const i=p.songIds.indexOf(id);
+moveItem(p.songIds,i,up?-1:1);
+persist();
+renderPlaylistDetail();
+}
+if(remove){
+p.songIds=p.songIds.filter(id=>id!==remove);
+persist();
+renderPlaylistDetail();
+}
 };
 
+// 検索・並べ替え
 $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
+// バックアップ
 $('exportBtn').onclick=()=>{
-  let blob=new Blob([JSON.stringify({app:'レパートリーリスト',version:2,songs,tags,playlists},null,2)],{type:'application/json'});
-  let a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='レパートリーリスト_バックアップ.json';
-  a.click();
-  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+let blob=new Blob([JSON.stringify({app:'レパートリーリスト',version:3,songs,tags,playlists},null,2)],{type:'application/json'});
+let a=document.createElement('a');
+a.href=URL.createObjectURL(blob);
+a.download='レパートリーリスト_バックアップ.json';
+a.click();
+setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 };
 
 $('importBtn').onclick=()=>$('fileInput').click();
 
 $('fileInput').onchange=async e=>{
-  let f=e.target.files[0];
-  if(!f)return;
-
-  try{
-    let d=JSON.parse(await f.text());
-    if(!Array.isArray(d.songs)||!Array.isArray(d.tags))throw Error();
-
-    if(!confirm('現在の曲データを読み込んだ内容に置き換えるよ。続ける？'))return;
-
-    songs=d.songs;
-    tags=d.tags;
-    playlists=Array.isArray(d.playlists)?d.playlists:[];
-    activeStatuses=[];
-    activeInstruments=[];
-    activeTags=[];
-    selectedSongIds.clear();
-    activePlaylistId='';
-    persist();
-    render();
-    alert('読み込みが完了したよ');
-  }catch(err){
-    alert('このファイルは読み込めませんでした');
-  }
-
-  e.target.value='';
+let f=e.target.files[0];
+if(!f)return;
+try{
+let d=JSON.parse(await f.text());
+if(!Array.isArray(d.songs)||!Array.isArray(d.tags))throw Error();
+if(!confirm('現在の曲データを読み込んだ内容に置き換えるよ。続ける？'))return;
+songs=d.songs;
+tags=d.tags;
+playlists=Array.isArray(d.playlists)?d.playlists:[];
+songs.forEach(s=>{
+if(!Array.isArray(s.instruments))s.instruments=[];
+if(!Array.isArray(s.tags))s.tags=[];
+});
+playlists.forEach(p=>{
+if(!Array.isArray(p.songIds))p.songIds=[];
+if(!Array.isArray(p.tags))p.tags=[];
+});
+activeStatuses=[];
+activeInstruments=[];
+activeTags=[];
+activePlaylistTags=[];
+selectedSongIds.clear();
+activePlaylistId='';
+persist();
+render();
+alert('読み込みが完了したよ');
+}catch(err){
+alert('このファイルは読み込めませんでした');
+}
+e.target.value='';
 };
 
 load();
 render();
+setSaveStatus(false);
 })();
 </script>
 </body>
