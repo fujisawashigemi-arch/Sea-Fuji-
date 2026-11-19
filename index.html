@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -5,7 +6,7 @@
 <link rel="apple-touch-icon" href="8E184DEF-7032-4F3C-BE33-4DD8A3D6338D.png">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f6f3ee">
-<title>レパートリーリスト</title>
+<title>マイレパ</title>
 <style>
 :root{
 --bg:#f6f3ee;--paper:#fff;--ink:#292722;
@@ -164,13 +165,12 @@ header{padding-top:14px}
 </head>
 <body>
 <header>
-<h1>レパートリーリスト</h1>
+<h1>マイレパ</h1>
 <div class="sub">曲・キー・演奏方法・練習状況をまとめて管理</div>
 </header>
 
 <main>
 
-<!-- 上部操作 -->
 <div class="top-actions">
 <button class="primary" id="newBtn">＋ 曲を追加</button>
 <button id="exportBtn">バックアップ保存</button>
@@ -179,7 +179,6 @@ header{padding-top:14px}
 <div class="save-status" id="saveStatus">保存済み</div>
 <input type="file" id="fileInput" accept=".json,application/json" class="hidden">
 
-<!-- 曲編集 -->
 <section id="editor" class="panel hidden">
 <h2 id="formTitle" style="font-size:16px;margin:0 0 12px">曲を追加</h2>
 <form id="songForm">
@@ -225,7 +224,6 @@ header{padding-top:14px}
 </form>
 </section>
 
-<!-- プレイリスト -->
 <section class="panel">
 <button class="section-toggle" id="playlistToggle">
 <span>🎵 プレイリスト</span><span class="arrow" id="playlistArrow">▼ 開く</span>
@@ -237,27 +235,22 @@ header{padding-top:14px}
 <option value="">プレイリストを選択</option>
 </select>
 </div>
-
 <div class="filter-title playlist-tag-filter">プレイリストをタグで絞り込み</div>
 <div id="playlistTagFilters" class="tagfilters"></div>
 <button id="clearPlaylistTagFilter" class="rowbtn" style="margin-top:7px">タグ絞り込み解除</button>
-
 <div id="playlistManagement" style="margin-top:8px"></div>
 <div id="playlistDetail" class="playlistsongs hidden"></div>
 <div class="note">プレイリストのタグは曲のタグとは別に管理されます。タグでプレイリストを絞り込めます。</div>
 </div>
 </section>
 
-<!-- 絞り込み -->
 <section class="panel">
 <button class="section-toggle" id="filterToggle">
 <span>🔎 検索・絞り込み</span><span class="arrow" id="filterArrow">▼ 開く</span>
 </button>
 <div id="filterContent" class="section-content hidden">
-
 <label>曲名・アーティスト・メモを検索</label>
 <input id="search" class="search" placeholder="検索したい文字を入力">
-
 <div class="toolbar">
 <label style="margin:0;white-space:nowrap">並べ替え</label>
 <select id="sort">
@@ -270,7 +263,6 @@ header{padding-top:14px}
 <select id="direction"><option value="asc">昇順</option><option value="desc">降順</option></select>
 <button id="clearFilter">絞り込み解除</button>
 </div>
-
 <div class="filtergroup">
 <div class="filter-title">現状で絞り込み</div>
 <div id="statusFilters" class="tagfilters"></div>
@@ -283,9 +275,7 @@ header{padding-top:14px}
 <div class="filter-title">タグで絞り込み</div>
 <div id="tagFilters" class="tagfilters"></div>
 </div>
-
 <div class="note">各絞り込み内も異なる種類の絞り込みも「いずれかに該当すれば表示」の追加方式（OR）です。検索文字は別途適用されます。</div>
-
 <div class="tagmanage">
 <button id="manageTagsBtn">🏷️ タグ管理を表示</button>
 <div id="tagManagement" class="hidden" style="margin-top:9px"></div>
@@ -298,7 +288,6 @@ header{padding-top:14px}
 <span id="count" class="count">0曲</span>
 </div>
 
-<!-- 一括操作 -->
 <div class="bulkbar">
 <span id="selectedCount">0曲選択中</span>
 <button id="selectVisibleBtn">表示中を全選択</button>
@@ -375,9 +364,7 @@ $('saveStatus').textContent=dirty?'● 編集中（未保存）':'✓ 保存済�
 $('saveStatus').classList.toggle('dirty',dirty);
 }
 
-function markDirty(){
-setSaveStatus(true);
-}
+function markDirty(){setSaveStatus(true);}
 
 function fillSelect(id,values){
 $(id).innerHTML=values.map(v=>`<option value="${esc(v)}">${v||'未設定'}</option>`).join('');
@@ -399,9 +386,7 @@ function setChecks(name,values){
 document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=values.includes(x.value));
 }
 
-function norm(s){
-return (s||'').trim().toLocaleLowerCase();
-}
+function norm(s){return (s||'').trim().toLocaleLowerCase();}
 
 function renderTags(){
 const previouslyChecked=checked('songTags');
@@ -629,13 +614,11 @@ if(target<0||target>=arr.length)return;
 [arr[index],arr[target]]=[arr[target],arr[index]];
 }
 
-// 初期設定
 fillSelect('key1',KEYS);
 fillSelect('key2',KEYS);
 checks('instruments',INSTR,'instrument');
 checks('statuses',STATUS,'status');
 
-// 折りたたみ
 function toggleSection(contentId,arrowId){
 const box=$(contentId);
 box.classList.toggle('hidden');
@@ -644,7 +627,6 @@ $(arrowId).textContent=box.classList.contains('hidden')?'▼ 開く':'▲ 閉じ
 $('playlistToggle').onclick=()=>toggleSection('playlistContent','playlistArrow');
 $('filterToggle').onclick=()=>toggleSection('filterContent','filterArrow');
 
-// 曲編集
 $('newBtn').onclick=()=>openForm(null);
 $('cancelBtn').onclick=closeForm;
 
@@ -664,7 +646,6 @@ $('artistReading').addEventListener('input',()=>{
 $('artistReading').dataset.touched='1';
 });
 
-// 現状は1曲につき1つ
 $('statuses').addEventListener('change',e=>{
 if(e.target.name==='status'&&e.target.checked){
 document.querySelectorAll('input[name="status"]').forEach(x=>{
@@ -673,7 +654,6 @@ if(x!==e.target)x.checked=false;
 }
 });
 
-// 曲タグ追加
 $('addTagBtn').onclick=()=>{
 let t=$('newTag').value.trim();
 if(t&&!tags.includes(t)){
@@ -688,7 +668,6 @@ alert('そのタグはすでに登録されているよ');
 }
 };
 
-// 曲保存
 $('songForm').onsubmit=e=>{
 e.preventDefault();
 let title=$('title').value.trim();
@@ -720,7 +699,6 @@ closeForm();
 render();
 };
 
-// 曲一覧操作
 $('songRows').onclick=e=>{
 let ed=e.target.dataset.edit;
 let del=e.target.dataset.delete;
@@ -761,7 +739,6 @@ selectedSongIds.clear();
 render();
 };
 
-// 一括タグ操作
 $('bulkAddTagBtn').onclick=()=>{
 const tag=$('bulkTagSelect').value;
 if(!tag){alert('タグを選んでね');return;}
@@ -788,7 +765,6 @@ render();
 alert(`選択した曲から「${tag}」を外したよ`);
 };
 
-// プレイリスト追加先を個別に選択
 $('addToPlaylistBtn').onclick=()=>{
 if(!selectedSongIds.size){alert('曲を選択してね');return;}
 const targetId=$('addTargetPlaylist').value;
@@ -807,7 +783,6 @@ render();
 alert(`${added}曲を「${p.name}」に追加したよ`);
 };
 
-// 曲絞り込み
 $('statusFilters').onclick=handleFilterClick;
 $('instrumentFilters').onclick=handleFilterClick;
 $('tagFilters').onclick=handleFilterClick;
@@ -820,7 +795,6 @@ $('search').value='';
 render();
 };
 
-// タグ管理
 $('manageTagsBtn').onclick=()=>{
 const box=$('tagManagement');
 box.classList.toggle('hidden');
@@ -853,7 +827,6 @@ render();
 }
 };
 
-// プレイリスト作成
 $('createPlaylistBtn').onclick=()=>{
 const name=prompt('プレイリスト名を入力してね');
 if(name===null)return;
@@ -869,13 +842,11 @@ persist();
 render();
 };
 
-// プレイリスト選択
 $('activePlaylistSelect').onchange=e=>{
 activePlaylistId=e.target.value;
 renderPlaylistDetail();
 };
 
-// プレイリストタグ絞り込み
 $('playlistTagFilters').onclick=e=>{
 const b=e.target.closest('[data-playlist-filter]');
 if(!b)return;
@@ -891,7 +862,6 @@ activePlaylistTags=[];
 renderPlaylists();
 };
 
-// プレイリスト操作
 $('playlistManagement').onclick=e=>{
 const open=e.target.dataset.openplaylist;
 const up=e.target.dataset.playlistup;
@@ -946,7 +916,6 @@ render();
 }
 };
 
-// プレイリスト内の曲の並べ替え・削除
 $('playlistDetail').onclick=e=>{
 const up=e.target.dataset.plsongup;
 const down=e.target.dataset.plsongdown;
@@ -967,79 +936,72 @@ renderPlaylistDetail();
 }
 };
 
-// 検索・並べ替え
 $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
-// バックアップ保存
+// JSONバックアップ保存
 $('exportBtn').onclick=async()=>{
-  const now=new Date();
-  const y=now.getFullYear();
-  const m=String(now.getMonth()+1).padStart(2,'0');
-  const d=String(now.getDate()).padStart(2,'0');
-  const filename=`マイレパ${y}${m}${d}.json`;
+const now=new Date();
+const y=now.getFullYear();
+const m=String(now.getMonth()+1).padStart(2,'0');
+const d=String(now.getDate()).padStart(2,'0');
+const filename=`マイレパ${y}${m}${d}.json`;
 
-  const data={
-    app:'レパートリーリスト',
-    version:3,
-    songs,
-    tags,
-    playlists
-  };
-
-  const json=JSON.stringify(data,null,2);
-  const file=new File([json],filename,{
-    type:'application/json'
-  });
-
-  try{
-    // 保存先選択ダイアログに対応するブラウザ
-    if(window.showSaveFilePicker){
-      const handle=await window.showSaveFilePicker({
-        suggestedName:filename,
-        types:[{
-          description:'JSONバックアップ',
-          accept:{'application/json':['.json']}
-        }]
-      });
-
-      const writable=await handle.createWritable();
-      await writable.write(file);
-      await writable.close();
-
-      alert('バックアップを保存したよ');
-      return;
-    }
-
-    // iPhone・iPadの共有シート
-    if(navigator.canShare&&navigator.canShare({files:[file]})){
-      await navigator.share({
-        files:[file],
-        title:'マイレパのバックアップ'
-      });
-      return;
-    }
-
-    // その他のブラウザ用
-    const url=URL.createObjectURL(file);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download=filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-
-    setTimeout(()=>URL.revokeObjectURL(url),1000);
-
-  }catch(err){
-    if(err.name==='AbortError')return;
-    alert('保存できませんでした。もう一度試してね。');
-    console.error(err);
-  }
+const data={
+app:'マイレパ',
+version:3,
+songs,
+tags,
+playlists
 };
 
-// バックアップ読み込み
+const json=JSON.stringify(data,null,2);
+const file=new File([json],filename,{
+type:'application/json'
+});
+
+try{
+if(window.showSaveFilePicker){
+const handle=await window.showSaveFilePicker({
+suggestedName:filename,
+types:[{
+description:'JSONバックアップ',
+accept:{'application/json':['.json']}
+}]
+});
+const writable=await handle.createWritable();
+await writable.write(file);
+await writable.close();
+alert('バックアップを保存したよ');
+return;
+}
+
+if(navigator.canShare&&navigator.canShare({files:[file]})){
+await navigator.share({
+files:[file],
+title:'マイレパのバックアップ'
+});
+return;
+}
+
+const url=URL.createObjectURL(file);
+const a=document.createElement('a');
+a.href=url;
+a.download=filename;
+document.body.appendChild(a);
+a.click();
+a.remove();
+setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+}catch(err){
+if(err.name==='AbortError')return;
+alert('保存できませんでした。もう一度試してね。');
+console.error(err);
+}
+};
+
+// JSONバックアップ読み込み
 $('importBtn').onclick=()=>$('fileInput').click();
 
 $('fileInput').onchange=async e=>{
