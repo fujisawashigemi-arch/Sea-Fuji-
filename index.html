@@ -940,8 +940,8 @@ $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
-// JSONバックアップ保存
-$('exportBtn').onclick=async()=>{
+// JSONバックアップ保存（JSONファイル1個を直接ダウンロード）
+$('exportBtn').onclick=()=>{
 const now=new Date();
 const y=now.getFullYear();
 const m=String(now.getMonth()+1).padStart(2,'0');
@@ -957,48 +957,22 @@ playlists
 };
 
 const json=JSON.stringify(data,null,2);
-const file=new File([json],filename,{
-type:'application/json'
+const blob=new Blob([json],{
+type:'application/json;charset=utf-8'
 });
 
-try{
-if(window.showSaveFilePicker){
-const handle=await window.showSaveFilePicker({
-suggestedName:filename,
-types:[{
-description:'JSONバックアップ',
-accept:{'application/json':['.json']}
-}]
-});
-const writable=await handle.createWritable();
-await writable.write(file);
-await writable.close();
-alert('バックアップを保存したよ');
-return;
-}
-
-if(navigator.canShare&&navigator.canShare({files:[file]})){
-await navigator.share({
-files:[file],
-title:'マイレパのバックアップ'
-});
-return;
-}
-
-const url=URL.createObjectURL(file);
+const url=URL.createObjectURL(blob);
 const a=document.createElement('a');
 a.href=url;
 a.download=filename;
+a.style.display='none';
 document.body.appendChild(a);
 a.click();
 a.remove();
-setTimeout(()=>URL.revokeObjectURL(url),1000);
 
-}catch(err){
-if(err.name==='AbortError')return;
-alert('保存できませんでした。もう一度試してね。');
-console.error(err);
-}
+setTimeout(()=>{
+URL.revokeObjectURL(url);
+},3000);
 };
 
 // JSONバックアップ読み込み
