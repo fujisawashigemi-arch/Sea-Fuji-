@@ -975,51 +975,6 @@ $('exportBtn').onclick=()=>{
   },2000);
 };
 
-const json=JSON.stringify(data,null,2);
-const file=new File([json],filename,{
-type:'application/json'
-});
-
-try{
-if(window.showSaveFilePicker){
-const handle=await window.showSaveFilePicker({
-suggestedName:filename,
-types:[{
-description:'JSONバックアップ',
-accept:{'application/json':['.json']}
-}]
-});
-const writable=await handle.createWritable();
-await writable.write(file);
-await writable.close();
-alert('バックアップを保存したよ');
-return;
-}
-
-if(navigator.canShare&&navigator.canShare({files:[file]})){
-await navigator.share({
-files:[file],
-title:'マイレパのバックアップ'
-});
-return;
-}
-
-const url=URL.createObjectURL(file);
-const a=document.createElement('a');
-a.href=url;
-a.download=filename;
-document.body.appendChild(a);
-a.click();
-a.remove();
-setTimeout(()=>URL.revokeObjectURL(url),1000);
-
-}catch(err){
-if(err.name==='AbortError')return;
-alert('保存できませんでした。もう一度試してね。');
-console.error(err);
-}
-};
-
 // JSONバックアップ読み込み
 $('importBtn').onclick=()=>$('fileInput').click();
 
