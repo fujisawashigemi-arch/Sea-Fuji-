@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -134,6 +135,12 @@ font-size:15px
 .filter-title{font-size:12px;color:var(--muted);margin-top:12px}
 .playlist-tags{flex-basis:100%;margin-left:0}
 .playlist-tag-filter{margin-top:10px}
+.tag-mode{
+display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+margin-top:9px
+}
+.tag-mode-label{font-size:11px;color:var(--muted)}
+.tag-mode button{padding:6px 12px;font-size:12px}
 .tablewrap th:first-child,.tablewrap td:first-child{
 position:sticky;left:0;z-index:4;min-width:36px;width:36px
 }
@@ -273,8 +280,13 @@ header{padding-top:14px}
 <div class="filtergroup">
 <div class="filter-title">タグで絞り込み</div>
 <div id="tagFilters" class="tagfilters"></div>
+<div class="tag-mode">
+<span class="tag-mode-label">タグの検索方法</span>
+<button type="button" id="tagOrBtn" class="active">OR（いずれか）</button>
+<button type="button" id="tagAndBtn">AND（すべて）</button>
 </div>
-<div class="note">各絞り込み内も異なる種類の絞り込みも「いずれかに該当すれば表示」の追加方式（OR）です。検索文字は別途適用されます。</div>
+</div>
+<div class="note">同じ種類の絞り込みでは選択した条件に一致する曲を表示します。タグはOR・ANDを切り替えできます。異なる種類の絞り込み同士は、これまで通りOR方式です。検索文字は別途適用されます。</div>
 <div class="tagmanage">
 <button id="manageTagsBtn">🏷️ タグ管理を表示</button>
 <div id="tagManagement" class="hidden" style="margin-top:9px"></div>
@@ -327,6 +339,7 @@ const STORE='mySongList_v1';
 let songs=[],tags=[],playlists=[];
 let activeStatuses=[],activeInstruments=[],activeTags=[];
 let activePlaylistTags=[];
+let tagFilterMode='or';
 let selectedSongIds=new Set();
 let activePlaylistId='';
 let editingDirty=false;
@@ -420,6 +433,8 @@ function renderFilterButtons(){
 makeFilterButtons('statusFilters',STATUS,activeStatuses,'status');
 makeFilterButtons('instrumentFilters',INSTR,activeInstruments,'instrument');
 makeFilterButtons('tagFilters',tags,activeTags,'tag');
+$('tagOrBtn').classList.toggle('active',tagFilterMode==='or');
+$('tagAndBtn').classList.toggle('active',tagFilterMode==='and');
 }
 
 function renderTagManagement(){
@@ -475,9 +490,19 @@ return songs.filter(s=>{
 const searchMatch=!q||[s.title,s.reading,s.artist,s.artistReading,s.memo].some(v=>norm(v).includes(q));
 if(!searchMatch)return false;
 if(!hasFilters)return true;
+
 const statusMatch=activeStatuses.length&&activeStatuses.includes(s.status);
 const instrumentMatch=activeInstruments.length&&(s.instruments||[]).some(x=>activeInstruments.includes(x));
-const tagMatch=activeTags.length&&(s.tags||[]).some(x=>activeTags.includes(x));
+
+let tagMatch=false;
+if(activeTags.length){
+if(tagFilterMode==='and'){
+tagMatch=activeTags.every(x=>(s.tags||[]).includes(x));
+}else{
+tagMatch=(s.tags||[]).some(x=>activeTags.includes(x));
+}
+}
+
 return !!(statusMatch||instrumentMatch||tagMatch);
 });
 }
@@ -785,6 +810,15 @@ alert(`${added}曲を「${p.name}」に追加したよ`);
 $('statusFilters').onclick=handleFilterClick;
 $('instrumentFilters').onclick=handleFilterClick;
 $('tagFilters').onclick=handleFilterClick;
+
+$('tagOrBtn').onclick=()=>{
+tagFilterMode='or';
+render();
+};
+$('tagAndBtn').onclick=()=>{
+tagFilterMode='and';
+render();
+};
 
 $('clearFilter').onclick=()=>{
 activeStatuses=[];
