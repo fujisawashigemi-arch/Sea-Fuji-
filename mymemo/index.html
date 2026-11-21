@@ -305,7 +305,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 }
 .memo-table{
   width:100%;
-  min-width:690px;
+  min-width:790px;
   border-collapse:separate;
   border-spacing:0;
   table-layout:fixed;
@@ -344,6 +344,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
   background:#faf9f7;
 }
 .memo-table td.check-col{background:#fff}
+
 .memo-table .title-col{
   width:145px;
   min-width:145px;
@@ -358,8 +359,9 @@ button:disabled{opacity:.4;cursor:not-allowed}
   background:#faf9f7;
 }
 .memo-table .body-col{width:230px}
+.memo-table .date-col{width:145px}
 .memo-table .tags-col{width:145px}
-.memo-table .date-col{width:105px}
+
 .memo-table td.title-col{
   font-weight:700;
   cursor:pointer;
@@ -1057,12 +1059,12 @@ function renderMemos(){
           ${escapeHTML(memo.body.replace(/\s+/g," "))}
         </td>
 
+        <td class="date-col">${formatDate(memo.createdAt)}</td>
+        <td class="date-col">${formatDate(memo.updatedAt)}</td>
+
         <td class="tags-col">
           <div class="row-tags">${tags}${extra}</div>
         </td>
-
-        <td class="date-col">${formatShortDate(memo.createdAt)}</td>
-        <td class="date-col">${formatShortDate(memo.updatedAt)}</td>
       </tr>
     `;
   }).join("");
@@ -1072,11 +1074,11 @@ function renderMemos(){
       <thead>
         <tr>
           <th class="check-col"></th>
-          <th class="title-col">メモの題名</th>
-          <th class="body-col">本文の冒頭</th>
+          <th class="title-col">タイトル</th>
+          <th class="body-col">本文</th>
+          <th class="date-col">作成日時</th>
+          <th class="date-col">更新日時</th>
           <th class="tags-col">タグ</th>
-          <th class="date-col">追加日</th>
-          <th class="date-col">更新日</th>
         </tr>
       </thead>
       <tbody>${rows}</tbody>
