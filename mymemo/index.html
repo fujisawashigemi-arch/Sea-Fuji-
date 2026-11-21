@@ -227,6 +227,29 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .section-heading h2{margin:0}
 .count{color:var(--muted);font-size:12px}
 
+/* 並べ替え */
+.sort-tools{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin:0 0 12px;
+}
+.sort-tools label{
+  margin:0;
+  font-size:12px;
+  color:var(--muted);
+  font-weight:650;
+  white-space:nowrap;
+}
+.sort-tools select{
+  width:auto;
+  min-width:110px;
+  flex:1;
+  padding:7px 9px;
+  font-size:12px;
+}
+
 .select-tools{
   display:flex;
   align-items:center;
@@ -506,6 +529,20 @@ footer{
       <div class="section-heading">
         <h2>メモ一覧</h2>
         <span class="count" id="memoCount"></span>
+      </div>
+
+      <div class="sort-tools">
+        <label for="sortKey">並べ替え</label>
+        <select id="sortKey">
+          <option value="createdAt">作成日</option>
+          <option value="updatedAt">更新日</option>
+          <option value="title">タイトル</option>
+        </select>
+
+        <select id="sortOrder" aria-label="並べ替え順">
+          <option value="desc">降順</option>
+          <option value="asc">昇順</option>
+        </select>
       </div>
 
       <div class="select-tools">
@@ -826,13 +863,13 @@ function deleteMemo(id){
   showList();
 }
 
-/* 一覧・検索 */
+/* 一覧・検索・並べ替え */
 
 function getFilteredMemos(){
   const keyword = $("keyword").value.trim().toLowerCase();
   const mode = document.querySelector('input[name="tagMode"]:checked').value;
 
-  return memos.filter(memo => {
+  const filtered = memos.filter(memo => {
     const text = (
       memo.title + "\n" + memo.body + "\n" + memo.tags.join(" ")
     ).toLowerCase();
@@ -846,6 +883,35 @@ function getFilteredMemos(){
 
     return matchesKeyword && matchesTags;
   });
+
+  const sortKey = $("sortKey").value;
+  const sortOrder = $("sortOrder").value;
+  const direction = sortOrder === "asc" ? 1 : -1;
+
+  filtered.sort((a,b) => {
+    let result = 0;
+
+    if(sortKey === "title"){
+      const titleA = a.title || "タイトルなし";
+      const titleB = b.title || "タイトルなし";
+
+      result = titleA.localeCompare(
+        titleB,
+        "ja",
+        {numeric:true,sensitivity:"base"}
+      );
+    }else{
+      result = Number(a[sortKey] || 0) - Number(b[sortKey] || 0);
+    }
+
+    if(result === 0){
+      result = Number(a.createdAt || 0) - Number(b.createdAt || 0);
+    }
+
+    return result * direction;
+  });
+
+  return filtered;
 }
 
 function renderFilterTags(){
@@ -1290,6 +1356,10 @@ $("clearTags").addEventListener("click",() => {
 document.querySelectorAll('input[name="tagMode"]').forEach(radio => {
   radio.addEventListener("change",renderMemos);
 });
+
+/* 並べ替えの変更 */
+$("sortKey").addEventListener("change",renderMemos);
+$("sortOrder").addEventListener("change",renderMemos);
 
 $("backupBtn").addEventListener("click",backupData);
 
