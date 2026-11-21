@@ -247,7 +247,6 @@ footer{text-align:center;color:#aaa399;font-size:11px;padding:24px 0 8px}
 
 <body>
 
-<!-- パスワード画面 -->
 <section class="auth-screen" id="authScreen">
   <div class="auth-panel">
     <div class="auth-brand">マイメモ<small>OTOLIS</small></div>
@@ -615,7 +614,6 @@ async function setupVault(){
     allTags = [];
     await saveData();
 
-    /* 旧テストデータを削除 */
     localStorage.removeItem(OLD_STORAGE_KEY);
 
     $("passwordInput").value = "";
@@ -1145,6 +1143,15 @@ function downloadJSON(data,filename){
   setTimeout(() => URL.revokeObjectURL(url),1000);
 }
 
+/* 日付を YYYYMMDD 形式で取得 */
+function getFileDate(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth()+1).padStart(2,"0");
+  const day = String(now.getDate()).padStart(2,"0");
+  return `${year}${month}${day}`;
+}
+
 async function backupData(){
   try{
     await saveData();
@@ -1154,7 +1161,7 @@ async function backupData(){
       backupVersion:1,
       exportedAt:new Date().toISOString(),
       encryptedVault:record
-    },"マイメモ_暗号化バックアップ_"+new Date().toISOString().slice(0,10)+".json");
+    },"マイメモ"+getFileDate()+".json");
     alert("暗号化バックアップを作成したよ。");
   }catch(error){
     alert("バックアップを作成できなかったよ。");
