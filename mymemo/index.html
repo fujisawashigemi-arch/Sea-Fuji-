@@ -29,8 +29,9 @@ body{
     "Yu Gothic",Meiryo,sans-serif;
   line-height:1.6;
 }
-button,input,textarea,select{font:inherit}
+button,input,textarea{font:inherit}
 button{cursor:pointer}
+button:active{transform:scale(.98)}
 header{
   position:sticky;
   top:0;
@@ -75,21 +76,15 @@ main{
   margin-bottom:16px;
   box-shadow:var(--shadow);
 }
-h2{
-  font-size:16px;
-  margin:0 0 12px;
-}
-h3{
-  font-size:14px;
-  margin:16px 0 8px;
-}
+h2{font-size:16px;margin:0 0 12px}
+h3{font-size:14px;margin:16px 0 8px}
 label{
   display:block;
   font-size:13px;
   font-weight:650;
   margin:12px 0 5px;
 }
-input[type="text"],textarea,select{
+input[type="text"],textarea{
   width:100%;
   border:1px solid var(--line);
   border-radius:10px;
@@ -98,14 +93,11 @@ input[type="text"],textarea,select{
   color:var(--ink);
   outline:none;
 }
-input:focus,textarea:focus,select:focus{
+input:focus,textarea:focus{
   border-color:var(--green);
   box-shadow:0 0 0 3px rgba(113,139,112,.12);
 }
-textarea{
-  min-height:150px;
-  resize:vertical;
-}
+textarea{min-height:180px;resize:vertical}
 button{
   border:0;
   border-radius:10px;
@@ -114,7 +106,6 @@ button{
   color:#fff;
   font-weight:650;
 }
-button:active{transform:scale(.98)}
 button.secondary{
   background:var(--green-light);
   color:var(--green-dark);
@@ -128,24 +119,17 @@ button.danger{
   background:#f8ecea;
   color:var(--danger);
 }
-button.small{
-  font-size:12px;
-  padding:6px 9px;
-}
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-.form-actions{
+button.small{font-size:12px;padding:6px 9px}
+button:disabled{opacity:.45;cursor:not-allowed}
+[hidden]{display:none!important}
+
+.form-actions,.view-actions{
   display:flex;
   gap:8px;
   flex-wrap:wrap;
-  margin-top:14px;
+  margin-top:15px;
 }
-.tag-entry{
-  display:flex;
-  gap:7px;
-}
+.tag-entry{display:flex;gap:7px}
 .tag-entry input{flex:1;min-width:0}
 .tag-list,.filter-tags{
   display:flex;
@@ -183,11 +167,7 @@ button:disabled{
   color:#fff;
   border-color:var(--green);
 }
-.search-row{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
+.search-row{display:flex;gap:8px;align-items:center}
 .search-row input{flex:1;min-width:0}
 .filter-options{
   display:flex;
@@ -214,10 +194,7 @@ button:disabled{
   margin:22px 2px 12px;
 }
 .section-heading h2{margin:0}
-.count{
-  color:var(--muted);
-  font-size:12px;
-}
+.count{color:var(--muted);font-size:12px}
 .memo-list{
   display:grid;
   grid-template-columns:1fr;
@@ -236,12 +213,18 @@ button:disabled{
   font-size:16px;
   overflow-wrap:anywhere;
 }
-.memo-card .body{
+.memo-card .body-preview{
   white-space:pre-wrap;
   overflow-wrap:anywhere;
   font-size:14px;
+  color:#555149;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  line-clamp:3;
+  overflow:hidden;
 }
-.memo-card .date{
+.memo-card .date,.view-date{
   font-size:11px;
   color:var(--muted);
   margin-top:12px;
@@ -270,6 +253,30 @@ button:disabled{
   font-size:12px;
   color:var(--muted);
   margin:6px 0 0;
+}
+.view-title{
+  font-size:21px;
+  line-height:1.5;
+  margin:0 0 16px;
+  overflow-wrap:anywhere;
+}
+.view-body{
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  font-size:15px;
+  line-height:1.9;
+  min-height:40px;
+}
+.view-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:18px;
+}
+.view-date{
+  border-top:1px solid var(--line);
+  padding-top:12px;
+  margin-top:20px;
 }
 details summary{
   cursor:pointer;
@@ -312,7 +319,8 @@ footer{
 
 <main>
 
-  <section class="panel" id="editor">
+  <!-- メモ入力・編集 -->
+  <section class="panel" id="editor" hidden>
     <h2 id="formHeading">＋ メモを追加</h2>
 
     <label for="memoTitle">タイトル（任意）</label>
@@ -330,45 +338,67 @@ footer{
 
     <div class="form-actions">
       <button id="saveMemo">保存する</button>
-      <button class="ghost" id="cancelEdit" hidden>編集をやめる</button>
+      <button class="ghost" id="cancelEdit">キャンセル</button>
     </div>
   </section>
 
-  <section class="panel">
-    <h2>メモを探す</h2>
-    <div class="search-row">
-      <input type="text" id="keyword" placeholder="キーワードで検索">
-      <button class="ghost small" id="clearSearch">クリア</button>
-    </div>
+  <!-- メモ詳細・閲覧 -->
+  <section class="panel" id="detailView" hidden>
+    <h2>メモの内容</h2>
+    <h1 class="view-title" id="viewTitle"></h1>
+    <div class="view-body" id="viewBody"></div>
+    <div class="view-tags" id="viewTags"></div>
+    <div class="view-date" id="viewDate"></div>
 
-    <h3>タグで絞り込み</h3>
-    <div class="filter-tags" id="filterTagList"></div>
-
-    <div class="filter-options">
-      <span>タグの検索方法：</span>
-      <label><input type="radio" name="tagMode" value="or" checked> OR（どれか）</label>
-      <label><input type="radio" name="tagMode" value="and"> AND（すべて）</label>
-      <button class="ghost small" id="clearTags">タグ解除</button>
+    <div class="view-actions">
+      <button id="viewEditBtn">編集する</button>
+      <button class="ghost" id="backToListBtn">一覧に戻る</button>
+      <button class="danger small" id="viewDeleteBtn">削除</button>
     </div>
   </section>
 
-  <section>
-    <div class="section-heading">
-      <h2>メモ一覧</h2>
-      <span class="count" id="memoCount"></span>
-    </div>
-    <div class="memo-list" id="memoList"></div>
-  </section>
+  <!-- 一覧・検索 -->
+  <section id="listScreen">
+    <section class="panel">
+      <button id="newMemoBtn">＋ 新しいメモを作る</button>
+    </section>
 
-  <section class="panel" style="margin-top:22px">
-    <details>
-      <summary>タグの管理</summary>
-      <div class="details-content">
-        <p class="note">登録済みのタグの名前を変更したり、削除したりできるよ。</p>
-        <div id="manageTagList" class="tag-list"></div>
-        <p class="note">タグを削除すると、そのタグはメモからも外れるよ。</p>
+    <section class="panel">
+      <h2>メモを探す</h2>
+      <div class="search-row">
+        <input type="text" id="keyword" placeholder="キーワードで検索">
+        <button class="ghost small" id="clearSearch">クリア</button>
       </div>
-    </details>
+
+      <h3>タグで絞り込み</h3>
+      <div class="filter-tags" id="filterTagList"></div>
+
+      <div class="filter-options">
+        <span>タグの検索方法：</span>
+        <label><input type="radio" name="tagMode" value="or" checked> OR（どれか）</label>
+        <label><input type="radio" name="tagMode" value="and"> AND（すべて）</label>
+        <button class="ghost small" id="clearTags">タグ解除</button>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-heading">
+        <h2>メモ一覧</h2>
+        <span class="count" id="memoCount"></span>
+      </div>
+      <div class="memo-list" id="memoList"></div>
+    </section>
+
+    <section class="panel" style="margin-top:22px">
+      <details>
+        <summary>タグの管理</summary>
+        <div class="details-content">
+          <p class="note">登録済みのタグの名前を変更したり、削除したりできるよ。</p>
+          <div id="manageTagList" class="tag-list"></div>
+          <p class="note">タグを削除すると、そのタグはメモからも外れるよ。</p>
+        </div>
+      </details>
+    </section>
   </section>
 
   <footer>OTOLIS · MY MEMO</footer>
@@ -382,6 +412,7 @@ const STORAGE_KEY = "myMemoList_v1";
 let memos = [];
 let allTags = [];
 let editingId = null;
+let viewingId = null;
 let draftTags = [];
 let selectedTags = [];
 
@@ -452,11 +483,53 @@ function formatDate(time){
   });
 }
 
+/* 画面切り替え */
+
+function showList(){
+  $("editor").hidden = true;
+  $("detailView").hidden = true;
+  $("listScreen").hidden = false;
+  viewingId = null;
+  editingId = null;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showEditor(){
+  $("listScreen").hidden = true;
+  $("detailView").hidden = true;
+  $("editor").hidden = false;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function showDetail(id){
+  const memo = memos.find(m => m.id === id);
+  if(!memo) return;
+
+  viewingId = id;
+  $("listScreen").hidden = true;
+  $("editor").hidden = true;
+  $("detailView").hidden = false;
+
+  $("viewTitle").textContent = memo.title || "タイトルなし";
+  $("viewBody").textContent = memo.body;
+
+  $("viewTags").innerHTML = memo.tags.map(tag =>
+    `<span class="tag">${escapeHTML(tag)}</span>`
+  ).join("");
+
+  $("viewDate").textContent =
+    `登録：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* 入力フォーム */
+
 function renderDraftTags(){
   $("memoTagList").innerHTML = draftTags.map(tag => `
     <span class="tag">
       ${escapeHTML(tag)}
-      <button type="button" data-remove-draft="${escapeHTML(tag)}" aria-label="${escapeHTML(tag)}を外す">×</button>
+      <button type="button" data-remove-draft="${escapeHTML(tag)}">×</button>
     </span>
   `).join("");
 }
@@ -464,8 +537,10 @@ function renderDraftTags(){
 function addDraftTag(){
   const tag = $("memoTagInput").value.trim();
   if(!tag) return;
+
   if(!draftTags.includes(tag)) draftTags.push(tag);
   if(!allTags.includes(tag)) allTags.push(tag);
+
   $("memoTagInput").value = "";
   renderDraftTags();
   renderFilterTags();
@@ -480,8 +555,29 @@ function resetForm(){
   $("memoTagInput").value = "";
   $("formHeading").textContent = "＋ メモを追加";
   $("saveMemo").textContent = "保存する";
-  $("cancelEdit").hidden = true;
   renderDraftTags();
+}
+
+function startNewMemo(){
+  resetForm();
+  $("listScreen").hidden = true;
+  $("detailView").hidden = true;
+  showEditor();
+}
+
+function startEditMemo(id){
+  const memo = memos.find(m => m.id === id);
+  if(!memo) return;
+
+  editingId = id;
+  draftTags = [...memo.tags];
+  $("memoTitle").value = memo.title;
+  $("memoBody").value = memo.body;
+  $("formHeading").textContent = "メモを編集";
+  $("saveMemo").textContent = "変更を保存";
+
+  renderDraftTags();
+  showEditor();
 }
 
 function saveMemo(){
@@ -495,18 +591,21 @@ function saveMemo(){
   }
 
   const now = Date.now();
+  let savedId;
 
   if(editingId){
     const memo = memos.find(m => m.id === editingId);
-    if(memo){
-      memo.title = title;
-      memo.body = body;
-      memo.tags = [...draftTags];
-      memo.updatedAt = now;
-    }
+    if(!memo) return;
+
+    memo.title = title;
+    memo.body = body;
+    memo.tags = [...draftTags];
+    memo.updatedAt = now;
+    savedId = memo.id;
   }else{
+    savedId = makeId();
     memos.unshift({
-      id:makeId(),
+      id:savedId,
       title,
       body,
       tags:[...draftTags],
@@ -517,34 +616,32 @@ function saveMemo(){
 
   syncAllTags();
   saveData();
+
+  const wasEditing = !!editingId;
   resetForm();
   renderAll();
-  window.scrollTo({top:0,behavior:"smooth"});
+
+  if(wasEditing){
+    showDetail(savedId);
+  }else{
+    showList();
+  }
 }
 
-function editMemo(id){
-  const memo = memos.find(m => m.id === id);
-  if(!memo) return;
-
-  editingId = id;
-  $("memoTitle").value = memo.title;
-  $("memoBody").value = memo.body;
-  draftTags = [...memo.tags];
-  $("formHeading").textContent = "メモを編集";
-  $("saveMemo").textContent = "変更を保存";
-  $("cancelEdit").hidden = false;
-  renderDraftTags();
-  window.scrollTo({top:0,behavior:"smooth"});
-}
+/* 削除 */
 
 function deleteMemo(id){
   if(!confirm("このメモを削除する？")) return;
+
   memos = memos.filter(m => m.id !== id);
   syncAllTags();
   saveData();
-  if(editingId === id) resetForm();
+  resetForm();
   renderAll();
+  showList();
 }
+
+/* 一覧表示 */
 
 function renderFilterTags(){
   $("filterTagList").innerHTML = allTags.map(tag => `
@@ -561,8 +658,8 @@ function renderManageTags(){
     ? allTags.map(tag => `
       <span class="tag">
         ${escapeHTML(tag)}
-        <button type="button" data-rename-tag="${escapeHTML(tag)}" aria-label="${escapeHTML(tag)}を変更">✎</button>
-        <button type="button" data-delete-tag="${escapeHTML(tag)}" aria-label="${escapeHTML(tag)}を削除">×</button>
+        <button type="button" data-rename-tag="${escapeHTML(tag)}">✎</button>
+        <button type="button" data-delete-tag="${escapeHTML(tag)}">×</button>
       </span>
     `).join("")
     : '<span class="note">まだタグはありません。</span>';
@@ -573,7 +670,10 @@ function renderMemos(){
   const mode = document.querySelector('input[name="tagMode"]:checked').value;
 
   const filtered = memos.filter(memo => {
-    const text = (memo.title + "\n" + memo.body + "\n" + memo.tags.join(" ")).toLowerCase();
+    const text = (
+      memo.title + "\n" + memo.body + "\n" + memo.tags.join(" ")
+    ).toLowerCase();
+
     const matchesKeyword = !keyword || text.includes(keyword);
 
     const matchesTags = selectedTags.length === 0 ||
@@ -587,25 +687,31 @@ function renderMemos(){
   $("memoCount").textContent = `${filtered.length} / ${memos.length} 件`;
 
   if(filtered.length === 0){
-    $("memoList").innerHTML = '<div class="empty">メモが見つからなかったよ。</div>';
+    $("memoList").innerHTML =
+      '<div class="empty">メモが見つからなかったよ。</div>';
     return;
   }
 
   $("memoList").innerHTML = filtered.map(memo => `
     <article class="memo-card">
-      ${memo.title ? `<h3>${escapeHTML(memo.title)}</h3>` : ""}
-      <div class="body">${escapeHTML(memo.body)}</div>
+      <h3>${escapeHTML(memo.title || "タイトルなし")}</h3>
+      <div class="body-preview">${escapeHTML(memo.body)}</div>
+
       ${memo.tags.length ? `
         <div class="card-tags">
-          ${memo.tags.map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join("")}
+          ${memo.tags.map(tag =>
+            `<span class="tag">${escapeHTML(tag)}</span>`
+          ).join("")}
         </div>
       ` : ""}
+
       <div class="date">
-        ${memo.updatedAt !== memo.createdAt ? "更新：" : "登録："}${formatDate(memo.updatedAt)}
+        ${memo.updatedAt !== memo.createdAt ? "更新：" : "登録："}
+        ${formatDate(memo.updatedAt)}
       </div>
+
       <div class="card-actions">
-        <button class="secondary small" data-edit="${escapeHTML(memo.id)}">編集</button>
-        <button class="danger small" data-delete="${escapeHTML(memo.id)}">削除</button>
+        <button class="secondary small" data-view="${escapeHTML(memo.id)}">表示</button>
       </div>
     </article>
   `).join("");
@@ -617,46 +723,60 @@ function renderAll(){
   renderMemos();
 }
 
+/* タグ管理 */
+
 function renameTag(oldTag){
   const newTag = prompt("新しいタグ名を入力してね。",oldTag);
   if(newTag === null) return;
 
   const name = newTag.trim();
+
   if(!name){
     alert("タグ名を空にはできないよ。");
     return;
   }
+
   if(name !== oldTag && allTags.includes(name)){
     alert("そのタグ名はすでにあるよ。");
     return;
   }
 
   allTags = allTags.map(tag => tag === oldTag ? name : tag);
+
   memos.forEach(memo => {
     memo.tags = memo.tags.map(tag => tag === oldTag ? name : tag);
   });
+
   draftTags = draftTags.map(tag => tag === oldTag ? name : tag);
   selectedTags = selectedTags.map(tag => tag === oldTag ? name : tag);
 
   saveData();
   renderAll();
   renderDraftTags();
+
+  if(viewingId) showDetail(viewingId);
 }
 
 function deleteTag(tag){
   if(!confirm(`「${tag}」を削除する？\nこのタグはメモからも外れるよ。`)) return;
 
   allTags = allTags.filter(t => t !== tag);
+
   memos.forEach(memo => {
     memo.tags = memo.tags.filter(t => t !== tag);
   });
+
   draftTags = draftTags.filter(t => t !== tag);
   selectedTags = selectedTags.filter(t => t !== tag);
 
   saveData();
   renderAll();
   renderDraftTags();
+
+  if(viewingId) showDetail(viewingId);
 }
+
+/* バックアップ・復元 */
 
 function backupData(){
   const data = {
@@ -671,11 +791,14 @@ function backupData(){
     [JSON.stringify(data,null,2)],
     {type:"application/json"}
   );
+
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
+
   a.href = url;
   a.download = "マイメモ_backup_" +
     new Date().toISOString().slice(0,10) + ".json";
+
   document.body.appendChild(a);
   a.click();
   a.remove();
@@ -686,9 +809,11 @@ function restoreData(file){
   if(!file) return;
 
   const reader = new FileReader();
+
   reader.onload = () => {
     try{
       const data = JSON.parse(reader.result);
+
       if(!data || !Array.isArray(data.memos)){
         throw new Error("形式が違います");
       }
@@ -706,33 +831,45 @@ function restoreData(file){
 
       allTags = Array.isArray(data.tags) ? data.tags.map(String) : [];
       selectedTags = [];
+
       syncAllTags();
       saveData();
       resetForm();
       renderAll();
+      showList();
+
       alert("バックアップから復元したよ！");
     }catch(error){
       alert("読み込めなかったよ。マイメモのバックアップファイルか確認してね。");
     }
   };
+
   reader.readAsText(file);
 }
 
 /* イベント */
+
+$("newMemoBtn").addEventListener("click",startNewMemo);
+$("saveMemo").addEventListener("click",saveMemo);
+$("cancelEdit").addEventListener("click",showList);
+
 $("addMemoTag").addEventListener("click",addDraftTag);
+
 $("memoTagInput").addEventListener("keydown",event => {
   if(event.key === "Enter"){
     event.preventDefault();
     addDraftTag();
   }
 });
-$("saveMemo").addEventListener("click",saveMemo);
-$("cancelEdit").addEventListener("click",resetForm);
 
 $("memoTagList").addEventListener("click",event => {
   const button = event.target.closest("[data-remove-draft]");
   if(!button) return;
-  draftTags = draftTags.filter(tag => tag !== button.dataset.removeDraft);
+
+  draftTags = draftTags.filter(tag =>
+    tag !== button.dataset.removeDraft
+  );
+
   renderDraftTags();
 });
 
@@ -741,6 +878,7 @@ $("filterTagList").addEventListener("click",event => {
   if(!button) return;
 
   const tag = button.dataset.filterTag;
+
   selectedTags = selectedTags.includes(tag)
     ? selectedTags.filter(t => t !== tag)
     : [...selectedTags,tag];
@@ -757,11 +895,20 @@ $("manageTagList").addEventListener("click",event => {
 });
 
 $("memoList").addEventListener("click",event => {
-  const edit = event.target.closest("[data-edit]");
-  const remove = event.target.closest("[data-delete]");
+  const button = event.target.closest("[data-view]");
+  if(!button) return;
 
-  if(edit) editMemo(edit.dataset.edit);
-  if(remove) deleteMemo(remove.dataset.delete);
+  showDetail(button.dataset.view);
+});
+
+$("viewEditBtn").addEventListener("click",() => {
+  if(viewingId) startEditMemo(viewingId);
+});
+
+$("backToListBtn").addEventListener("click",showList);
+
+$("viewDeleteBtn").addEventListener("click",() => {
+  if(viewingId) deleteMemo(viewingId);
 });
 
 $("keyword").addEventListener("input",renderMemos);
@@ -792,11 +939,13 @@ $("restoreFile").addEventListener("change",event => {
 });
 
 /* 起動 */
+
 loadData();
 renderAll();
 renderDraftTags();
 
 /* オフライン対応 */
+
 if("serviceWorker" in navigator){
   window.addEventListener("load",() => {
     navigator.serviceWorker.register("./sw.js").catch(error => {
@@ -807,4 +956,3 @@ if("serviceWorker" in navigator){
 </script>
 </body>
 </html>
-
