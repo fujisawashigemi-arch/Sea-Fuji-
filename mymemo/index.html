@@ -9,23 +9,16 @@
 
 <style>
 :root{
-  --bg:#f6f3ee;
-  --paper:#fff;
-  --ink:#292722;
-  --muted:#89847b;
-  --line:#e8e2d9;
-  --green:#718b70;
-  --green-dark:#536d52;
-  --green-light:#edf2eb;
-  --danger:#b65f58;
+  --bg:#f6f3ee;--paper:#fff;--ink:#292722;
+  --muted:#89847b;--line:#e8e2d9;
+  --green:#718b70;--green-dark:#536d52;
+  --green-light:#edf2eb;--danger:#b65f58;
 }
 *{box-sizing:border-box}
 body{
-  margin:0;
-  background:var(--bg);
-  color:var(--ink);
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",
-    "Yu Gothic",Meiryo,sans-serif;
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,
+  "Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
   line-height:1.6;
 }
 button,input,textarea,select{font:inherit}
@@ -34,443 +27,216 @@ button:active{transform:scale(.98)}
 [hidden]{display:none!important}
 
 header{
-  position:sticky;
-  top:0;
-  z-index:10;
+  position:sticky;top:0;z-index:10;
   background:rgba(246,243,238,.96);
   backdrop-filter:blur(10px);
   border-bottom:1px solid var(--line);
   padding:14px 16px 12px;
 }
 .header-inner{
-  max-width:760px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
+  max-width:760px;margin:auto;display:flex;
+  align-items:center;justify-content:space-between;gap:12px;
 }
-.brand{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:.04em;
-}
+.brand{font-size:22px;font-weight:800;letter-spacing:.04em}
 .brand small{
-  display:block;
-  font-size:10px;
-  color:var(--muted);
-  font-weight:500;
-  letter-spacing:.16em;
-  line-height:1.2;
+  display:block;font-size:10px;color:var(--muted);
+  font-weight:500;letter-spacing:.16em;line-height:1.2;
 }
-.header-actions{display:flex;gap:7px}
+.header-actions{display:flex;gap:7px;flex-wrap:wrap}
 
-main{
-  max-width:760px;
-  margin:0 auto;
-  padding:18px 14px 60px;
-}
+main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 .panel{
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:15px;
-  margin-bottom:15px;
+  background:var(--paper);border:1px solid var(--line);
+  border-radius:14px;padding:15px;margin-bottom:15px;
 }
 h2{font-size:16px;margin:0 0 12px}
 h3{font-size:14px;margin:16px 0 8px}
-label{
-  display:block;
-  font-size:13px;
-  font-weight:650;
-  margin:12px 0 5px;
-}
-input[type="text"],textarea,select{
-  width:100%;
-  border:1px solid var(--line);
-  border-radius:9px;
-  padding:10px 11px;
-  background:#fff;
-  color:var(--ink);
-  outline:none;
+label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}
+input[type="text"],input[type="password"],textarea,select{
+  width:100%;border:1px solid var(--line);border-radius:9px;
+  padding:10px 11px;background:#fff;color:var(--ink);outline:none;
 }
 input:focus,textarea:focus,select:focus{
-  border-color:var(--green);
-  box-shadow:0 0 0 3px rgba(113,139,112,.12);
+  border-color:var(--green);box-shadow:0 0 0 3px rgba(113,139,112,.12);
 }
 textarea{min-height:180px;resize:vertical}
-
 button{
-  border:0;
-  border-radius:9px;
-  padding:9px 13px;
-  background:var(--green);
-  color:#fff;
-  font-weight:650;
+  border:0;border-radius:9px;padding:9px 13px;
+  background:var(--green);color:#fff;font-weight:650;
 }
-button.secondary{
-  background:var(--green-light);
-  color:var(--green-dark);
-}
-button.ghost{
-  background:transparent;
-  color:var(--muted);
-  border:1px solid var(--line);
-}
-button.danger{
-  background:#f8ecea;
-  color:var(--danger);
-}
+button.secondary{background:var(--green-light);color:var(--green-dark)}
+button.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+button.danger{background:#f8ecea;color:var(--danger)}
 button.small{font-size:12px;padding:6px 9px}
 button:disabled{opacity:.4;cursor:not-allowed}
 
-/* 絞り込み欄の開閉ボタン */
+.auth-screen{
+  min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:22px;
+}
+.auth-panel{
+  width:100%;max-width:390px;background:#fff;
+  border:1px solid var(--line);border-radius:18px;padding:25px;
+  box-shadow:0 8px 30px rgba(50,40,25,.05);
+}
+.auth-brand{text-align:center;font-size:25px;font-weight:800;letter-spacing:.05em}
+.auth-brand small{
+  display:block;font-size:10px;color:var(--muted);
+  letter-spacing:.2em;font-weight:500;
+}
+.auth-icon{text-align:center;font-size:32px;margin:18px 0 8px}
+.auth-panel h2{text-align:center;margin:8px 0 12px}
+.auth-description{font-size:13px;color:var(--muted);text-align:center}
+.auth-panel button{width:100%;margin-top:17px}
+.auth-message{
+  color:var(--danger);font-size:13px;margin-top:12px;
+  min-height:20px;text-align:center;
+}
+.security-note{
+  font-size:11px;color:var(--muted);line-height:1.7;
+  background:#f8f7f4;padding:11px;border-radius:9px;margin-top:18px;
+}
+.auth-panel .password-hint{font-size:11px;color:var(--muted);margin-top:5px}
+
 .filter-toggle{
-  width:100%;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:0;
-  margin:0;
-  background:transparent;
-  color:var(--ink);
-  border:0;
-  border-radius:0;
-  font-size:16px;
-  font-weight:750;
-  text-align:left;
+  width:100%;display:flex;align-items:center;
+  justify-content:space-between;gap:10px;padding:0;margin:0;
+  background:transparent;color:var(--ink);border:0;
+  border-radius:0;font-size:16px;font-weight:750;text-align:left;
 }
 .filter-toggle:active{transform:none}
-.filter-toggle-icon{
-  color:var(--green-dark);
-  font-size:13px;
-  transition:transform .2s ease;
-}
-.filter-toggle[aria-expanded="false"] .filter-toggle-icon{
-  transform:rotate(-90deg);
-}
-.filter-content{
-  padding-top:12px;
-}
+.filter-toggle-icon{color:var(--green-dark);font-size:13px}
+.filter-content{padding-top:12px}
 
 .form-actions,.view-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:16px;
+  display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;
 }
-.tag-entry{
-  display:flex;
-  gap:7px;
-  margin-top:10px;
-}
+.tag-entry{display:flex;gap:7px;margin-top:10px}
 .tag-entry input{flex:1;min-width:0}
-
 .tag-picker,.tag-list,.filter-tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:9px;
+  display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;
 }
 .tag-choice{
-  border:1px solid var(--line);
-  background:#fff;
-  color:var(--muted);
-  border-radius:20px;
-  padding:6px 11px;
-  font-size:12px;
+  border:1px solid var(--line);background:#fff;color:var(--muted);
+  border-radius:20px;padding:6px 11px;font-size:12px;
 }
-.tag-choice.active{
-  background:var(--green);
-  border-color:var(--green);
-  color:#fff;
-}
+.tag-choice.active{background:var(--green);border-color:var(--green);color:#fff}
 .tag{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  background:var(--green-light);
-  color:var(--green-dark);
-  border-radius:20px;
-  padding:4px 9px;
-  font-size:12px;
-  white-space:nowrap;
+  display:inline-flex;align-items:center;gap:5px;
+  background:var(--green-light);color:var(--green-dark);
+  border-radius:20px;padding:4px 9px;font-size:12px;white-space:nowrap;
 }
 .tag button{
-  padding:0;
-  background:transparent;
-  color:var(--green-dark);
-  font-size:14px;
-  line-height:1;
+  padding:0;background:transparent;color:var(--green-dark);
+  font-size:14px;line-height:1;
 }
-.note{
-  font-size:12px;
-  color:var(--muted);
-  margin:6px 0 0;
-}
+.note{font-size:12px;color:var(--muted);margin:6px 0 0}
 
-.search-row{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
+.search-row{display:flex;gap:8px;align-items:center}
 .search-row input{flex:1;min-width:0}
 .filter-tag{
-  background:#fff;
-  color:var(--muted);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:6px 11px;
-  font-size:12px;
+  background:#fff;color:var(--muted);border:1px solid var(--line);
+  border-radius:20px;padding:6px 11px;font-size:12px;
 }
-.filter-tag.active{
-  background:var(--green);
-  color:#fff;
-  border-color:var(--green);
-}
+.filter-tag.active{background:var(--green);color:#fff;border-color:var(--green)}
 .filter-options{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:12px;
-  margin-top:12px;
-  font-size:13px;
-  color:var(--muted);
+  display:flex;align-items:center;flex-wrap:wrap;
+  gap:12px;margin-top:12px;font-size:13px;color:var(--muted);
 }
 .filter-options label{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  margin:0;
-  font-weight:500;
+  display:inline-flex;align-items:center;gap:5px;
+  margin:0;font-weight:500;
 }
 .filter-options input{accent-color:var(--green)}
 
 .section-heading{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin:22px 2px 10px;
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;margin:22px 2px 10px;
 }
 .section-heading h2{margin:0}
 .count{color:var(--muted);font-size:12px}
 
-/* 並べ替え */
-.sort-tools{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:8px;
+.sort-tools,.select-tools{
+  display:flex;align-items:center;flex-wrap:wrap;gap:8px;
   margin:0 0 12px;
 }
-.sort-tools label{
-  margin:0;
-  font-size:12px;
-  color:var(--muted);
-  font-weight:650;
-  white-space:nowrap;
-}
-.sort-tools select{
-  width:auto;
-  min-width:110px;
-  flex:1;
-  padding:7px 9px;
-  font-size:12px;
-}
+.sort-tools label{margin:0;font-size:12px;color:var(--muted);font-weight:650}
+.sort-tools select{width:auto;min-width:110px;flex:1;padding:7px 9px;font-size:12px}
+.selected-count{font-size:12px;color:var(--green-dark);font-weight:650}
 
-.select-tools{
-  display:flex;
-  align-items:center;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-bottom:10px;
-}
-.selected-count{
-  font-size:12px;
-  color:var(--green-dark);
-  font-weight:650;
-}
-
-/* 一覧表 */
 .tablewrap{
-  width:100%;
-  max-height:65vh;
-  overflow:auto;
-  background:var(--paper);
-  border:1px solid var(--line);
-  border-radius:10px;
+  width:100%;max-height:65vh;overflow:auto;background:var(--paper);
+  border:1px solid var(--line);border-radius:10px;
   -webkit-overflow-scrolling:touch;
 }
 .memo-table{
-  width:100%;
-  min-width:790px;
-  border-collapse:separate;
-  border-spacing:0;
-  table-layout:fixed;
-  font-size:12px;
+  width:100%;min-width:790px;border-collapse:separate;
+  border-spacing:0;table-layout:fixed;font-size:12px;
 }
-.memo-table th,
-.memo-table td{
-  padding:9px 8px;
-  border-bottom:1px solid var(--line);
-  border-right:1px solid #f0ece6;
-  text-align:left;
-  vertical-align:middle;
-  background:#fff;
+.memo-table th,.memo-table td{
+  padding:9px 8px;border-bottom:1px solid var(--line);
+  border-right:1px solid #f0ece6;text-align:left;
+  vertical-align:middle;background:#fff;
 }
 .memo-table th{
-  position:sticky;
-  top:0;
-  z-index:3;
-  background:#faf9f7;
-  color:#6f6a61;
-  font-weight:700;
-  white-space:nowrap;
+  position:sticky;top:0;z-index:3;background:#faf9f7;
+  color:#6f6a61;font-weight:700;white-space:nowrap;
 }
 .memo-table tr:last-child td{border-bottom:0}
-.memo-table th:last-child,
-.memo-table td:last-child{border-right:0}
-
+.memo-table th:last-child,.memo-table td:last-child{border-right:0}
 .memo-table .check-col{
-  width:36px;
-  min-width:36px;
-  max-width:36px;
-  text-align:center;
-  position:sticky;
-  left:0;
-  z-index:4;
-  background:#faf9f7;
+  width:36px;min-width:36px;max-width:36px;text-align:center;
+  position:sticky;left:0;z-index:4;background:#faf9f7;
 }
 .memo-table td.check-col{background:#fff}
-
 .memo-table .title-col{
-  width:145px;
-  min-width:145px;
-  max-width:145px;
-  position:sticky;
-  left:36px;
-  z-index:2;
-  background:#fff;
+  width:145px;min-width:145px;max-width:145px;
+  position:sticky;left:36px;z-index:2;background:#fff;
 }
-.memo-table th.title-col{
-  z-index:6;
-  background:#faf9f7;
-}
+.memo-table th.title-col{z-index:6;background:#faf9f7}
 .memo-table .body-col{width:230px}
 .memo-table .date-col{width:145px}
 .memo-table .tags-col{width:145px}
-
-.memo-table td.title-col{
-  font-weight:700;
-  cursor:pointer;
+.memo-table td.title-col{font-weight:700;cursor:pointer}
+.memo-table td.body-col{color:#777168;cursor:pointer}
+.memo-table td.title-col,.memo-table td.body-col{
+  overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }
-.memo-table td.body-col{
-  color:#777168;
-  cursor:pointer;
-}
-.memo-table td.title-col,
-.memo-table td.body-col{
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-.memo-table td.tags-col{
-  overflow:hidden;
-}
-.memo-table .row-tags{
-  display:flex;
-  gap:4px;
-  overflow:hidden;
-  white-space:nowrap;
-}
-.memo-table .tag{
-  font-size:10px;
-  padding:3px 7px;
-}
-.memo-table .date-col{
-  color:#777168;
-  font-size:11px;
-  white-space:nowrap;
-}
+.memo-table td.tags-col{overflow:hidden}
+.memo-table .row-tags{display:flex;gap:4px;overflow:hidden;white-space:nowrap}
+.memo-table .tag{font-size:10px;padding:3px 7px}
+.memo-table .date-col{color:#777168;font-size:11px;white-space:nowrap}
 .memo-table tbody tr:hover td{background:#faf9f6}
 .memo-table tbody tr:hover td.check-col,
 .memo-table tbody tr:hover td.title-col{background:#f6f5f1}
 .memo-table input[type="checkbox"]{
-  width:17px;
-  height:17px;
-  accent-color:var(--green);
-  vertical-align:middle;
+  width:17px;height:17px;accent-color:var(--green);vertical-align:middle;
 }
-.table-empty{
-  padding:30px 12px;
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
-}
+.table-empty{padding:30px 12px;text-align:center;color:var(--muted);font-size:13px}
 
 .bulk-panel{
-  background:var(--green-light);
-  border:1px solid #dce6d9;
-  border-radius:12px;
-  padding:13px;
-  margin-bottom:12px;
+  background:var(--green-light);border:1px solid #dce6d9;
+  border-radius:12px;padding:13px;margin-bottom:12px;
 }
 .bulk-panel h3{margin:0 0 8px;color:var(--green-dark)}
-.bulk-row{
-  display:flex;
-  gap:7px;
-  align-items:center;
-  margin-top:8px;
-}
+.bulk-row{display:flex;gap:7px;align-items:center;margin-top:8px}
 .bulk-row select,.bulk-row input{flex:1;min-width:0}
 .bulk-row button{white-space:nowrap}
 
-.view-title{
-  font-size:21px;
-  line-height:1.5;
-  margin:0 0 16px;
-  overflow-wrap:anywhere;
-}
+.view-title{font-size:21px;line-height:1.5;margin:0 0 16px;overflow-wrap:anywhere}
 .view-body{
-  white-space:pre-wrap;
-  overflow-wrap:anywhere;
-  font-size:15px;
-  line-height:1.9;
-  min-height:40px;
+  white-space:pre-wrap;overflow-wrap:anywhere;font-size:15px;
+  line-height:1.9;min-height:40px;
 }
-.view-tags{
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-top:18px;
-}
+.view-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:18px}
 .view-date{
-  font-size:11px;
-  color:var(--muted);
-  border-top:1px solid var(--line);
-  padding-top:12px;
-  margin-top:20px;
+  font-size:11px;color:var(--muted);border-top:1px solid var(--line);
+  padding-top:12px;margin-top:20px;
 }
-details summary{
-  cursor:pointer;
-  color:var(--green-dark);
-  font-size:13px;
-  font-weight:650;
-}
+details summary{cursor:pointer;color:var(--green-dark);font-size:13px;font-weight:650}
 details .details-content{padding-top:10px}
-hr{
-  border:0;
-  border-top:1px solid var(--line);
-  margin:16px 0;
-}
-footer{
-  text-align:center;
-  color:#aaa399;
-  font-size:11px;
-  padding:24px 0 8px;
-}
+hr{border:0;border-top:1px solid var(--line);margin:16px 0}
+footer{text-align:center;color:#aaa399;font-size:11px;padding:24px 0 8px}
 @media(max-width:420px){
   main{padding-left:10px;padding-right:10px}
   .header-actions{gap:4px}
@@ -480,40 +246,75 @@ footer{
 </head>
 
 <body>
+
+<!-- パスワード画面 -->
+<section class="auth-screen" id="authScreen">
+  <div class="auth-panel">
+    <div class="auth-brand">マイメモ<small>OTOLIS</small></div>
+    <div class="auth-icon">🔐</div>
+    <h2 id="authHeading">マイメモを開く</h2>
+    <p class="auth-description" id="authDescription">
+      パスワードを入力してね。
+    </p>
+
+    <div id="setupFields" hidden>
+      <label for="passwordInput">新しいパスワード</label>
+      <input type="password" id="passwordInput"
+        autocomplete="new-password" placeholder="12文字以上">
+      <p class="password-hint">英字・数字・記号を組み合わせた長いパスワードがおすすめ。</p>
+
+      <label for="passwordConfirm">パスワードの確認</label>
+      <input type="password" id="passwordConfirm"
+        autocomplete="new-password" placeholder="もう一度入力">
+    </div>
+
+    <div id="unlockFields">
+      <label for="unlockPassword">パスワード</label>
+      <input type="password" id="unlockPassword"
+        autocomplete="current-password" placeholder="パスワードを入力">
+    </div>
+
+    <button id="authButton">開く</button>
+    <div class="auth-message" id="authMessage"></div>
+
+    <div class="security-note" id="setupWarning" hidden>
+      初回設定では、新しい暗号化保管庫を作成するよ。以前のテストメモは削除されるよ。<br>
+      パスワードを忘れると、メモを復元できないので必ず控えてね。
+    </div>
+    <div class="security-note" id="unlockWarning">
+      メモはこの端末のブラウザ内に暗号化して保存されているよ。
+      パスワードはサーバーには送信されないよ。
+    </div>
+  </div>
+</section>
+
+<div id="appShell" hidden>
 <header>
   <div class="header-inner">
-    <div class="brand">
-      マイメモ
-      <small>OTOLIS</small>
-    </div>
+    <div class="brand">マイメモ<small>OTOLIS</small></div>
     <div class="header-actions">
       <button class="secondary small" id="backupBtn">バックアップ</button>
       <button class="ghost small" id="restoreBtn">復元</button>
+      <button class="ghost small" id="lockBtn">ロック</button>
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
     </div>
   </div>
 </header>
 
 <main>
-
   <section class="panel" id="editor" hidden>
     <h2 id="formHeading">＋ メモを追加</h2>
-
     <label for="memoTitle">タイトル（任意）</label>
     <input type="text" id="memoTitle" placeholder="タイトルを入力">
-
     <label for="memoBody">本文</label>
     <textarea id="memoBody" placeholder="メモしたいことを書いてね"></textarea>
-
     <label>タグ</label>
     <div class="tag-picker" id="memoTagPicker"></div>
-
     <div class="tag-entry">
       <input type="text" id="memoTagInput" placeholder="新しいタグ名">
       <button type="button" id="addMemoTag">追加</button>
     </div>
     <p class="note">登録済みのタグを選ぶか、新しいタグを追加できるよ。</p>
-
     <div class="form-actions">
       <button id="saveMemo">保存する</button>
       <button class="ghost" id="cancelEdit">キャンセル</button>
@@ -526,7 +327,6 @@ footer{
     <div class="view-body" id="viewBody"></div>
     <div class="view-tags" id="viewTags"></div>
     <div class="view-date" id="viewDate"></div>
-
     <div class="view-actions">
       <button id="viewEditBtn">編集する</button>
       <button class="ghost" id="backToListBtn">一覧に戻る</button>
@@ -539,27 +339,18 @@ footer{
       <button id="newMemoBtn">＋ 新しいメモを作る</button>
     </section>
 
-    <!-- 絞り込みパネル -->
     <section class="panel">
-      <button
-        type="button"
-        class="filter-toggle"
-        id="filterToggle"
-        aria-expanded="true"
-        aria-controls="filterContent">
-        <span>メモを探す</span>
-        <span class="filter-toggle-icon" id="filterToggleIcon" aria-hidden="true">▼</span>
+      <button type="button" class="filter-toggle" id="filterToggle"
+        aria-expanded="true" aria-controls="filterContent">
+        <span>メモを探す</span><span class="filter-toggle-icon" id="filterToggleIcon">▼</span>
       </button>
-
       <div class="filter-content" id="filterContent">
         <div class="search-row">
           <input type="text" id="keyword" placeholder="キーワードで検索">
           <button class="ghost small" id="clearSearch">クリア</button>
         </div>
-
         <h3>タグで絞り込み</h3>
         <div class="filter-tags" id="filterTagList"></div>
-
         <div class="filter-options">
           <span>タグの検索方法：</span>
           <label><input type="radio" name="tagMode" value="or" checked> OR（どれか）</label>
@@ -571,10 +362,8 @@ footer{
 
     <section>
       <div class="section-heading">
-        <h2>メモ一覧</h2>
-        <span class="count" id="memoCount"></span>
+        <h2>メモ一覧</h2><span class="count" id="memoCount"></span>
       </div>
-
       <div class="sort-tools">
         <label for="sortKey">並べ替え</label>
         <select id="sortKey">
@@ -582,49 +371,35 @@ footer{
           <option value="updatedAt">更新日</option>
           <option value="title">タイトル</option>
         </select>
-
         <select id="sortOrder" aria-label="並べ替え順">
           <option value="desc">降順</option>
           <option value="asc">昇順</option>
         </select>
       </div>
-
       <div class="select-tools">
         <button class="secondary small" id="toggleSelectBtn">複数選択</button>
         <span class="selected-count" id="selectedCount" hidden>0件選択中</span>
         <button class="ghost small" id="selectAllBtn" hidden>表示中をすべて選択</button>
         <button class="ghost small" id="clearSelectionBtn" hidden>選択解除</button>
       </div>
-
       <section class="bulk-panel" id="bulkPanel" hidden>
         <h3>選択したメモのタグを一括操作</h3>
-
         <div class="bulk-row">
-          <select id="bulkAddTag">
-            <option value="">追加するタグを選択</option>
-          </select>
+          <select id="bulkAddTag"><option value="">追加するタグを選択</option></select>
           <button class="small" id="bulkAddBtn">一括追加</button>
         </div>
-
         <div class="bulk-row">
           <input type="text" id="bulkNewTag" placeholder="新しいタグを作って追加">
           <button class="small" id="bulkNewTagBtn">作成・追加</button>
         </div>
-
         <hr>
-
         <div class="bulk-row">
-          <select id="bulkRemoveTag">
-            <option value="">外すタグを選択</option>
-          </select>
+          <select id="bulkRemoveTag"><option value="">外すタグを選択</option></select>
           <button class="danger small" id="bulkRemoveBtn">一括解除</button>
         </div>
         <p class="note">選択したメモだけに反映されるよ。</p>
       </section>
-
-      <div class="tablewrap" id="tablewrap">
-        <div id="memoList"></div>
-      </div>
+      <div class="tablewrap" id="tablewrap"><div id="memoList"></div></div>
     </section>
 
     <section class="panel" style="margin-top:22px">
@@ -638,14 +413,23 @@ footer{
       </details>
     </section>
   </section>
-
   <footer>OTOLIS · MY MEMO</footer>
 </main>
+</div>
 
 <script>
 "use strict";
 
-const STORAGE_KEY = "myMemoList_v1";
+/* 暗号化設定 */
+const STORAGE_KEY = "myMemoEncrypted_v1";
+const OLD_STORAGE_KEY = "myMemoList_v1";
+const FORMAT = "otolis-encrypted-v1";
+const PBKDF2_ITERATIONS = 600000;
+const AUTO_LOCK_MS = 5 * 60 * 1000;
+
+let cryptoKey = null;
+let vaultSalt = null;
+let lockTimer = null;
 
 let memos = [];
 let allTags = [];
@@ -658,57 +442,123 @@ let selectedMemoIds = [];
 
 const $ = id => document.getElementById(id);
 
+/* バイト列とBase64の変換 */
+function toBase64(bytes){
+  let binary = "";
+  const chunk = 0x8000;
+  for(let i=0;i<bytes.length;i+=chunk){
+    binary += String.fromCharCode(...bytes.subarray(i,i+chunk));
+  }
+  return btoa(binary);
+}
+
+function fromBase64(value){
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/* パスワードから暗号鍵を作る */
+async function deriveEncryptionKey(password,salt){
+  const encoder = new TextEncoder();
+  const baseKey = await crypto.subtle.importKey(
+    "raw",encoder.encode(password),"PBKDF2",false,["deriveKey"]
+  );
+
+  return crypto.subtle.deriveKey(
+    {
+      name:"PBKDF2",
+      salt,
+      iterations:PBKDF2_ITERATIONS,
+      hash:"SHA-256"
+    },
+    baseKey,
+    {name:"AES-GCM",length:256},
+    false,
+    ["encrypt","decrypt"]
+  );
+}
+
+/* データを暗号化 */
+async function encryptVault(data,key,salt){
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(JSON.stringify(data));
+  const encrypted = await crypto.subtle.encrypt(
+    {name:"AES-GCM",iv},
+    key,
+    encoded
+  );
+
+  return {
+    format:FORMAT,
+    version:1,
+    kdf:"PBKDF2-SHA-256",
+    iterations:PBKDF2_ITERATIONS,
+    cipher:"AES-256-GCM",
+    salt:toBase64(salt),
+    iv:toBase64(iv),
+    ciphertext:toBase64(new Uint8Array(encrypted))
+  };
+}
+
+/* 暗号化データを復号 */
+async function decryptVault(record,key){
+  if(!record || record.format !== FORMAT ||
+     !record.salt || !record.iv || !record.ciphertext){
+    throw new Error("暗号化データの形式が違います");
+  }
+
+  const decrypted = await crypto.subtle.decrypt(
+    {name:"AES-GCM",iv:fromBase64(record.iv)},
+    key,
+    fromBase64(record.ciphertext)
+  );
+
+  const data = JSON.parse(new TextDecoder().decode(decrypted));
+
+  if(!data || !Array.isArray(data.memos)){
+    throw new Error("メモデータの形式が違います");
+  }
+
+  return data;
+}
+
+/* 暗号化保管庫の保存 */
+async function saveData(){
+  if(!cryptoKey || !vaultSalt) throw new Error("保管庫がロックされています");
+
+  const record = await encryptVault({
+    memos,
+    tags:allTags
+  },cryptoKey,vaultSalt);
+
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(record));
+}
+
+/* データ整形 */
+function normalizeData(data){
+  memos = data.memos.map(m => ({
+    id:String(m.id || makeId()),
+    title:String(m.title || ""),
+    body:String(m.body || ""),
+    tags:Array.isArray(m.tags) ? m.tags.map(String) : [],
+    createdAt:Number(m.createdAt) || Date.now(),
+    updatedAt:Number(m.updatedAt) || Number(m.createdAt) || Date.now()
+  }));
+
+  allTags = Array.isArray(data.tags) ? data.tags.map(String) : [];
+  syncAllTags();
+}
+
 function makeId(){
   return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
 }
 
 function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#39;"
+  return String(value ?? "").replace(/[&<>"']/g,char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   })[char]);
-}
-
-function loadData(){
-  try{
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if(saved){
-      const data = JSON.parse(saved);
-
-      if(Array.isArray(data.memos)){
-        memos = data.memos.map(m => ({
-          id:String(m.id || makeId()),
-          title:String(m.title || ""),
-          body:String(m.body || ""),
-          tags:Array.isArray(m.tags) ? m.tags.map(String) : [],
-          createdAt:Number(m.createdAt) || Date.now(),
-          updatedAt:Number(m.updatedAt) || Number(m.createdAt) || Date.now()
-        }));
-      }
-
-      if(Array.isArray(data.tags)){
-        allTags = data.tags.map(String);
-      }
-    }
-  }catch(error){
-    console.error("データの読み込みに失敗しました",error);
-  }
-
-  syncAllTags();
-}
-
-function saveData(){
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify({
-      memos,
-      tags:allTags
-    }));
-  }catch(error){
-    alert("保存できなかったよ。端末の空き容量を確認してね。");
-  }
 }
 
 function syncAllTags(){
@@ -718,24 +568,180 @@ function syncAllTags(){
 
 function formatDate(time){
   return new Date(time).toLocaleString("ja-JP",{
-    year:"numeric",
-    month:"2-digit",
-    day:"2-digit",
-    hour:"2-digit",
-    minute:"2-digit"
+    year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit"
   });
 }
 
-function formatShortDate(time){
-  return new Date(time).toLocaleDateString("ja-JP",{
-    year:"numeric",
-    month:"2-digit",
-    day:"2-digit"
-  });
+/* 初回設定・ロック解除 */
+function showAuth(isSetup){
+  $("authScreen").hidden = false;
+  $("appShell").hidden = true;
+  $("authMessage").textContent = "";
+
+  $("setupFields").hidden = !isSetup;
+  $("unlockFields").hidden = isSetup;
+  $("setupWarning").hidden = !isSetup;
+  $("unlockWarning").hidden = isSetup;
+
+  $("authHeading").textContent = isSetup ? "パスワードを設定" : "マイメモを開く";
+  $("authDescription").textContent = isSetup
+    ? "マイメモを守るパスワードを決めてね。"
+    : "パスワードを入力してね。";
+  $("authButton").textContent = isSetup ? "保管庫を作成" : "開く";
 }
+
+async function setupVault(){
+  const password = $("passwordInput").value;
+  const confirmPassword = $("passwordConfirm").value;
+
+  if(password.length < 12){
+    $("authMessage").textContent = "パスワードは12文字以上にしてね。";
+    return;
+  }
+  if(password !== confirmPassword){
+    $("authMessage").textContent = "確認用パスワードが一致しないよ。";
+    return;
+  }
+
+  $("authButton").disabled = true;
+  $("authMessage").textContent = "暗号化保管庫を作成中…";
+
+  try{
+    vaultSalt = crypto.getRandomValues(new Uint8Array(16));
+    cryptoKey = await deriveEncryptionKey(password,vaultSalt);
+
+    memos = [];
+    allTags = [];
+    await saveData();
+
+    /* 旧テストデータを削除 */
+    localStorage.removeItem(OLD_STORAGE_KEY);
+
+    $("passwordInput").value = "";
+    $("passwordConfirm").value = "";
+    enterApp();
+  }catch(error){
+    cryptoKey = null;
+    vaultSalt = null;
+    $("authMessage").textContent = "作成できなかったよ。もう一度試してね。";
+    console.error(error);
+  }finally{
+    $("authButton").disabled = false;
+  }
+}
+
+async function unlockVault(){
+  const password = $("unlockPassword").value;
+  if(!password){
+    $("authMessage").textContent = "パスワードを入力してね。";
+    return;
+  }
+
+  $("authButton").disabled = true;
+  $("authMessage").textContent = "確認中…";
+
+  try{
+    const record = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(!record) throw new Error("保管庫が見つかりません");
+
+    vaultSalt = fromBase64(record.salt);
+    cryptoKey = await deriveEncryptionKey(password,vaultSalt);
+
+    const data = await decryptVault(record,cryptoKey);
+    normalizeData(data);
+
+    $("unlockPassword").value = "";
+    enterApp();
+  }catch(error){
+    cryptoKey = null;
+    vaultSalt = null;
+    $("authMessage").textContent =
+      "開けなかったよ。パスワードか保管データを確認してね。";
+    console.error(error);
+  }finally{
+    $("authButton").disabled = false;
+  }
+}
+
+function enterApp(){
+  $("authScreen").hidden = true;
+  $("appShell").hidden = false;
+  resetForm();
+  renderAll();
+  startAutoLock();
+  window.scrollTo(0,0);
+}
+
+function clearSensitiveScreen(){
+  $("viewTitle").textContent = "";
+  $("viewBody").textContent = "";
+  $("viewTags").innerHTML = "";
+  $("viewDate").textContent = "";
+  $("memoTitle").value = "";
+  $("memoBody").value = "";
+  $("memoTagInput").value = "";
+  $("keyword").value = "";
+  $("memoList").innerHTML = "";
+  $("filterTagList").innerHTML = "";
+  $("manageTagList").innerHTML = "";
+  $("memoTagPicker").innerHTML = "";
+  $("bulkAddTag").innerHTML = "";
+  $("bulkRemoveTag").innerHTML = "";
+  $("editor").hidden = true;
+  $("detailView").hidden = true;
+  $("listScreen").hidden = true;
+}
+
+function lockApp(){
+  if(!cryptoKey) return;
+
+  clearTimeout(lockTimer);
+  cryptoKey = null;
+  vaultSalt = null;
+
+  memos = [];
+  allTags = [];
+  draftTags = [];
+  selectedTags = [];
+  selectedMemoIds = [];
+  editingId = null;
+  viewingId = null;
+  selectionMode = false;
+
+  clearSensitiveScreen();
+  $("appShell").hidden = true;
+  $("unlockPassword").value = "";
+  showAuth(false);
+}
+
+function startAutoLock(){
+  clearTimeout(lockTimer);
+  lockTimer = setTimeout(lockApp,AUTO_LOCK_MS);
+}
+
+function registerActivity(){
+  if(cryptoKey) startAutoLock();
+}
+
+["pointerdown","keydown","touchstart","scroll"].forEach(type => {
+  document.addEventListener(type,registerActivity,{passive:true});
+});
+
+$("authButton").addEventListener("click",async () => {
+  const isSetup = $("setupFields").hidden === false;
+  if(isSetup) await setupVault();
+  else await unlockVault();
+});
+
+$("passwordConfirm").addEventListener("keydown",event => {
+  if(event.key === "Enter") setupVault();
+});
+$("unlockPassword").addEventListener("keydown",event => {
+  if(event.key === "Enter") unlockVault();
+});
 
 /* 画面切り替え */
-
 function showList(){
   $("editor").hidden = true;
   $("detailView").hidden = true;
@@ -763,11 +769,9 @@ function showDetail(id){
 
   $("viewTitle").textContent = memo.title || "タイトルなし";
   $("viewBody").textContent = memo.body;
-
   $("viewTags").innerHTML = memo.tags.map(tag =>
     `<span class="tag">${escapeHTML(tag)}</span>`
   ).join("");
-
   $("viewDate").textContent =
     `追加：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
 
@@ -775,7 +779,6 @@ function showDetail(id){
 }
 
 /* タグ選択 */
-
 function renderDraftTags(){
   $("memoTagPicker").innerHTML = allTags.length
     ? allTags.map(tag => `
@@ -789,30 +792,23 @@ function renderDraftTags(){
 }
 
 function toggleDraftTag(tag){
-  if(draftTags.includes(tag)){
-    draftTags = draftTags.filter(t => t !== tag);
-  }else{
-    draftTags.push(tag);
-  }
+  draftTags = draftTags.includes(tag)
+    ? draftTags.filter(t => t !== tag)
+    : [...draftTags,tag];
   renderDraftTags();
 }
 
-function addDraftTag(){
+async function addDraftTag(){
   const tag = $("memoTagInput").value.trim();
   if(!tag) return;
-
-  if(!allTags.includes(tag)){
-    allTags.push(tag);
-  }
-
-  if(!draftTags.includes(tag)){
-    draftTags.push(tag);
-  }
-
+  if(!allTags.includes(tag)) allTags.push(tag);
+  if(!draftTags.includes(tag)) draftTags.push(tag);
   $("memoTagInput").value = "";
-  saveData();
-  renderDraftTags();
-  renderAll();
+  try{
+    await saveData();
+    renderDraftTags();
+    renderAll();
+  }catch(error){alert("保存できなかったよ。");}
 }
 
 function resetForm(){
@@ -834,19 +830,17 @@ function startNewMemo(){
 function startEditMemo(id){
   const memo = memos.find(m => m.id === id);
   if(!memo) return;
-
   editingId = id;
   draftTags = [...memo.tags];
   $("memoTitle").value = memo.title;
   $("memoBody").value = memo.body;
   $("formHeading").textContent = "メモを編集";
   $("saveMemo").textContent = "変更を保存";
-
   renderDraftTags();
   showEditor();
 }
 
-function saveMemo(){
+async function saveMemo(){
   const title = $("memoTitle").value.trim();
   const body = $("memoBody").value.trim();
 
@@ -863,7 +857,6 @@ function saveMemo(){
   if(editingId){
     const memo = memos.find(m => m.id === editingId);
     if(!memo) return;
-
     memo.title = title;
     memo.body = body;
     memo.tags = [...draftTags];
@@ -872,89 +865,65 @@ function saveMemo(){
   }else{
     savedId = makeId();
     memos.unshift({
-      id:savedId,
-      title,
-      body,
-      tags:[...draftTags],
-      createdAt:now,
-      updatedAt:now
+      id:savedId,title,body,tags:[...draftTags],
+      createdAt:now,updatedAt:now
     });
   }
 
   syncAllTags();
-  saveData();
-  resetForm();
-  renderAll();
-
-  if(wasEditing){
-    showDetail(savedId);
-  }else{
-    showList();
-  }
+  try{
+    await saveData();
+    resetForm();
+    renderAll();
+    if(wasEditing) showDetail(savedId);
+    else showList();
+  }catch(error){alert("保存できなかったよ。もう一度試してね。");}
 }
 
-/* 削除 */
-
-function deleteMemo(id){
+async function deleteMemo(id){
   if(!confirm("このメモを削除する？")) return;
-
   memos = memos.filter(m => m.id !== id);
   selectedMemoIds = selectedMemoIds.filter(x => x !== id);
   syncAllTags();
-  saveData();
-  resetForm();
-  renderAll();
-  showList();
+  try{
+    await saveData();
+    resetForm();
+    renderAll();
+    showList();
+  }catch(error){alert("削除を保存できなかったよ。");}
 }
 
 /* 一覧・検索・並べ替え */
-
 function getFilteredMemos(){
   const keyword = $("keyword").value.trim().toLowerCase();
   const mode = document.querySelector('input[name="tagMode"]:checked').value;
 
   const filtered = memos.filter(memo => {
-    const text = (
-      memo.title + "\n" + memo.body + "\n" + memo.tags.join(" ")
-    ).toLowerCase();
-
+    const text = (memo.title+"\n"+memo.body+"\n"+memo.tags.join(" ")).toLowerCase();
     const matchesKeyword = !keyword || text.includes(keyword);
-
     const matchesTags = selectedTags.length === 0 ||
       (mode === "and"
         ? selectedTags.every(tag => memo.tags.includes(tag))
         : selectedTags.some(tag => memo.tags.includes(tag)));
-
     return matchesKeyword && matchesTags;
   });
 
   const sortKey = $("sortKey").value;
-  const sortOrder = $("sortOrder").value;
-  const direction = sortOrder === "asc" ? 1 : -1;
+  const direction = $("sortOrder").value === "asc" ? 1 : -1;
 
   filtered.sort((a,b) => {
     let result = 0;
-
     if(sortKey === "title"){
-      const titleA = a.title || "タイトルなし";
-      const titleB = b.title || "タイトルなし";
-
-      result = titleA.localeCompare(
-        titleB,
-        "ja",
+      result = (a.title || "タイトルなし").localeCompare(
+        b.title || "タイトルなし","ja",
         {numeric:true,sensitivity:"base"}
       );
     }else{
-      result = Number(a[sortKey] || 0) - Number(b[sortKey] || 0);
+      result = Number(a[sortKey] || 0)-Number(b[sortKey] || 0);
     }
-
-    if(result === 0){
-      result = Number(a.createdAt || 0) - Number(b.createdAt || 0);
-    }
-
-    return result * direction;
+    if(result === 0) result = Number(a.createdAt || 0)-Number(b.createdAt || 0);
+    return result*direction;
   });
-
   return filtered;
 }
 
@@ -962,17 +931,14 @@ function renderFilterTags(){
   $("filterTagList").innerHTML = allTags.map(tag => `
     <button type="button"
       class="filter-tag ${selectedTags.includes(tag) ? "active" : ""}"
-      data-filter-tag="${escapeHTML(tag)}">
-      ${escapeHTML(tag)}
-    </button>
+      data-filter-tag="${escapeHTML(tag)}">${escapeHTML(tag)}</button>
   `).join("");
 }
 
 function renderManageTags(){
   $("manageTagList").innerHTML = allTags.length
     ? allTags.map(tag => `
-      <span class="tag">
-        ${escapeHTML(tag)}
+      <span class="tag">${escapeHTML(tag)}
         <button type="button" data-rename-tag="${escapeHTML(tag)}">✎</button>
         <button type="button" data-delete-tag="${escapeHTML(tag)}">×</button>
       </span>
@@ -983,19 +949,13 @@ function renderManageTags(){
 function renderBulkTagOptions(){
   const add = $("bulkAddTag");
   const remove = $("bulkRemoveTag");
-
   const addValue = add.value;
   const removeValue = remove.value;
 
   add.innerHTML = '<option value="">追加するタグを選択</option>' +
-    allTags.map(tag =>
-      `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`
-    ).join("");
-
+    allTags.map(tag => `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`).join("");
   remove.innerHTML = '<option value="">外すタグを選択</option>' +
-    allTags.map(tag =>
-      `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`
-    ).join("");
+    allTags.map(tag => `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`).join("");
 
   if(allTags.includes(addValue)) add.value = addValue;
   if(allTags.includes(removeValue)) remove.value = removeValue;
@@ -1003,17 +963,12 @@ function renderBulkTagOptions(){
 
 function renderSelectionTools(){
   const count = selectedMemoIds.length;
-
-  $("toggleSelectBtn").textContent =
-    selectionMode ? "選択を終了" : "複数選択";
-
+  $("toggleSelectBtn").textContent = selectionMode ? "選択を終了" : "複数選択";
   $("selectedCount").hidden = !selectionMode;
   $("selectedCount").textContent = `${count}件選択中`;
-
   $("selectAllBtn").hidden = !selectionMode;
   $("clearSelectionBtn").hidden = !selectionMode;
   $("bulkPanel").hidden = !selectionMode;
-
   $("bulkAddBtn").disabled = count === 0;
   $("bulkNewTagBtn").disabled = count === 0;
   $("bulkRemoveBtn").disabled = count === 0;
@@ -1021,12 +976,10 @@ function renderSelectionTools(){
 
 function renderMemos(){
   const filtered = getFilteredMemos();
-
   $("memoCount").textContent = `${filtered.length} / ${memos.length} 件`;
 
   if(filtered.length === 0){
-    $("memoList").innerHTML =
-      '<div class="table-empty">メモが見つからなかったよ。</div>';
+    $("memoList").innerHTML = '<div class="table-empty">メモが見つからなかったよ。</div>';
     renderSelectionTools();
     return;
   }
@@ -1035,56 +988,44 @@ function renderMemos(){
     const tags = memo.tags.slice(0,3).map(tag =>
       `<span class="tag">${escapeHTML(tag)}</span>`
     ).join("");
-
     const extra = memo.tags.length > 3
-      ? `<span class="tag">+${memo.tags.length - 3}</span>`
-      : "";
+      ? `<span class="tag">+${memo.tags.length-3}</span>` : "";
 
     return `
-      <tr data-row-id="${escapeHTML(memo.id)}">
+      <tr>
         <td class="check-col">
           ${selectionMode ? `
-            <input type="checkbox"
-              data-select-id="${escapeHTML(memo.id)}"
+            <input type="checkbox" data-select-id="${escapeHTML(memo.id)}"
               ${selectedMemoIds.includes(memo.id) ? "checked" : ""}
               aria-label="このメモを選択">
           ` : ""}
         </td>
-
         <td class="title-col" data-open-id="${escapeHTML(memo.id)}">
           ${escapeHTML(memo.title || "タイトルなし")}
         </td>
-
         <td class="body-col" data-open-id="${escapeHTML(memo.id)}">
           ${escapeHTML(memo.body.replace(/\s+/g," "))}
         </td>
-
         <td class="date-col">${formatDate(memo.createdAt)}</td>
         <td class="date-col">${formatDate(memo.updatedAt)}</td>
-
-        <td class="tags-col">
-          <div class="row-tags">${tags}${extra}</div>
-        </td>
+        <td class="tags-col"><div class="row-tags">${tags}${extra}</div></td>
       </tr>
     `;
   }).join("");
 
   $("memoList").innerHTML = `
     <table class="memo-table">
-      <thead>
-        <tr>
-          <th class="check-col"></th>
-          <th class="title-col">タイトル</th>
-          <th class="body-col">本文</th>
-          <th class="date-col">作成日時</th>
-          <th class="date-col">更新日時</th>
-          <th class="tags-col">タグ</th>
-        </tr>
-      </thead>
+      <thead><tr>
+        <th class="check-col"></th>
+        <th class="title-col">タイトル</th>
+        <th class="body-col">本文</th>
+        <th class="date-col">作成日時</th>
+        <th class="date-col">更新日時</th>
+        <th class="tags-col">タグ</th>
+      </tr></thead>
       <tbody>${rows}</tbody>
     </table>
   `;
-
   renderSelectionTools();
 }
 
@@ -1096,344 +1037,282 @@ function renderAll(){
 }
 
 /* 複数選択 */
-
 function toggleSelectionMode(){
   selectionMode = !selectionMode;
   selectedMemoIds = [];
   renderMemos();
 }
-
 function toggleMemoSelection(id){
-  if(selectedMemoIds.includes(id)){
-    selectedMemoIds = selectedMemoIds.filter(x => x !== id);
-  }else{
-    selectedMemoIds.push(id);
-  }
+  selectedMemoIds = selectedMemoIds.includes(id)
+    ? selectedMemoIds.filter(x => x !== id)
+    : [...selectedMemoIds,id];
   renderMemos();
 }
-
 function selectAllFiltered(){
   selectedMemoIds = getFilteredMemos().map(m => m.id);
   renderMemos();
 }
-
 function clearSelection(){
   selectedMemoIds = [];
   renderMemos();
 }
 
-function bulkAddTag(tag){
+async function bulkAddTag(tag){
   if(!tag || selectedMemoIds.length === 0) return;
-
   selectedMemoIds.forEach(id => {
     const memo = memos.find(m => m.id === id);
-    if(memo && !memo.tags.includes(tag)){
-      memo.tags.push(tag);
-    }
+    if(memo && !memo.tags.includes(tag)) memo.tags.push(tag);
   });
-
   syncAllTags();
-  saveData();
-  renderAll();
-  alert(`選択したメモに「${tag}」を追加したよ。`);
+  try{
+    await saveData();
+    renderAll();
+    alert(`選択したメモに「${tag}」を追加したよ。`);
+  }catch(error){alert("保存できなかったよ。");}
 }
 
-function bulkRemoveTag(tag){
+async function bulkRemoveTag(tag){
   if(!tag || selectedMemoIds.length === 0) return;
-
   selectedMemoIds.forEach(id => {
     const memo = memos.find(m => m.id === id);
-    if(memo){
-      memo.tags = memo.tags.filter(t => t !== tag);
-    }
+    if(memo) memo.tags = memo.tags.filter(t => t !== tag);
   });
-
-  saveData();
-  renderAll();
-  alert(`選択したメモから「${tag}」を外したよ。`);
+  try{
+    await saveData();
+    renderAll();
+    alert(`選択したメモから「${tag}」を外したよ。`);
+  }catch(error){alert("保存できなかったよ。");}
 }
 
-function bulkCreateAndAddTag(){
+async function bulkCreateAndAddTag(){
   const tag = $("bulkNewTag").value.trim();
   if(!tag || selectedMemoIds.length === 0) return;
-
-  if(!allTags.includes(tag)){
-    allTags.push(tag);
-  }
-
+  if(!allTags.includes(tag)) allTags.push(tag);
   $("bulkNewTag").value = "";
-  bulkAddTag(tag);
+  await bulkAddTag(tag);
 }
 
 /* タグ管理 */
-
-function renameTag(oldTag){
+async function renameTag(oldTag){
   const newTag = prompt("新しいタグ名を入力してね。",oldTag);
   if(newTag === null) return;
-
   const name = newTag.trim();
-
-  if(!name){
-    alert("タグ名を空にはできないよ。");
-    return;
-  }
-
+  if(!name){alert("タグ名を空にはできないよ。");return;}
   if(name !== oldTag && allTags.includes(name)){
-    alert("そのタグ名はすでにあるよ。");
-    return;
+    alert("そのタグ名はすでにあるよ。");return;
   }
 
   allTags = allTags.map(tag => tag === oldTag ? name : tag);
-
   memos.forEach(memo => {
     memo.tags = memo.tags.map(tag => tag === oldTag ? name : tag);
   });
-
   draftTags = draftTags.map(tag => tag === oldTag ? name : tag);
   selectedTags = selectedTags.map(tag => tag === oldTag ? name : tag);
 
-  saveData();
-  renderAll();
-  renderDraftTags();
-
-  if(viewingId) showDetail(viewingId);
+  try{
+    await saveData();
+    renderAll();
+    renderDraftTags();
+    if(viewingId) showDetail(viewingId);
+  }catch(error){alert("保存できなかったよ。");}
 }
 
-function deleteTag(tag){
+async function deleteTag(tag){
   if(!confirm(`「${tag}」を削除する？\nこのタグはメモからも外れるよ。`)) return;
-
   allTags = allTags.filter(t => t !== tag);
-
-  memos.forEach(memo => {
-    memo.tags = memo.tags.filter(t => t !== tag);
-  });
-
+  memos.forEach(memo => {memo.tags = memo.tags.filter(t => t !== tag);});
   draftTags = draftTags.filter(t => t !== tag);
   selectedTags = selectedTags.filter(t => t !== tag);
 
-  saveData();
-  renderAll();
-  renderDraftTags();
-
-  if(viewingId) showDetail(viewingId);
+  try{
+    await saveData();
+    renderAll();
+    renderDraftTags();
+    if(viewingId) showDetail(viewingId);
+  }catch(error){alert("保存できなかったよ。");}
 }
 
-/* バックアップ・復元 */
-
-function backupData(){
-  const data = {
-    app:"オトリス・マイメモ",
-    version:1,
-    exportedAt:new Date().toISOString(),
-    memos,
-    tags:allTags
-  };
-
-  const blob = new Blob(
-    [JSON.stringify(data,null,2)],
-    {type:"application/json"}
-  );
-
+/* 暗号化バックアップ */
+function downloadJSON(data,filename){
+  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
-
   a.href = url;
-  a.download = "マイメモ_backup_" +
-    new Date().toISOString().slice(0,10) + ".json";
-
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
-  URL.revokeObjectURL(url);
+  setTimeout(() => URL.revokeObjectURL(url),1000);
 }
 
-function restoreData(file){
+async function backupData(){
+  try{
+    await saveData();
+    const record = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    downloadJSON({
+      app:"オトリス・マイメモ",
+      backupVersion:1,
+      exportedAt:new Date().toISOString(),
+      encryptedVault:record
+    },"マイメモ_暗号化バックアップ_"+new Date().toISOString().slice(0,10)+".json");
+    alert("暗号化バックアップを作成したよ。");
+  }catch(error){
+    alert("バックアップを作成できなかったよ。");
+  }
+}
+
+/* 暗号化バックアップから復元 */
+async function restoreData(file){
   if(!file) return;
 
-  const reader = new FileReader();
+  try{
+    const text = await file.text();
+    const backup = JSON.parse(text);
+    const record = backup.encryptedVault;
 
-  reader.onload = () => {
-    try{
-      const data = JSON.parse(reader.result);
-
-      if(!data || !Array.isArray(data.memos)){
-        throw new Error("形式が違います");
-      }
-
-      if(!confirm("現在のマイメモをバックアップデータで置き換えるよ。よろしい？")) return;
-
-      memos = data.memos.map(m => ({
-        id:String(m.id || makeId()),
-        title:String(m.title || ""),
-        body:String(m.body || ""),
-        tags:Array.isArray(m.tags) ? m.tags.map(String) : [],
-        createdAt:Number(m.createdAt) || Date.now(),
-        updatedAt:Number(m.updatedAt) || Number(m.createdAt) || Date.now()
-      }));
-
-      allTags = Array.isArray(data.tags) ? data.tags.map(String) : [];
-      selectedTags = [];
-      selectedMemoIds = [];
-      selectionMode = false;
-
-      syncAllTags();
-      saveData();
-      resetForm();
-      renderAll();
-      showList();
-
-      alert("バックアップから復元したよ！");
-    }catch(error){
-      alert("読み込めなかったよ。マイメモのバックアップファイルか確認してね。");
+    if(!record || record.format !== FORMAT){
+      throw new Error("バックアップ形式が違います");
     }
-  };
 
-  reader.readAsText(file);
+    const password = prompt("このバックアップを作成したときのパスワードを入力してね。");
+    if(password === null) return;
+
+    const salt = fromBase64(record.salt);
+    const restoreKey = await deriveEncryptionKey(password,salt);
+    const data = await decryptVault(record,restoreKey);
+
+    if(!confirm("現在のマイメモをバックアップデータで置き換えるよ。よろしい？")) return;
+
+    cryptoKey = restoreKey;
+    vaultSalt = salt;
+    normalizeData(data);
+    await saveData();
+
+    selectedTags = [];
+    selectedMemoIds = [];
+    selectionMode = false;
+    resetForm();
+    renderAll();
+    showList();
+    alert("暗号化バックアップから復元したよ！");
+  }catch(error){
+    console.error(error);
+    alert("復元できなかったよ。パスワードかバックアップファイルを確認してね。");
+  }
 }
 
 /* イベント */
-
 $("newMemoBtn").addEventListener("click",startNewMemo);
 $("saveMemo").addEventListener("click",saveMemo);
 $("cancelEdit").addEventListener("click",showList);
-
 $("addMemoTag").addEventListener("click",addDraftTag);
 
 $("memoTagInput").addEventListener("keydown",event => {
-  if(event.key === "Enter"){
-    event.preventDefault();
-    addDraftTag();
-  }
+  if(event.key === "Enter"){event.preventDefault();addDraftTag();}
 });
-
 $("memoTagPicker").addEventListener("click",event => {
   const button = event.target.closest("[data-draft-tag]");
-  if(!button) return;
-  toggleDraftTag(button.dataset.draftTag);
+  if(button) toggleDraftTag(button.dataset.draftTag);
 });
 
-/* 絞り込み欄の開閉 */
 $("filterToggle").addEventListener("click",() => {
   const content = $("filterContent");
-  const isExpanded = $("filterToggle").getAttribute("aria-expanded") === "true";
-
-  content.hidden = isExpanded;
-  $("filterToggle").setAttribute("aria-expanded",String(!isExpanded));
-  $("filterToggleIcon").textContent = isExpanded ? "▼" : "▲";
+  const expanded = $("filterToggle").getAttribute("aria-expanded") === "true";
+  content.hidden = expanded;
+  $("filterToggle").setAttribute("aria-expanded",String(!expanded));
+  $("filterToggleIcon").textContent = expanded ? "▼" : "▲";
 });
 
 $("filterTagList").addEventListener("click",event => {
   const button = event.target.closest("[data-filter-tag]");
   if(!button) return;
-
   const tag = button.dataset.filterTag;
-
   selectedTags = selectedTags.includes(tag)
     ? selectedTags.filter(t => t !== tag)
     : [...selectedTags,tag];
-
   renderAll();
 });
 
 $("manageTagList").addEventListener("click",event => {
   const rename = event.target.closest("[data-rename-tag]");
   const remove = event.target.closest("[data-delete-tag]");
-
   if(rename) renameTag(rename.dataset.renameTag);
   if(remove) deleteTag(remove.dataset.deleteTag);
 });
 
 $("memoList").addEventListener("click",event => {
   const checkbox = event.target.closest("[data-select-id]");
-
   if(checkbox){
     event.stopPropagation();
     toggleMemoSelection(checkbox.dataset.selectId);
     return;
   }
-
-  const openCell = event.target.closest("[data-open-id]");
-  if(!openCell) return;
-
-  const id = openCell.dataset.openId;
-
-  if(selectionMode){
-    toggleMemoSelection(id);
-  }else{
-    showDetail(id);
-  }
+  const cell = event.target.closest("[data-open-id]");
+  if(!cell) return;
+  if(selectionMode) toggleMemoSelection(cell.dataset.openId);
+  else showDetail(cell.dataset.openId);
 });
 
 $("toggleSelectBtn").addEventListener("click",toggleSelectionMode);
 $("selectAllBtn").addEventListener("click",selectAllFiltered);
 $("clearSelectionBtn").addEventListener("click",clearSelection);
-
-$("bulkAddBtn").addEventListener("click",() => {
-  bulkAddTag($("bulkAddTag").value);
-});
-
-$("bulkRemoveBtn").addEventListener("click",() => {
-  bulkRemoveTag($("bulkRemoveTag").value);
-});
-
+$("bulkAddBtn").addEventListener("click",() => bulkAddTag($("bulkAddTag").value));
+$("bulkRemoveBtn").addEventListener("click",() => bulkRemoveTag($("bulkRemoveTag").value));
 $("bulkNewTagBtn").addEventListener("click",bulkCreateAndAddTag);
-
 $("bulkNewTag").addEventListener("keydown",event => {
-  if(event.key === "Enter"){
-    event.preventDefault();
-    bulkCreateAndAddTag();
-  }
+  if(event.key === "Enter"){event.preventDefault();bulkCreateAndAddTag();}
 });
 
 $("viewEditBtn").addEventListener("click",() => {
   if(viewingId) startEditMemo(viewingId);
 });
-
 $("backToListBtn").addEventListener("click",showList);
-
 $("viewDeleteBtn").addEventListener("click",() => {
   if(viewingId) deleteMemo(viewingId);
 });
 
 $("keyword").addEventListener("input",renderMemos);
-
 $("clearSearch").addEventListener("click",() => {
   $("keyword").value = "";
   renderMemos();
 });
-
 $("clearTags").addEventListener("click",() => {
   selectedTags = [];
   renderAll();
 });
-
 document.querySelectorAll('input[name="tagMode"]').forEach(radio => {
   radio.addEventListener("change",renderMemos);
 });
-
-/* 並べ替えの変更 */
 $("sortKey").addEventListener("change",renderMemos);
 $("sortOrder").addEventListener("change",renderMemos);
 
 $("backupBtn").addEventListener("click",backupData);
-
-$("restoreBtn").addEventListener("click",() => {
-  $("restoreFile").click();
-});
-
-$("restoreFile").addEventListener("change",event => {
-  restoreData(event.target.files[0]);
+$("restoreBtn").addEventListener("click",() => $("restoreFile").click());
+$("restoreFile").addEventListener("change",async event => {
+  await restoreData(event.target.files[0]);
   event.target.value = "";
 });
+$("lockBtn").addEventListener("click",lockApp);
 
 /* 起動 */
+function initialize(){
+  if(!window.crypto || !crypto.subtle){
+    $("authHeading").textContent = "安全な接続が必要です";
+    $("authDescription").textContent =
+      "暗号化機能を使うにはHTTPS接続が必要だよ。GitHub PagesのURLで開いてね。";
+    $("authButton").hidden = true;
+    $("setupFields").hidden = true;
+    $("unlockFields").hidden = true;
+    return;
+  }
 
-loadData();
-renderAll();
-renderDraftTags();
+  const stored = localStorage.getItem(STORAGE_KEY);
+  showAuth(!stored);
+}
+
+initialize();
 
 /* オフライン対応 */
-
 if("serviceWorker" in navigator){
   window.addEventListener("load",() => {
     navigator.serviceWorker.register("./sw.js").catch(error => {
