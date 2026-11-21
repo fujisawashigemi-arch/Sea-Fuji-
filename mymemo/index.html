@@ -124,6 +124,36 @@ button.danger{
 button.small{font-size:12px;padding:6px 9px}
 button:disabled{opacity:.4;cursor:not-allowed}
 
+/* 絞り込み欄の開閉ボタン */
+.filter-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:0;
+  margin:0;
+  background:transparent;
+  color:var(--ink);
+  border:0;
+  border-radius:0;
+  font-size:16px;
+  font-weight:750;
+  text-align:left;
+}
+.filter-toggle:active{transform:none}
+.filter-toggle-icon{
+  color:var(--green-dark);
+  font-size:13px;
+  transition:transform .2s ease;
+}
+.filter-toggle[aria-expanded="false"] .filter-toggle-icon{
+  transform:rotate(-90deg);
+}
+.filter-content{
+  padding-top:12px;
+}
+
 .form-actions,.view-actions{
   display:flex;
   gap:8px;
@@ -507,21 +537,33 @@ footer{
       <button id="newMemoBtn">＋ 新しいメモを作る</button>
     </section>
 
+    <!-- 絞り込みパネル -->
     <section class="panel">
-      <h2>メモを探す</h2>
-      <div class="search-row">
-        <input type="text" id="keyword" placeholder="キーワードで検索">
-        <button class="ghost small" id="clearSearch">クリア</button>
-      </div>
+      <button
+        type="button"
+        class="filter-toggle"
+        id="filterToggle"
+        aria-expanded="true"
+        aria-controls="filterContent">
+        <span>メモを探す</span>
+        <span class="filter-toggle-icon" id="filterToggleIcon" aria-hidden="true">▼</span>
+      </button>
 
-      <h3>タグで絞り込み</h3>
-      <div class="filter-tags" id="filterTagList"></div>
+      <div class="filter-content" id="filterContent">
+        <div class="search-row">
+          <input type="text" id="keyword" placeholder="キーワードで検索">
+          <button class="ghost small" id="clearSearch">クリア</button>
+        </div>
 
-      <div class="filter-options">
-        <span>タグの検索方法：</span>
-        <label><input type="radio" name="tagMode" value="or" checked> OR（どれか）</label>
-        <label><input type="radio" name="tagMode" value="and"> AND（すべて）</label>
-        <button class="ghost small" id="clearTags">タグ解除</button>
+        <h3>タグで絞り込み</h3>
+        <div class="filter-tags" id="filterTagList"></div>
+
+        <div class="filter-options">
+          <span>タグの検索方法：</span>
+          <label><input type="radio" name="tagMode" value="or" checked> OR（どれか）</label>
+          <label><input type="radio" name="tagMode" value="and"> AND（すべて）</label>
+          <button class="ghost small" id="clearTags">タグ解除</button>
+        </div>
       </div>
     </section>
 
@@ -1266,6 +1308,16 @@ $("memoTagPicker").addEventListener("click",event => {
   const button = event.target.closest("[data-draft-tag]");
   if(!button) return;
   toggleDraftTag(button.dataset.draftTag);
+});
+
+/* 絞り込み欄の開閉 */
+$("filterToggle").addEventListener("click",() => {
+  const content = $("filterContent");
+  const isExpanded = $("filterToggle").getAttribute("aria-expanded") === "true";
+
+  content.hidden = isExpanded;
+  $("filterToggle").setAttribute("aria-expanded",String(!isExpanded));
+  $("filterToggleIcon").textContent = isExpanded ? "▼" : "▲";
 });
 
 $("filterTagList").addEventListener("click",event => {
