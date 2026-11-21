@@ -425,11 +425,20 @@ const STORAGE_KEY = "myMemoEncrypted_v1";
 const OLD_STORAGE_KEY = "myMemoList_v1";
 const FORMAT = "otolis-encrypted-v1";
 const PBKDF2_ITERATIONS = 600000;
-const AUTO_LOCK_MS = 5 * 60 * 1000;
+
+/* 最後の操作から24時間で自動ロック */
+const AUTO_LOCK_MS = 24 * 60 * 60 * 1000;
+
+/* 24時間セッション保存 */
+const SESSION_DB_NAME = "otolis-mymemo-session";
+const SESSION_STORE_NAME = "sessions";
+const SESSION_ID = "active";
+const SESSION_EXPIRY_KEY = "otolis-mymemo-session-expiry";
 
 let cryptoKey = null;
 let vaultSalt = null;
 let lockTimer = null;
+let sessionExpiresAt = 0;
 
 let memos = [];
 let allTags = [];
@@ -441,6 +450,124 @@ let selectionMode = false;
 let selectedMemoIds = [];
 
 const $ = id => document.getElementById(id);
+
+/* IndexedDB：解除用の暗号鍵を端末内に保存 */
+function openSessionDB(){
+  return new Promise((resolve,reject) => {
+    const request = indexedDB.open(SESSION_DB_NAME,1);
+
+    request.onupgradeneeded = () => {
+      const db = request.result;
+      if(!db.objectStoreNames.contains(SESSION_STORE_NAME)){
+        db.createObjectStore(SESSION_STORE_NAME,{keyPath:"id"});
+      }
+    };
+
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+
+/* ログイン状態を端末内に保存 */
+async function savePersistentSession(){
+  if(!cryptoKey || !vaultSalt){
+    throw new Error("保管庫がロックされています");
+  }
+
+  const db = await openSessionDB();
+
+  try{
+    await new Promise((resolve,reject) => {
+      const tx = db.transaction(SESSION_STORE_NAME,"readwrite");
+      tx.objectStore(SESSION_STORE_NAME).put({
+        id:SESSION_ID,
+        key:cryptoKey,
+        salt:toBase64(vaultSalt)
+      });
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  }finally{
+    db.close();
+  }
+
+  sessionExpiresAt = Date.now() + AUTO_LOCK_MS;
+  localStorage.setItem(SESSION_EXPIRY_KEY,String(sessionExpiresAt));
+}
+
+/* 保存済みログイン状態を読み込む */
+async function loadPersistentSession(){
+  const expiry = Number(localStorage.getItem(SESSION_EXPIRY_KEY) || 0);
+
+  if(!expiry || Date.now() >= expiry){
+    await clearPersistentSession();
+    return false;
+  }
+
+  const db = await openSessionDB();
+
+  let session;
+  try{
+    session = await new Promise((resolve,reject) => {
+      const tx = db.transaction(SESSION_STORE_NAME,"readonly");
+      const request = tx.objectStore(SESSION_STORE_NAME).get(SESSION_ID);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => reject(request.error);
+    });
+  }finally{
+    db.close();
+  }
+
+  if(!session || !session.key || !session.salt){
+    await clearPersistentSession();
+    return false;
+  }
+
+  try{
+    cryptoKey = session.key;
+    vaultSalt = fromBase64(session.salt);
+
+    const record = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if(!record) throw new Error("保管庫が見つかりません");
+
+    const data = await decryptVault(record,cryptoKey);
+    normalizeData(data);
+
+    sessionExpiresAt = expiry;
+    return true;
+  }catch(error){
+    cryptoKey = null;
+    vaultSalt = null;
+    await clearPersistentSession();
+    console.error("保存済みセッションを復元できませんでした",error);
+    return false;
+  }
+}
+
+/* ログイン状態を完全に削除 */
+async function clearPersistentSession(){
+  localStorage.removeItem(SESSION_EXPIRY_KEY);
+  sessionExpiresAt = 0;
+
+  try{
+    const db = await openSessionDB();
+
+    try{
+      await new Promise((resolve,reject) => {
+        const tx = db.transaction(SESSION_STORE_NAME,"readwrite");
+        tx.objectStore(SESSION_STORE_NAME).delete(SESSION_ID);
+        tx.oncomplete = resolve;
+        tx.onerror = () => reject(tx.error);
+        tx.onabort = () => reject(tx.error);
+      });
+    }finally{
+      db.close();
+    }
+  }catch(error){
+    console.error("セッション情報の削除に失敗しました",error);
+  }
+}
 
 /* バイト列とBase64の変換 */
 function toBase64(bytes){
@@ -591,6 +718,7 @@ function showAuth(isSetup){
   $("authButton").textContent = isSetup ? "保管庫を作成" : "開く";
 }
 
+/* 初回の保管庫作成 */
 async function setupVault(){
   const password = $("passwordInput").value;
   const confirmPassword = $("passwordConfirm").value;
@@ -614,6 +742,7 @@ async function setupVault(){
     memos = [];
     allTags = [];
     await saveData();
+    await savePersistentSession();
 
     localStorage.removeItem(OLD_STORAGE_KEY);
 
@@ -623,13 +752,15 @@ async function setupVault(){
   }catch(error){
     cryptoKey = null;
     vaultSalt = null;
-    $("authMessage").textContent = "作成できなかったよ。もう一度試してね。";
+    $("authMessage").textContent =
+      "作成できなかったよ。もう一度試してね。";
     console.error(error);
   }finally{
     $("authButton").disabled = false;
   }
 }
 
+/* パスワードでロック解除 */
 async function unlockVault(){
   const password = $("unlockPassword").value;
   if(!password){
@@ -650,6 +781,8 @@ async function unlockVault(){
     const data = await decryptVault(record,cryptoKey);
     normalizeData(data);
 
+    await savePersistentSession();
+
     $("unlockPassword").value = "";
     enterApp();
   }catch(error){
@@ -663,6 +796,7 @@ async function unlockVault(){
   }
 }
 
+/* アプリ表示 */
 function enterApp(){
   $("authScreen").hidden = true;
   $("appShell").hidden = false;
@@ -672,6 +806,7 @@ function enterApp(){
   window.scrollTo(0,0);
 }
 
+/* 画面上のメモ情報を消す */
 function clearSensitiveScreen(){
   $("viewTitle").textContent = "";
   $("viewBody").textContent = "";
@@ -692,7 +827,8 @@ function clearSensitiveScreen(){
   $("listScreen").hidden = true;
 }
 
-function lockApp(){
+/* 手動ロック */
+async function lockApp(){
   if(!cryptoKey) return;
 
   clearTimeout(lockTimer);
@@ -712,19 +848,42 @@ function lockApp(){
   $("appShell").hidden = true;
   $("unlockPassword").value = "";
   showAuth(false);
+
+  await clearPersistentSession();
 }
 
+/* 24時間の自動ロック */
 function startAutoLock(){
   clearTimeout(lockTimer);
-  lockTimer = setTimeout(lockApp,AUTO_LOCK_MS);
+
+  const remaining = sessionExpiresAt - Date.now();
+
+  if(remaining <= 0){
+    lockApp();
+    return;
+  }
+
+  lockTimer = setTimeout(lockApp,remaining);
 }
 
+/* 操作があれば期限を24時間先に延長 */
 function registerActivity(){
-  if(cryptoKey) startAutoLock();
+  if(!cryptoKey) return;
+
+  sessionExpiresAt = Date.now() + AUTO_LOCK_MS;
+  localStorage.setItem(SESSION_EXPIRY_KEY,String(sessionExpiresAt));
+  startAutoLock();
 }
 
 ["pointerdown","keydown","touchstart","scroll"].forEach(type => {
   document.addEventListener(type,registerActivity,{passive:true});
+});
+
+/* 別タブで手動ロックされた場合もロック */
+window.addEventListener("storage",event => {
+  if(event.key === SESSION_EXPIRY_KEY && event.newValue === null){
+    lockApp();
+  }
 });
 
 $("authButton").addEventListener("click",async () => {
@@ -1201,7 +1360,6 @@ function downloadJSON(data,filename){
   setTimeout(() => URL.revokeObjectURL(url),1000);
 }
 
-/* 日付を YYYYMMDD 形式で取得 */
 function getFileDate(){
   const now = new Date();
   const year = now.getFullYear();
@@ -1252,6 +1410,7 @@ async function restoreData(file){
     vaultSalt = salt;
     normalizeData(data);
     await saveData();
+    await savePersistentSession();
 
     selectedTags = [];
     selectedMemoIds = [];
@@ -1362,7 +1521,7 @@ $("restoreFile").addEventListener("change",async event => {
 $("lockBtn").addEventListener("click",lockApp);
 
 /* 起動 */
-function initialize(){
+async function initialize(){
   if(!window.crypto || !crypto.subtle){
     $("authHeading").textContent = "安全な接続が必要です";
     $("authDescription").textContent =
@@ -1374,7 +1533,28 @@ function initialize(){
   }
 
   const stored = localStorage.getItem(STORAGE_KEY);
-  showAuth(!stored);
+
+  if(!stored){
+    await clearPersistentSession();
+    showAuth(true);
+    return;
+  }
+
+  showAuth(false);
+
+  try{
+    const restored = await loadPersistentSession();
+
+    if(restored){
+      enterApp();
+    }else{
+      showAuth(false);
+    }
+  }catch(error){
+    console.error("セッションの復元に失敗しました",error);
+    await clearPersistentSession();
+    showAuth(false);
+  }
 }
 
 initialize();
