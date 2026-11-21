@@ -227,77 +227,6 @@ button:disabled{opacity:.4;cursor:not-allowed}
 .section-heading h2{margin:0}
 .count{color:var(--muted);font-size:12px}
 
-/* 一覧 */
-.memo-list{
-  background:var(--paper);
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-}
-.memo-row{
-  display:grid;
-  grid-template-columns:minmax(85px,1fr) minmax(0,2fr) auto;
-  align-items:center;
-  gap:10px;
-  width:100%;
-  min-height:54px;
-  padding:9px 8px;
-  border:0;
-  border-bottom:1px solid var(--line);
-  border-radius:0;
-  background:transparent;
-  color:var(--ink);
-  text-align:left;
-  font-weight:400;
-}
-.memo-row:last-child{border-bottom:0}
-.memo-row:active{transform:none;background:#f8f7f3}
-.row-title{
-  font-size:13px;
-  font-weight:700;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-.row-preview{
-  min-width:0;
-  font-size:12px;
-  color:#777168;
-  overflow:hidden;
-  white-space:nowrap;
-  text-overflow:ellipsis;
-}
-.row-tags{
-  display:flex;
-  gap:4px;
-  max-width:125px;
-  overflow:hidden;
-  white-space:nowrap;
-}
-.row-tags .tag{
-  font-size:10px;
-  padding:3px 7px;
-}
-.row-check{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.row-check input{
-  width:18px;
-  height:18px;
-  accent-color:var(--green);
-}
-.memo-row.selecting{
-  grid-template-columns:28px minmax(75px,1fr) minmax(0,2fr) auto;
-}
-.empty{
-  text-align:center;
-  padding:35px 12px;
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* 複数選択 */
 .select-tools{
   display:flex;
   align-items:center;
@@ -305,6 +234,127 @@ button:disabled{opacity:.4;cursor:not-allowed}
   gap:8px;
   margin-bottom:10px;
 }
+.selected-count{
+  font-size:12px;
+  color:var(--green-dark);
+  font-weight:650;
+}
+
+/* 一覧表 */
+.tablewrap{
+  width:100%;
+  max-height:65vh;
+  overflow:auto;
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:10px;
+  -webkit-overflow-scrolling:touch;
+}
+.memo-table{
+  width:100%;
+  min-width:690px;
+  border-collapse:separate;
+  border-spacing:0;
+  table-layout:fixed;
+  font-size:12px;
+}
+.memo-table th,
+.memo-table td{
+  padding:9px 8px;
+  border-bottom:1px solid var(--line);
+  border-right:1px solid #f0ece6;
+  text-align:left;
+  vertical-align:middle;
+  background:#fff;
+}
+.memo-table th{
+  position:sticky;
+  top:0;
+  z-index:3;
+  background:#faf9f7;
+  color:#6f6a61;
+  font-weight:700;
+  white-space:nowrap;
+}
+.memo-table tr:last-child td{border-bottom:0}
+.memo-table th:last-child,
+.memo-table td:last-child{border-right:0}
+
+.memo-table .check-col{
+  width:36px;
+  min-width:36px;
+  max-width:36px;
+  text-align:center;
+  position:sticky;
+  left:0;
+  z-index:4;
+  background:#faf9f7;
+}
+.memo-table td.check-col{background:#fff}
+.memo-table .title-col{
+  width:145px;
+  min-width:145px;
+  max-width:145px;
+  position:sticky;
+  left:36px;
+  z-index:2;
+  background:#fff;
+}
+.memo-table th.title-col{
+  z-index:6;
+  background:#faf9f7;
+}
+.memo-table .body-col{width:230px}
+.memo-table .tags-col{width:145px}
+.memo-table .date-col{width:105px}
+.memo-table td.title-col{
+  font-weight:700;
+  cursor:pointer;
+}
+.memo-table td.body-col{
+  color:#777168;
+  cursor:pointer;
+}
+.memo-table td.title-col,
+.memo-table td.body-col{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+}
+.memo-table td.tags-col{
+  overflow:hidden;
+}
+.memo-table .row-tags{
+  display:flex;
+  gap:4px;
+  overflow:hidden;
+  white-space:nowrap;
+}
+.memo-table .tag{
+  font-size:10px;
+  padding:3px 7px;
+}
+.memo-table .date-col{
+  color:#777168;
+  font-size:11px;
+  white-space:nowrap;
+}
+.memo-table tbody tr:hover td{background:#faf9f6}
+.memo-table tbody tr:hover td.check-col,
+.memo-table tbody tr:hover td.title-col{background:#f6f5f1}
+.memo-table input[type="checkbox"]{
+  width:17px;
+  height:17px;
+  accent-color:var(--green);
+  vertical-align:middle;
+}
+.table-empty{
+  padding:30px 12px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
 .bulk-panel{
   background:var(--green-light);
   border:1px solid #dce6d9;
@@ -321,13 +371,7 @@ button:disabled{opacity:.4;cursor:not-allowed}
 }
 .bulk-row select,.bulk-row input{flex:1;min-width:0}
 .bulk-row button{white-space:nowrap}
-.selected-count{
-  font-size:12px;
-  color:var(--green-dark);
-  font-weight:650;
-}
 
-/* 詳細 */
 .view-title{
   font-size:21px;
   line-height:1.5;
@@ -372,22 +416,8 @@ footer{
   font-size:11px;
   padding:24px 0 8px;
 }
-
 @media(max-width:420px){
   main{padding-left:10px;padding-right:10px}
-  .memo-row{
-    grid-template-columns:minmax(72px,.9fr) minmax(0,1.5fr) auto;
-    gap:6px;
-    padding:9px 5px;
-  }
-  .memo-row.selecting{
-    grid-template-columns:24px minmax(65px,.9fr) minmax(0,1.5fr) auto;
-    gap:5px;
-  }
-  .row-title{font-size:12px}
-  .row-preview{font-size:11px}
-  .row-tags{max-width:76px}
-  .row-tags .tag{font-size:9px;padding:3px 6px}
   .header-actions{gap:4px}
   .header-actions button{padding:6px 8px;font-size:11px}
 }
@@ -411,7 +441,6 @@ footer{
 
 <main>
 
-  <!-- メモ入力・編集 -->
   <section class="panel" id="editor" hidden>
     <h2 id="formHeading">＋ メモを追加</h2>
 
@@ -436,7 +465,6 @@ footer{
     </div>
   </section>
 
-  <!-- メモ詳細 -->
   <section class="panel" id="detailView" hidden>
     <h2>メモの内容</h2>
     <h1 class="view-title" id="viewTitle"></h1>
@@ -451,7 +479,6 @@ footer{
     </div>
   </section>
 
-  <!-- 一覧 -->
   <section id="listScreen">
     <section class="panel">
       <button id="newMemoBtn">＋ 新しいメモを作る</button>
@@ -514,7 +541,9 @@ footer{
         <p class="note">選択したメモだけに反映されるよ。</p>
       </section>
 
-      <div class="memo-list" id="memoList"></div>
+      <div class="tablewrap" id="tablewrap">
+        <div id="memoList"></div>
+      </div>
     </section>
 
     <section class="panel" style="margin-top:22px">
@@ -616,6 +645,14 @@ function formatDate(time){
   });
 }
 
+function formatShortDate(time){
+  return new Date(time).toLocaleDateString("ja-JP",{
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit"
+  });
+}
+
 /* 画面切り替え */
 
 function showList(){
@@ -651,7 +688,7 @@ function showDetail(id){
   ).join("");
 
   $("viewDate").textContent =
-    `登録：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
+    `追加：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
 
   window.scrollTo({top:0,behavior:"smooth"});
 }
@@ -765,7 +802,6 @@ function saveMemo(){
 
   syncAllTags();
   saveData();
-
   resetForm();
   renderAll();
 
@@ -880,12 +916,12 @@ function renderMemos(){
 
   if(filtered.length === 0){
     $("memoList").innerHTML =
-      '<div class="empty">メモが見つからなかったよ。</div>';
+      '<div class="table-empty">メモが見つからなかったよ。</div>';
     renderSelectionTools();
     return;
   }
 
-  $("memoList").innerHTML = filtered.map(memo => {
+  const rows = filtered.map(memo => {
     const tags = memo.tags.slice(0,3).map(tag =>
       `<span class="tag">${escapeHTML(tag)}</span>`
     ).join("");
@@ -895,25 +931,49 @@ function renderMemos(){
       : "";
 
     return `
-      <button type="button"
-        class="memo-row ${selectionMode ? "selecting" : ""}"
-        data-row-id="${escapeHTML(memo.id)}">
-
-        ${selectionMode ? `
-          <span class="row-check">
+      <tr data-row-id="${escapeHTML(memo.id)}">
+        <td class="check-col">
+          ${selectionMode ? `
             <input type="checkbox"
               data-select-id="${escapeHTML(memo.id)}"
               ${selectedMemoIds.includes(memo.id) ? "checked" : ""}
               aria-label="このメモを選択">
-          </span>
-        ` : ""}
+          ` : ""}
+        </td>
 
-        <span class="row-title">${escapeHTML(memo.title || "タイトルなし")}</span>
-        <span class="row-preview">${escapeHTML(memo.body.replace(/\s+/g," "))}</span>
-        <span class="row-tags">${tags}${extra}</span>
-      </button>
+        <td class="title-col" data-open-id="${escapeHTML(memo.id)}">
+          ${escapeHTML(memo.title || "タイトルなし")}
+        </td>
+
+        <td class="body-col" data-open-id="${escapeHTML(memo.id)}">
+          ${escapeHTML(memo.body.replace(/\s+/g," "))}
+        </td>
+
+        <td class="tags-col">
+          <div class="row-tags">${tags}${extra}</div>
+        </td>
+
+        <td class="date-col">${formatShortDate(memo.createdAt)}</td>
+        <td class="date-col">${formatShortDate(memo.updatedAt)}</td>
+      </tr>
     `;
   }).join("");
+
+  $("memoList").innerHTML = `
+    <table class="memo-table">
+      <thead>
+        <tr>
+          <th class="check-col"></th>
+          <th class="title-col">メモの題名</th>
+          <th class="body-col">本文の冒頭</th>
+          <th class="tags-col">タグ</th>
+          <th class="date-col">追加日</th>
+          <th class="date-col">更新日</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
 
   renderSelectionTools();
 }
@@ -985,16 +1045,14 @@ function bulkRemoveTag(tag){
 
 function bulkCreateAndAddTag(){
   const tag = $("bulkNewTag").value.trim();
-  if(!tag) return;
-
-  if(selectedMemoIds.length === 0) return;
+  if(!tag || selectedMemoIds.length === 0) return;
 
   if(!allTags.includes(tag)){
     allTags.push(tag);
   }
 
-  bulkAddTag(tag);
   $("bulkNewTag").value = "";
+  bulkAddTag(tag);
 }
 
 /* タグ管理 */
@@ -1166,22 +1224,23 @@ $("manageTagList").addEventListener("click",event => {
 });
 
 $("memoList").addEventListener("click",event => {
+  const checkbox = event.target.closest("[data-select-id]");
+
+  if(checkbox){
+    event.stopPropagation();
+    toggleMemoSelection(checkbox.dataset.selectId);
+    return;
+  }
+
+  const openCell = event.target.closest("[data-open-id]");
+  if(!openCell) return;
+
+  const id = openCell.dataset.openId;
+
   if(selectionMode){
-    const checkbox = event.target.closest("[data-select-id]");
-    const row = event.target.closest("[data-row-id]");
-
-    if(checkbox){
-      toggleMemoSelection(checkbox.dataset.selectId);
-      return;
-    }
-
-    if(row){
-      toggleMemoSelection(row.dataset.rowId);
-      return;
-    }
+    toggleMemoSelection(id);
   }else{
-    const row = event.target.closest("[data-row-id]");
-    if(row) showDetail(row.dataset.rowId);
+    showDetail(id);
   }
 });
 
