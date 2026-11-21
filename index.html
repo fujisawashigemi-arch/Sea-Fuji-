@@ -68,7 +68,7 @@ overflow:auto;background:white;border:1px solid var(--line);
 border-radius:11px;position:relative;
 -webkit-overflow-scrolling:touch
 }
-table{border-collapse:separate;border-spacing:0;width:100%;min-width:760px}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:820px}
 th,td{
 padding:6px 10px;border-bottom:1px solid var(--line);
 border-right:0;text-align:left;white-space:nowrap;font-size:12px;
@@ -90,7 +90,6 @@ padding:3px 7px;margin:1px;color:#46594e;font-size:11px
 .rowbtn{padding:5px 8px;font-size:11px}
 .tagfilters{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
 .tagfilters button{padding:6px 9px;font-size:12px}
-.tagfilters button.active{background:var(--soft);border-color:#aab9ae;color:#34483c}
 .note{color:var(--muted);font-size:11px;line-height:1.5;margin-top:8px}
 .empty{text-align:center;color:var(--muted);padding:30px}
 .tagmanage{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}
@@ -200,16 +199,22 @@ header{padding-top:14px}
 </div>
 <div class="field"><label>③ キー1</label><select id="key1"></select></div>
 <div class="field"><label>④ キー2</label><select id="key2"></select></div>
+
+<div class="field">
+<label>⑤ カラオケ</label>
+<select id="karaoke"></select>
+</div>
+
 <div class="field full">
-<label>⑤ 演奏可能項目（複数選択）</label>
+<label>⑥ 演奏可能項目（複数選択）</label>
 <div class="choices" id="instruments"></div>
 </div>
 <div class="field full" style="margin-top:11px">
-<label>⑥ 現状（1つ選択）</label>
+<label>⑦ 現状（1つ選択）</label>
 <div class="choices" id="statuses"></div>
 </div>
 <div class="field full" style="margin-top:11px">
-<label>⑦ タグ（複数選択・新しいタグも追加可能）</label>
+<label>⑧ タグ（複数選択・新しいタグも追加可能）</label>
 <div id="tagChoices" class="choices"></div>
 <div style="display:flex;gap:7px;margin-top:8px">
 <input id="newTag" placeholder="新しいタグ名">
@@ -217,10 +222,10 @@ header{padding-top:14px}
 </div>
 </div>
 <div class="formgrid" style="margin-top:11px">
-<div class="field"><label>⑧ アーティスト</label><input id="artist" placeholder="アーティスト名"></div>
-<div class="field"><label>⑨ アーティストのよみ</label><input id="artistReading" placeholder="並べ替え用の読み仮名"></div>
-<div class="field"><label>⑩ リリース年</label><input id="year" inputmode="numeric" maxlength="4" placeholder="例：1985"></div>
-<div class="field full"><label>⑪ フリーメモ・備考</label><textarea id="memo" rows="3" placeholder="自由にメモ"></textarea></div>
+<div class="field"><label>⑨ アーティスト</label><input id="artist" placeholder="アーティスト名"></div>
+<div class="field"><label>⑩ アーティストのよみ</label><input id="artistReading" placeholder="並べ替え用の読み仮名"></div>
+<div class="field"><label>⑪ リリース年</label><input id="year" inputmode="numeric" maxlength="4" placeholder="例：1985"></div>
+<div class="field full"><label>⑫ フリーメモ・備考</label><textarea id="memo" rows="3" placeholder="自由にメモ"></textarea></div>
 </div>
 <div class="formactions">
 <button class="primary" type="submit">保存する</button>
@@ -318,7 +323,7 @@ header{padding-top:14px}
 <table>
 <thead><tr>
 <th class="selectcell"><input type="checkbox" id="selectAllVisible" title="表示中を全選択"></th>
-<th>曲名</th><th>キー</th><th>演奏可能</th><th>現状</th><th>タグ</th><th>アーティスト</th><th>年</th><th>操作</th>
+<th>曲名</th><th>キー</th><th>カラオケ</th><th>演奏可能</th><th>現状</th><th>タグ</th><th>アーティスト</th><th>年</th><th>操作</th>
 </tr></thead>
 <tbody id="songRows"></tbody>
 </table>
@@ -332,6 +337,10 @@ header{padding-top:14px}
 (()=>{
 const $=id=>document.getElementById(id);
 const KEYS=['','C(±0)','D♭(+1-11)','D(+2-10)','E♭(+3-9)','E(+4-8)','F(+5-7)','G♭(+6-6)','G(+7-5)','A♭(+8-4)','A(+9-3)','B♭(+10-2)','B(+11-1)','1.4寸','1.5寸','1.6寸','1.7寸','1.8寸','1.9寸','2尺','2.1寸','2.2寸','2.3寸'];
+
+// カラオケキー設定（原曲キーを±0として上下6段階）
+const KARAOKE_KEYS=['','−6','−5','−4','−3','−2','−1','±0','+1','+2','+3','+4','+5','+6'];
+
 const INSTR=['歌','ギター','ピアノ','生ピアノ','三味線','笛','その他'];
 const STATUS=['歌える','練習中','歌いたい'];
 const STORE='mySongList_v1';
@@ -462,6 +471,7 @@ $('reading').value=song?.reading||'';
 $('reading').dataset.touched=song?.reading?'1':'';
 $('key1').value=song?.key1||'';
 $('key2').value=song?.key2||'';
+$('karaoke').value=song?.karaoke||'';
 $('artist').value=song?.artist||'';
 $('artistReading').value=song?.artistReading||'';
 $('artistReading').dataset.touched=song?.artistReading?'1':'';
@@ -529,6 +539,7 @@ $('songRows').innerHTML=data.map(s=>`<tr>
 <td class="selectcell"><input type="checkbox" class="songSelect" data-selectsong="${esc(s.id)}" ${selectedSongIds.has(s.id)?'checked':''}></td>
 <td><div class="song">${esc(s.title)}</div></td>
 <td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
+<td>${esc(s.karaoke||'－')}</td>
 <td>${(s.instruments||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
 <td class="status">${esc(s.status||'－')}</td>
 <td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
@@ -640,6 +651,7 @@ if(target<0||target>=arr.length)return;
 
 fillSelect('key1',KEYS);
 fillSelect('key2',KEYS);
+fillSelect('karaoke',KARAOKE_KEYS);
 checks('instruments',INSTR,'instrument');
 checks('statuses',STATUS,'status');
 
@@ -704,6 +716,7 @@ title,
 reading:$('reading').value.trim(),
 key1:$('key1').value,
 key2:$('key2').value,
+karaoke:$('karaoke').value,
 instruments:checked('instrument'),
 status:checked('status')[0]||'',
 tags:checked('songTags'),
@@ -983,7 +996,7 @@ const filename=`マイレパ${y}${m}${d}.json`;
 
 const data={
 app:'マイレパ',
-version:3,
+version:4,
 songs,
 tags,
 playlists
@@ -1024,6 +1037,7 @@ playlists=Array.isArray(d.playlists)?d.playlists:[];
 songs.forEach(s=>{
 if(!Array.isArray(s.instruments))s.instruments=[];
 if(!Array.isArray(s.tags))s.tags=[];
+if(!s.karaoke)s.karaoke='';
 });
 playlists.forEach(p=>{
 if(!Array.isArray(p.songIds))p.songIds=[];
