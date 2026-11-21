@@ -327,6 +327,7 @@ footer{text-align:center;color:#aaa399;font-size:11px;padding:24px 0 8px}
     <div class="view-tags" id="viewTags"></div>
     <div class="view-date" id="viewDate"></div>
     <div class="view-actions">
+      <button class="secondary" id="copyBodyBtn">本文をすべてコピー</button>
       <button id="viewEditBtn">編集する</button>
       <button class="ghost" id="backToListBtn">一覧に戻る</button>
       <button class="danger small" id="viewDeleteBtn">削除</button>
@@ -774,6 +775,63 @@ function showDetail(id){
     `追加：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
 
   window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* 本文をすべてコピー */
+function copyTextFallback(text){
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly","");
+  textarea.style.position = "fixed";
+  textarea.style.left = "-9999px";
+  textarea.style.top = "0";
+  document.body.appendChild(textarea);
+
+  textarea.focus();
+  textarea.select();
+  textarea.setSelectionRange(0,textarea.value.length);
+
+  let success = false;
+  try{
+    success = document.execCommand("copy");
+  }catch(error){
+    success = false;
+  }
+
+  textarea.remove();
+  return success;
+}
+
+async function copyMemoBody(){
+  const memo = memos.find(m => m.id === viewingId);
+  if(!memo) return;
+
+  if(!memo.body){
+    alert("コピーする本文がないよ。");
+    return;
+  }
+
+  try{
+    let copied = false;
+
+    if(navigator.clipboard && window.isSecureContext){
+      try{
+        await navigator.clipboard.writeText(memo.body);
+        copied = true;
+      }catch(error){
+        copied = copyTextFallback(memo.body);
+      }
+    }else{
+      copied = copyTextFallback(memo.body);
+    }
+
+    if(!copied) throw new Error("コピーに失敗しました");
+
+    alert("本文をコピーしたよ！");
+  }catch(error){
+    console.error(error);
+    alert("コピーできなかったよ。本文を長押ししてコピーしてね。");
+  }
 }
 
 /* タグ選択 */
@@ -1269,6 +1327,8 @@ $("bulkNewTagBtn").addEventListener("click",bulkCreateAndAddTag);
 $("bulkNewTag").addEventListener("keydown",event => {
   if(event.key === "Enter"){event.preventDefault();bulkCreateAndAddTag();}
 });
+
+$("copyBodyBtn").addEventListener("click",copyMemoBody);
 
 $("viewEditBtn").addEventListener("click",() => {
   if(viewingId) startEditMemo(viewingId);
