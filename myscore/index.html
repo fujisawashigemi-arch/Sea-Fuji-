@@ -120,7 +120,7 @@ header{
   color:var(--ink);
 }
 
-main{padding:12px 10px 240px}
+main{padding:12px 10px 280px}
 
 .paper{
   background:var(--paper);
@@ -151,7 +151,8 @@ main{padding:12px 10px 240px}
   display:block;
   width:100%;
   height:auto;
-  touch-action:manipulation;
+  touch-action:pan-y;
+  user-select:none;
 }
 
 #status{
@@ -198,9 +199,21 @@ main{padding:12px 10px 240px}
   stroke:#29945b;
   stroke-width:2.5;
   opacity:.95;
+  pointer-events:none;
 }
 
-.cursor-cap{fill:#29945b}
+.cursor-cap{fill:#29945b;pointer-events:none}
+
+.cursor-handle{
+  fill:#29945b;
+  stroke:white;
+  stroke-width:3;
+  cursor:grab;
+  touch-action:none;
+}
+
+.cursor-handle:active{cursor:grabbing}
+
 .note-head{fill:#292722;stroke:#292722;stroke-width:1}
 .note-head.open{fill:white;stroke-width:2}
 .note-stem{stroke:#292722;stroke-width:1.6}
@@ -237,7 +250,7 @@ main{padding:12px 10px 240px}
   border-top:1px solid var(--line);
   box-shadow:0 -4px 18px #0000000b;
   padding:8px 10px calc(10px + env(safe-area-inset-bottom));
-  max-height:48vh;
+  max-height:55vh;
   overflow:auto;
 }
 
@@ -253,7 +266,8 @@ main{padding:12px 10px 240px}
 
 #panelContent{display:block}
 
-.tool-row,.duration-row,.octave-row{
+.tool-row,.duration-row,.octave-row,
+.mode-row,.cursor-row,.sound-row{
   display:flex;
   align-items:center;
   gap:6px;
@@ -262,7 +276,8 @@ main{padding:12px 10px 240px}
   scrollbar-width:thin;
 }
 
-.tool-row button,.duration-row button{
+.tool-row button,.duration-row button,
+.mode-row button,.cursor-row button,.sound-row button{
   flex:none;
   font-size:12px;
   padding:8px 11px;
@@ -281,6 +296,13 @@ main{padding:12px 10px 240px}
   border-radius:10px;
   padding:7px 6px 8px;
   overflow-x:auto;
+}
+
+.cursor-position{
+  font-size:11px;
+  color:var(--muted);
+  min-width:75px;
+  text-align:center;
 }
 
 /* =========================================
@@ -453,7 +475,7 @@ main{padding:12px 10px 240px}
     <svg id="score" viewBox="0 0 1000 520"
       xmlns="http://www.w3.org/2000/svg"
       role="img" aria-label="楽譜編集エリア"></svg>
-    <div id="status">小節内をタップして入力位置を選んでね。</div>
+    <div id="status">入力モードを選んで、楽譜をタップしてね。</div>
   </div>
 </main>
 
@@ -473,6 +495,24 @@ main{padding:12px 10px 240px}
   </div>
 
   <div id="panelContent">
+
+    <div class="mode-row">
+      <span class="small-label">入力方法</span>
+      <button id="penModeBtn" class="active">✎ ペン入力</button>
+      <button id="keyboardModeBtn">♫ 鍵盤入力</button>
+    </div>
+
+    <div class="cursor-row">
+      <span class="small-label">カーソル</span>
+      <button id="cursorLeftBtn" aria-label="左へ移動">◀</button>
+      <span id="cursorPosition" class="cursor-position">1小節 1/16</span>
+      <button id="cursorRightBtn" aria-label="右へ移動">▶</button>
+    </div>
+
+    <div class="sound-row">
+      <span class="small-label">入力音・試し弾き</span>
+      <button id="soundToggleBtn" class="active">音 ON</button>
+    </div>
 
     <div class="tool-row">
       <span class="small-label">操作</span>
@@ -518,9 +558,10 @@ main{padding:12px 10px 240px}
     </div>
 
     <div class="help">
-      ① 楽譜の小節内をタップして入力位置を選択。<br>
-      ② 鍵盤を押すと、その位置に音符が入り、音符の長さ分だけ入力位置が進むよ。<br>
-      ③ 緑色の縦線が次の入力位置。点線は16分音符単位の目安だよ。
+      ① ペン入力では、五線譜をタップすると音符が入るよ。<br>
+      ② 鍵盤入力では、五線譜をタップして位置を決めてから鍵盤を押してね。<br>
+      ③ 緑の丸をドラッグすると入力位置だけを移動できるよ。<br>
+      ④ 左右ボタンでは16分音符単位で移動。鍵盤はいつでも試し弾きできるよ。
     </div>
 
   </div>
@@ -564,6 +605,8 @@ let state = {
 };
 
 let selectedTool="pen";
+let inputMode="pen";
+let soundEnabled=true;
 let selectedDuration=4;
 let selectedNoteId=null;
 let cursor={measure:0,slot:0};
@@ -574,6 +617,7 @@ let audioContext=null;
 let activeOscillators=[];
 let playTimer=null;
 let panelOpen=true;
+let cursorDragging=false;
 
 /* =========================================
    【基本設定・データ】ここまで
@@ -602,6 +646,7 @@ function undo(){
   redoStack.push(JSON.stringify(state));
   state=JSON.parse(undoStack.pop());
   selectedNoteId=null;
+  cursor.measure=clamp(cursor.measure,0,state.measures-1);
   renderAll();
   updateHistoryButtons();
 }
@@ -611,6 +656,7 @@ function redo(){
   undoStack.push(JSON.stringify(state));
   state=JSON.parse(redoStack.pop());
   selectedNoteId=null;
+  cursor.measure=clamp(cursor.measure,0,state.measures-1);
   renderAll();
   updateHistoryButtons();
 }
@@ -647,6 +693,54 @@ function systemY(system){
 function noteX(note){
   return measureX(note.measure)+12+
     (note.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
+}
+
+function updateCursorPosition(){
+  $("cursorPosition").textContent=
+    `${cursor.measure+1}小節 ${cursor.slot+1}/16`;
+
+  $("cursorLeftBtn").disabled=
+    cursor.measure===0&&cursor.slot===0;
+
+  $("cursorRightBtn").disabled=
+    cursor.measure===state.measures-1&&cursor.slot===15;
+}
+
+function moveCursorBy(amount){
+  let absolute=cursor.measure*16+cursor.slot+amount;
+  absolute=clamp(absolute,0,state.measures*16-1);
+
+  cursor.measure=Math.floor(absolute/16);
+  cursor.slot=absolute%16;
+
+  selectedNoteId=null;
+  renderScore();
+  updateCursorPosition();
+  showStatus(
+    `${cursor.measure+1}小節・${cursor.slot+1}/16 の位置`
+  );
+}
+
+function cursorFromSvgX(svgX){
+  const relative=svgX-START_X;
+  const measureOffset=Math.floor(relative/MEASURE_WIDTH);
+  const measure=clamp(measureOffset,0,state.measures-1);
+  const xInMeasure=relative-measureOffset*MEASURE_WIDTH;
+  const innerWidth=MEASURE_WIDTH-24;
+  const slot=clamp(
+    Math.round((xInMeasure-12)/innerWidth*16),
+    0,15
+  );
+
+  cursor={measure,slot};
+}
+
+function svgCoordinates(event){
+  const rect=$("score").getBoundingClientRect();
+  return {
+    x:(event.clientX-rect.left)/rect.width*1000,
+    y:(event.clientY-rect.top)/rect.width*1000
+  };
 }
 
 /* =========================================
@@ -766,32 +860,56 @@ function renderScore(){
       },svg);
 
       hit.addEventListener("click",event=>{
-        const rect=svg.getBoundingClientRect();
-        const svgPointX=(event.clientX-rect.left)/rect.width*1000;
-        const localX=svgPointX-innerStart;
-        const rawSlot=Math.round(localX/innerWidth*GRID_COUNT);
+        if(cursorDragging)return;
+        if(event.target.closest("[data-note-id]"))return;
 
-        cursor.measure=measure;
-        cursor.slot=clamp(rawSlot,0,15);
+        const point=svgCoordinates(event);
+        const systemYTop=systemY(measureSystem(measure));
+        const localX=point.x-innerStart;
+        const rawSlot=Math.round(localX/innerWidth*GRID_COUNT);
+        const slot=clamp(rawSlot,0,15);
+
+        cursor={measure,slot};
         selectedNoteId=null;
 
-        renderScore();
-        showStatus(
-          `小節 ${measure+1} ・ ${cursor.slot+1}/16 の位置を選択中`
-        );
+        if(selectedTool==="eraser"){
+          renderScore();
+          showStatus("消したい音符をタップしてね");
+          return;
+        }
+
+        if(selectedTool==="select"){
+          renderScore();
+          showStatus("音符を選択してね");
+          return;
+        }
+
+        if(selectedTool==="chord"){
+          editChord();
+          return;
+        }
+
+        if(selectedTool==="lyric"){
+          editLyric();
+          return;
+        }
+
+        if(selectedTool==="mark"){
+          editMark();
+          return;
+        }
+
+        if(inputMode==="pen"&&selectedTool==="pen"){
+          const midi=midiFromStaffY(point.y-systemYTop,systemYTop);
+          insertPitch(midi);
+        }else{
+          renderScore();
+          updateCursorPosition();
+          showStatus(
+            `小節 ${measure+1} ・ ${slot+1}/16 の位置を選択中`
+          );
+        }
       });
-
-      if(state.chords[measure]){
-        svgText(svg,x+8,y-22,state.chords[measure],"chord-text");
-      }
-
-      if(state.lyrics[measure]){
-        svgText(svg,x+8,y+82,state.lyrics[measure],"lyric-text");
-      }
-
-      if(state.marks[measure]){
-        svgText(svg,x+8,y-38,state.marks[measure],"rehearsal-text");
-      }
     }
   }
 
@@ -800,7 +918,17 @@ function renderScore(){
   });
 
   drawCursor(svg);
+  updateCursorPosition();
 }
+
+/* =========================================
+   【楽譜表示・小節ガイド】ここまで
+========================================= */
+
+
+/* =========================================
+   【カーソル表示・ドラッグ】ここから
+========================================= */
 
 function drawCursor(svg){
   const system=measureSystem(cursor.measure);
@@ -808,19 +936,68 @@ function drawCursor(svg){
     (cursor.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
   const y=systemY(system);
 
-  svgElement("line",{
-    x1:x,y1:y-13,x2:x,y2:y+55,
-    class:"cursor-line"
+  const group=svgElement("g",{
+    id:"cursorGroup",
+    transform:`translate(${x},0)`
   },svg);
 
+  svgElement("line",{
+    x1:0,y1:y-13,x2:0,y2:y+55,
+    class:"cursor-line"
+  },group);
+
   svgElement("path",{
-    d:`M ${x-5} ${y-15} L ${x+5} ${y-15} L ${x} ${y-7} Z`,
+    d:`M -5 ${y-15} L 5 ${y-15} L 0 ${y-7} Z`,
     class:"cursor-cap"
-  },svg);
+  },group);
+
+  const handle=svgElement("circle",{
+    cx:0,cy:y-17,r:12,
+    class:"cursor-handle",
+    "data-cursor-handle":"true"
+  },group);
+
+  handle.addEventListener("pointerdown",event=>{
+    event.preventDefault();
+    event.stopPropagation();
+
+    cursorDragging=true;
+    svg.setPointerCapture(event.pointerId);
+    showStatus("緑の丸を動かして入力位置を調整中");
+  });
+
+  svg.addEventListener("pointermove",event=>{
+    if(!cursorDragging)return;
+
+    const point=svgCoordinates(event);
+    cursorFromSvgX(point.x);
+
+    const newX=measureX(cursor.measure)+12+
+      (cursor.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
+
+    const currentGroup=$("cursorGroup");
+    if(currentGroup){
+      currentGroup.setAttribute("transform",`translate(${newX},0)`);
+    }
+
+    updateCursorPosition();
+  });
+
+  const finishDrag=()=>{
+    if(!cursorDragging)return;
+    cursorDragging=false;
+    renderScore();
+    showStatus(
+      `${cursor.measure+1}小節・${cursor.slot+1}/16 に移動したよ`
+    );
+  };
+
+  svg.addEventListener("pointerup",finishDrag);
+  svg.addEventListener("pointercancel",finishDrag);
 }
 
 /* =========================================
-   【楽譜表示・小節ガイド】ここまで
+   【カーソル表示・ドラッグ】ここまで
 ========================================= */
 
 
@@ -834,7 +1011,7 @@ function pitchInfo(midi){
     "F♯","G","G♯","A","A♯","B"
   ];
 
-  const name=names[midi%12];
+  const name=names[((midi%12)+12)%12];
   const octave=Math.floor(midi/12)-1;
   const natural=name[0];
 
@@ -843,6 +1020,24 @@ function pitchInfo(midi){
   const accidental=name.includes("♯")?"♯":"";
 
   return {name,octave,step,accidental};
+}
+
+function midiFromDiatonicStep(step){
+  const letters=["C","D","E","F","G","A","B"];
+  const midiBase={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+
+  const octave=Math.floor(step/7);
+  const letter=letters[((step%7)+7)%7];
+
+  return (octave+1)*12+midiBase[letter];
+}
+
+function midiFromStaffY(localY,systemTop){
+  const bottomLine=systemTop+48;
+  const steps=Math.round((bottomLine-localY)/6);
+  const e4Step=4*7+2;
+
+  return midiFromDiatonicStep(e4Step+steps);
 }
 
 function drawNote(svg,note){
@@ -983,11 +1178,9 @@ function buildKeyboard(){
 
   const whiteNotes=[0,2,4,5,7,9,11];
 
-  // 白鍵の位置をMIDI番号ごとに記録する
   const whitePositions={};
   let whiteIndex=0;
 
-  // 先に白鍵を並べる
   for(let i=0;i<total;i++){
     const midi=startMidi+i;
     const pitch=midi%12;
@@ -1004,21 +1197,19 @@ function buildKeyboard(){
     whitePositions[midi]=whiteIndex;
 
     key.addEventListener("click",()=>{
-      insertPitch(midi,key);
+      handleKeyboardPress(midi,key);
     });
 
     keyboard.appendChild(key);
     whiteIndex++;
   }
 
-  // 黒鍵は白鍵の境目を基準に配置する
-  // C#はCとDの間、D#はDとEの間、など
   const blackBefore={
-    1:0,   // C#
-    3:2,   // D#
-    6:5,   // F#
-    8:7,   // G#
-    10:9  // A#
+    1:0,
+    3:2,
+    6:5,
+    8:7,
+    10:9
   };
 
   for(let i=0;i<total;i++){
@@ -1029,7 +1220,6 @@ function buildKeyboard(){
 
     const octaveStart=midi-pitch;
     const naturalMidi=octaveStart+blackBefore[pitch];
-
     const leftWhiteIndex=whitePositions[naturalMidi];
 
     if(leftWhiteIndex===undefined)continue;
@@ -1039,7 +1229,6 @@ function buildKeyboard(){
     key.textContent=pitchInfo(midi).name;
     key.dataset.midi=midi;
 
-    // 白鍵の右端から黒鍵幅の半分だけ戻す
     const left=
       (leftWhiteIndex+1)*WHITE_KEY_WIDTH-
       BLACK_KEY_WIDTH/2;
@@ -1047,7 +1236,7 @@ function buildKeyboard(){
     key.style.left=left+"px";
 
     key.addEventListener("click",()=>{
-      insertPitch(midi,key);
+      handleKeyboardPress(midi,key);
     });
 
     keyboard.appendChild(key);
@@ -1057,8 +1246,90 @@ function buildKeyboard(){
     `C${octaveBase}〜B${octaveBase+1}`;
 }
 
+function handleKeyboardPress(midi,key){
+  key.classList.add("pressed");
+  setTimeout(()=>key.classList.remove("pressed"),130);
+
+  if(inputMode==="keyboard"&&selectedTool==="pen"){
+    insertPitch(midi);
+  }else{
+    playMidi(midi);
+    const info=pitchInfo(midi);
+    showStatus(
+      soundEnabled?
+      `${info.name}${info.octave} を試し弾き`:
+      "音はOFFになっているよ"
+    );
+  }
+}
+
 /* =========================================
    【鍵盤の表示】ここまで
+========================================= */
+
+
+/* =========================================
+   【音の発音・試し弾き】ここから
+========================================= */
+
+function midiFrequency(midi){
+  return 440*Math.pow(2,(midi-69)/12);
+}
+
+function playMidi(midi){
+  if(!soundEnabled)return;
+
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+
+  audioContext=audioContext||new AudioCtx();
+
+  if(audioContext.state==="suspended"){
+    audioContext.resume();
+  }
+
+  const start=audioContext.currentTime;
+  const osc=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+
+  osc.type="sine";
+  osc.frequency.value=midiFrequency(midi);
+
+  gain.gain.setValueAtTime(.0001,start);
+  gain.gain.linearRampToValueAtTime(.16,start+.015);
+  gain.gain.setValueAtTime(.16,start+.18);
+  gain.gain.linearRampToValueAtTime(.0001,start+.32);
+
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start(start);
+  osc.stop(start+.34);
+
+  activeOscillators.push(osc);
+  osc.onended=()=>{
+    activeOscillators=activeOscillators.filter(item=>item!==osc);
+  };
+}
+
+function updateSoundButton(){
+  $("soundToggleBtn").textContent=soundEnabled?"音 ON":"音 OFF";
+  $("soundToggleBtn").classList.toggle("active",soundEnabled);
+}
+
+$("soundToggleBtn").addEventListener("click",()=>{
+  soundEnabled=!soundEnabled;
+  updateSoundButton();
+
+  showStatus(
+    soundEnabled?
+    "入力音・試し弾きをONにしたよ":
+    "入力音・試し弾きをOFFにしたよ"
+  );
+});
+
+/* =========================================
+   【音の発音・試し弾き】ここまで
 ========================================= */
 
 
@@ -1067,9 +1338,9 @@ function buildKeyboard(){
 ========================================= */
 
 function insertPitch(midi){
-  if(selectedTool!=="pen"){
-    selectedTool="pen";
-    updateToolButtons();
+  if(cursor.measure>=state.measures){
+    showStatus("入力できる小節がないよ");
+    return;
   }
 
   snapshot();
@@ -1086,6 +1357,8 @@ function insertPitch(midi){
   state.notes.push(note);
   selectedNoteId=note.id;
 
+  if(soundEnabled)playMidi(midi);
+
   advanceCursor(note.duration);
   renderAll();
 
@@ -1094,6 +1367,8 @@ function insertPitch(midi){
 }
 
 function insertRest(){
+  if(cursor.measure>=state.measures)return;
+
   snapshot();
 
   const note={
@@ -1131,8 +1406,29 @@ function advanceCursor(duration){
 
 
 /* =========================================
-   【ツール・音符の長さ】ここから
+   【入力モード・ツール・音符の長さ】ここから
 ========================================= */
+
+function updateInputModeButtons(){
+  $("penModeBtn").classList.toggle("active",inputMode==="pen");
+  $("keyboardModeBtn").classList.toggle("active",inputMode==="keyboard");
+}
+
+$("penModeBtn").addEventListener("click",()=>{
+  inputMode="pen";
+  selectedTool="pen";
+  updateInputModeButtons();
+  updateToolButtons();
+  showStatus("ペン入力モード。五線譜をタップして音符を入力してね");
+});
+
+$("keyboardModeBtn").addEventListener("click",()=>{
+  inputMode="keyboard";
+  selectedTool="pen";
+  updateInputModeButtons();
+  updateToolButtons();
+  showStatus("鍵盤入力モード。五線譜で位置を選んで鍵盤を押してね");
+});
 
 function updateToolButtons(){
   document.querySelectorAll(".tool").forEach(btn=>{
@@ -1167,7 +1463,9 @@ document.querySelectorAll(".tool").forEach(btn=>{
         "消したい音符をタップしてね":
         selectedTool==="select"?
         "編集したい音符をタップしてね":
-        "入力したい小節の位置をタップしてね"
+        inputMode==="pen"?
+        "五線譜をタップして音符を入力してね":
+        "五線譜で位置を選び、鍵盤から入力してね"
       );
     }
   });
@@ -1188,7 +1486,24 @@ document.querySelectorAll(".duration").forEach(btn=>{
 });
 
 /* =========================================
-   【ツール・音符の長さ】ここまで
+   【入力モード・ツール・音符の長さ】ここまで
+========================================= */
+
+
+/* =========================================
+   【カーソル左右移動】ここから
+========================================= */
+
+$("cursorLeftBtn").addEventListener("click",()=>{
+  moveCursorBy(-1);
+});
+
+$("cursorRightBtn").addEventListener("click",()=>{
+  moveCursorBy(1);
+});
+
+/* =========================================
+   【カーソル左右移動】ここまで
 ========================================= */
 
 
@@ -1252,6 +1567,9 @@ function editMark(){
 
   renderAll();
 }
+
+$("chordEditBtn").addEventListener("click",editChord);
+$("lyricEditBtn").addEventListener("click",editLyric);
 
 /* =========================================
    【コード名・歌詞・記号】ここまで
@@ -1438,10 +1756,7 @@ function renderAll(){
   syncMeta();
   renderScore();
   updateHistoryButtons();
-}
-
-function midiFrequency(midi){
-  return 440*Math.pow(2,(midi-69)/12);
+  updateCursorPosition();
 }
 
 function stopPlayback(){
@@ -1591,6 +1906,8 @@ buildKeyboard();
 renderAll();
 updateDurationButtons();
 updateToolButtons();
+updateInputModeButtons();
+updateSoundButton();
 
 /* =========================================
    【アプリ起動・初期化】ここまで
