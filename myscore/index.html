@@ -862,14 +862,14 @@ function renderScore(){
         if(cursorDragging)return;
         if(event.target.closest("[data-note-id]"))return;
 
-        /* ペン入力はpointerupで確定するため、clickでは入力しない */
         if(inputMode==="pen"&&selectedTool==="pen")return;
 
         const point=svgCoordinates(event);
-        const systemYTop=systemY(measureSystem(measure));
         const localX=point.x-innerStart;
-        const rawSlot=Math.round(localX/innerWidth*GRID_COUNT);
-        const slot=clamp(rawSlot,0,15);
+        const slot=clamp(
+          Math.round(localX/innerWidth*GRID_COUNT),
+          0,15
+        );
 
         cursor={measure,slot};
         selectedNoteId=null;
@@ -911,6 +911,9 @@ function renderScore(){
   state.notes.forEach(note=>{
     if(note.measure<state.measures)drawNote(svg,note);
   });
+
+  /* 音符同士を自動でつなぐ */
+  drawBeams(svg);
 
   if(ghostNote)drawGhostNote(svg,ghostNote);
 
