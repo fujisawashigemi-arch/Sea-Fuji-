@@ -971,6 +971,7 @@ function drawCursor(svg){
 /* 【カーソル表示・ドラッグ】ここまで */
 
 
+
 /* 【音名・音符の描画】ここから */
 
 function pitchInfo(midi){
@@ -1020,6 +1021,119 @@ function notePosition(note){
   return {x,y,yTop,info};
 }
 
+/* 連桁にできる音符のグループを作る */
+
+function getBeamGroups(){
+  const groups=[];
+
+  for(let measure=0;measure<state.measures;measure++){
+    const notes=state.notes
+      .filter(n=>
+        n.measure===measure&&
+        !n.rest&&
+        (n.duration===1||n.duration===2)
+      )
+      .slice()
+      .sort((a,b)=>a.slot-b.slot);
+
+    let group=[];
+
+    for(const note of notes){
+      if(group.length===0){
+        group=[note];
+        continue;
+      }
+
+      const previous=group[group.length-1];
+
+      const sameBeat=
+        Math.floor(previous.slot/4)===
+        Math.floor(note.slot/4);
+
+      const touching=
+        previous.slot+previous.duration===note.slot;
+
+      if(sameBeat&&touching){
+        group.push(note);
+      }else{
+        if(group.length>=2)groups.push(group);
+        group=[note];
+      }
+    }
+
+    if(group.length>=2)groups.push(group);
+  }
+
+  return groups;
+}
+
+function isNoteBeamed(note){
+  return getBeamGroups().some(group=>
+    group.some(item=>item.id===note.id)
+  );
+}
+
+/* 連桁を描く */
+
+function drawBeams(svg){
+  const groups=getBeamGroups();
+
+  groups.forEach(group=>{
+    const positions=group.map(note=>{
+      const p=notePosition(note);
+      return {
+        note,
+        x:p.x+6,
+        y:p.y-37
+      };
+    });
+
+    /* 1本目の太い線 */
+    const first=positions[0];
+    const last=positions[positions.length-1];
+
+    svgElement("line",{
+      x1:first.x,
+      y1:first.y,
+      x2:last.x,
+      y2:last.y,
+      stroke:"#292722",
+      "stroke-width":4,
+      "stroke-linecap":"round"
+    },svg);
+
+    /* 16分音符の2本目の線 */
+    positions.forEach((position,index)=>{
+      if(position.note.duration!==1)return;
+
+      const next=positions[index+1];
+      const previous=positions[index-1];
+
+      if(next&&next.note.duration===1){
+        svgElement("line",{
+          x1:position.x,
+          y1:position.y+6,
+          x2:next.x,
+          y2:next.y+6,
+          stroke:"#292722",
+          "stroke-width":3,
+          "stroke-linecap":"round"
+        },svg);
+      }else if(!previous||previous.note.duration!==1){
+        svgElement("line",{
+          x1:position.x,
+          y1:position.y+6,
+          x2:position.x+10,
+          y2:position.y+6,
+          stroke:"#292722",
+          "stroke-width":3,
+          "stroke-linecap":"round"
+        },svg);
+      }
+    });
+  });
+}
+
 function drawNote(svg,note){
   const {x,y,yTop,info}=notePosition(note);
 
@@ -1029,6 +1143,7 @@ function drawNote(svg,note){
   },svg);
 
   const selected=note.id===selectedNoteId;
+  const beamed=isNoteBeamed(note);
 
   if(selected){
     svgElement("circle",{
@@ -1090,7 +1205,8 @@ function drawNote(svg,note){
         class:"note-stem"
       },group);
 
-      if(note.duration<=2){
+      /* 連桁に参加していない音符だけ旗を描く */
+      if(!beamed&&note.duration<=2){
         const flags=note.duration===1?2:1;
 
         for(let f=0;f<flags;f++){
@@ -1200,6 +1316,7 @@ function drawGhostNote(svg,note){
 }
 
 /* 【音名・音符の描画】ここまで */
+
 
 
 /* 【ペン入力・水色プレビュー】ここから */
