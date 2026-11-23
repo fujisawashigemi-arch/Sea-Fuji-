@@ -7,76 +7,59 @@
 <meta name="theme-color" content="#f6f3ee">
 <title>マイスコア｜オトリス</title>
 <style>
-:root{--bg:#f6f3ee;--paper:#fff;--ink:#292722;--muted:#89847b;--line:#ded9cf;--green:#39845c;--green-light:#e4f1e8;--orange:#d88b42;--white-key-width:39px}
+:root{--bg:#f6f3ee;--paper:#fff;--ink:#292722;--muted:#89847b;--line:#ded9cf;--green:#39845c;--green-light:#e4f1e8;--white-key-width:39px}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Yu Gothic",Meiryo,sans-serif}
 button,input,select{font:inherit}
 button{border:1px solid var(--line);background:white;color:var(--ink);border-radius:9px;padding:9px 12px;cursor:pointer;touch-action:manipulation}
-button:active{transform:scale(.97)}
 button.active{background:var(--green-light);border-color:var(--green);color:#24613e}
-button:disabled{opacity:.35;cursor:default}
-header{position:sticky;top:0;z-index:10;background:rgba(246,243,238,.96);border-bottom:1px solid var(--line);padding:10px 12px;backdrop-filter:blur(10px)}
+button:disabled{opacity:.35}
+header{position:sticky;top:0;z-index:10;background:rgba(246,243,238,.96);border-bottom:1px solid var(--line);padding:10px 12px}
 .header-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
-.logo{font-weight:800;letter-spacing:.04em;font-size:18px}
-.logo small{font-size:10px;color:var(--muted);font-weight:500;margin-left:5px}
-.top-actions{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end}
-.top-actions button{padding:7px 9px;font-size:12px}
+.logo{font-weight:800;font-size:18px}.logo small{font-size:10px;color:var(--muted);font-weight:500}
+.top-actions{display:flex;gap:5px}.top-actions button{padding:7px 9px;font-size:12px}
 .meta{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:7px}
 .meta label{display:block;font-size:10px;color:var(--muted);margin-bottom:3px}
-.meta input,.meta select{width:100%;min-width:0;border:1px solid var(--line);background:white;border-radius:7px;padding:8px;color:var(--ink)}
+.meta input,.meta select{width:100%;min-width:0;border:1px solid var(--line);background:white;border-radius:7px;padding:8px}
 main{padding:12px 10px 280px}
-.paper{background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 2px 8px #00000008;overflow:hidden}
+.paper{background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .score-heading{text-align:center;padding:22px 10px 10px}
-.score-heading h1{font-size:22px;margin:0 0 5px;font-weight:700}
-.score-heading p{margin:0;color:var(--muted);font-size:11px}
+.score-heading h1{font-size:22px;margin:0 0 5px}.score-heading p{margin:0;color:var(--muted);font-size:11px}
 #score{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
 #status{padding:9px 12px;color:var(--muted);font-size:12px;text-align:center}
-.staff-line{stroke:#55514b;stroke-width:1}
-.measure-line{stroke:#aaa49a;stroke-width:1}
+.staff-line{stroke:#55514b;stroke-width:1}.measure-line{stroke:#aaa49a;stroke-width:1}
 .grid-quarter{stroke:#a7a096;stroke-width:1;stroke-dasharray:2 4;opacity:.68}
 .grid-eighth{stroke:#bdb8af;stroke-width:.8;stroke-dasharray:1.5 4;opacity:.48}
 .grid-sixteenth{stroke:#c9c5bd;stroke-width:.7;stroke-dasharray:1 4;opacity:.34}
-.cursor-line{stroke:#29945b;stroke-width:2.5;opacity:.95;pointer-events:none}
-.cursor-cap{fill:#29945b;pointer-events:none}
-.cursor-handle{fill:#29945b;stroke:white;stroke-width:3;cursor:grab;touch-action:none}
-.cursor-handle:active{cursor:grabbing}
-.note-head{fill:#292722;stroke:#292722;stroke-width:1}
-.note-head.open{fill:white;stroke-width:2}
-.note-stem{stroke:#292722;stroke-width:1.6}
-.note-flag{fill:none;stroke:#292722;stroke-width:1.7;stroke-linecap:round}
+.cursor-line{stroke:#29945b;stroke-width:2.5}.cursor-cap{fill:#29945b}
+.cursor-handle{fill:#29945b;stroke:white;stroke-width:3;touch-action:none}
+.note-head{fill:#292722;stroke:#292722;stroke-width:1}.note-head.open{fill:white;stroke-width:2}
+.note-stem{stroke:#292722;stroke-width:1.6}.note-flag{fill:none;stroke:#292722;stroke-width:1.7;stroke-linecap:round}
 .note-selected{stroke:#29945b;stroke-width:2.5}
-.chord-text{font-size:12px;fill:#4e795e;font-weight:600}
-.lyric-text{font-size:11px;fill:#514c45}
 .measure-number{font-size:9px;fill:#aaa49a}
-.staff-hit{fill:transparent;cursor:crosshair;touch-action:none}
-.staff-hit:active{fill:#39845c12}
-.ghost-note-head{fill:#b9def4;stroke:#559bc9;stroke-width:1.8;opacity:.95;pointer-events:none}
-.ghost-note-head.open{fill:#fff;stroke:#559bc9;stroke-width:2.5}
+.staff-hit{fill:transparent;touch-action:none}
+.ghost-note-head{fill:#b9def4;stroke:#559bc9;stroke-width:1.8;pointer-events:none}
+.ghost-note-head.open{fill:white;stroke:#559bc9;stroke-width:2.5}
 .ghost-note-stem{stroke:#559bc9;stroke-width:1.8;pointer-events:none}
-.ghost-note-flag{fill:none;stroke:#559bc9;stroke-width:2;stroke-linecap:round;pointer-events:none}
+.ghost-note-flag{fill:none;stroke:#559bc9;stroke-width:2;pointer-events:none}
 .ghost-note-ledger{stroke:#559bc9;stroke-width:1.5;pointer-events:none}
 .ghost-note-accidental{fill:#559bc9;font-size:15px;pointer-events:none}
-.bottom-panel{position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(250,248,244,.98);border-top:1px solid var(--line);box-shadow:0 -4px 18px #0000000b;padding:8px 10px calc(10px + env(safe-area-inset-bottom));max-height:55vh;overflow:auto}
+.bottom-panel{position:fixed;bottom:0;left:0;right:0;z-index:20;background:rgba(250,248,244,.98);border-top:1px solid var(--line);padding:8px 10px calc(10px + env(safe-area-inset-bottom));max-height:55vh;overflow:auto}
 .panel-toggle{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px}
-.panel-toggle strong{font-size:13px}
-.panel-toggle button{font-size:11px;padding:6px 10px}
-#panelContent{display:block}
-.tool-row,.duration-row,.octave-row,.mode-row,.cursor-row,.sound-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:3px 0 7px;scrollbar-width:thin}
+.panel-toggle strong{font-size:13px}.panel-toggle button{font-size:11px;padding:6px 10px}
+.tool-row,.duration-row,.octave-row,.mode-row,.cursor-row,.sound-row{display:flex;align-items:center;gap:6px;overflow-x:auto;padding:3px 0 7px}
 .tool-row button,.duration-row button,.mode-row button,.cursor-row button,.sound-row button{flex:none;font-size:12px;padding:8px 11px}
-.small-label{flex:none;color:var(--muted);font-size:10px;margin-right:2px}
-.keyboard-wrap{background:#e9e5dc;border:1px solid #d7d1c6;border-radius:10px;padding:7px 6px 8px;overflow-x:auto}
+.small-label{flex:none;color:var(--muted);font-size:10px}
+.keyboard-wrap{background:#e9e5dc;border:1px solid #d7d1c6;border-radius:10px;padding:7px;overflow-x:auto}
 .cursor-position{font-size:11px;color:var(--muted);min-width:75px;text-align:center}
-.keyboard{position:relative;display:flex;width:max-content;height:118px;margin:0 auto;user-select:none;touch-action:manipulation}
-.white-key{position:relative;width:var(--white-key-width);height:116px;flex:none;border:1px solid #aaa49a;border-radius:0 0 5px 5px;background:#fff;color:#777;padding:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;font-size:10px}
-.white-key.pressed{background:#dceee1}
-.black-key{position:absolute;z-index:2;width:25px;height:70px;top:0;background:#292722;border:1px solid #111;border-radius:0 0 4px 4px;color:white;padding:0;font-size:8px;box-shadow:0 2px 3px #0004}
-.black-key.pressed{background:#397c55}
+.keyboard{position:relative;display:flex;width:max-content;height:118px;margin:auto;user-select:none}
+.white-key{position:relative;width:39px;height:116px;flex:none;border:1px solid #aaa49a;border-radius:0 0 5px 5px;background:white;color:#777;padding:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:7px;font-size:10px}
+.black-key{position:absolute;z-index:2;width:25px;height:70px;top:0;background:#292722;border:1px solid #111;border-radius:0 0 4px 4px;color:white;padding:0;font-size:8px}
 .extra-actions{display:flex;gap:6px;flex-wrap:wrap;padding-top:5px}
 .extra-actions button{font-size:11px;padding:7px 10px}
-#fileInput{display:none}
-.help{color:var(--muted);font-size:10px;line-height:1.6;padding:5px 2px 0}
+#fileInput{display:none}.help{color:var(--muted);font-size:10px;line-height:1.6;padding:5px 2px 0}
 @media(min-width:700px){main{max-width:1050px;margin:auto}.bottom-panel{padding-left:max(12px,calc((100vw - 1050px)/2));padding-right:max(12px,calc((100vw - 1050px)/2))}}
-@media print{header,.bottom-panel,#status{display:none!important}body{background:white}main{padding:0}.paper{border:0;box-shadow:none}}
+@media print{header,.bottom-panel,#status{display:none!important}body{background:white}main{padding:0}.paper{border:0}}
 </style>
 </head>
 <body>
@@ -84,10 +67,7 @@ main{padding:12px 10px 280px}
 <div class="header-top">
 <div class="logo">♫ マイスコア <small>by オトリス</small></div>
 <div class="top-actions">
-<button id="undoBtn" title="元に戻す">↶</button>
-<button id="redoBtn" title="やり直す">↷</button>
-<button id="saveBtn">保存</button>
-<button id="printBtn">印刷</button>
+<button id="undoBtn">↶</button><button id="redoBtn">↷</button><button id="saveBtn">保存</button><button id="printBtn">印刷</button>
 </div>
 </div>
 <div class="meta">
@@ -98,16 +78,11 @@ main{padding:12px 10px 280px}
 <div><label for="tempoInput">テンポ</label><input id="tempoInput" type="number" min="30" max="240" value="100"></div>
 </div>
 </header>
-<main>
-<div class="paper">
-<div class="score-heading">
-<h1 id="displayTitle">新しい曲</h1>
-<p><span id="displayKey">C</span>　・　♩ = <span id="displayTempo">100</span></p>
-</div>
-<svg id="score" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="楽譜編集エリア"></svg>
+<main><div class="paper">
+<div class="score-heading"><h1 id="displayTitle">新しい曲</h1><p><span id="displayKey">C</span>　・　♩ = <span id="displayTempo">100</span></p></div>
+<svg id="score" viewBox="0 0 1000 520" xmlns="http://www.w3.org/2000/svg" aria-label="楽譜編集エリア"></svg>
 <div id="status">入力モードを選んで、楽譜をタップしてね。</div>
-</div>
-</main>
+</div></main>
 <div class="bottom-panel">
 <div class="panel-toggle"><strong>音符入力パレット</strong><button id="collapseBtn">閉じる ▲</button></div>
 <div id="panelContent">
@@ -124,527 +99,498 @@ main{padding:12px 10px 280px}
 <div class="help">
 ① ペン入力では、五線譜を押さえている間、水色の音符が表示されるよ。指を離すと黒い音符になるよ。<br>
 ② 鍵盤入力では、五線譜をタップして位置を決めてから鍵盤を押してね。<br>
-③ 緑の丸をドラッグすると入力位置だけを移動できるよ。<br>
+③ 緑の丸をドラッグすると入力位置を移動できるよ。<br>
 ④ 左右ボタンでは16分音符単位で移動。鍵盤はいつでも試し弾きできるよ。
 </div>
-</div>
-</div>
+</div></div>
 <input type="file" id="fileInput" accept=".json,application/json">
+
 <script>
 "use strict";
 
-/* 【基本設定・データ】ここから */
-const SVG_NS="http://www.w3.org/2000/svg";
-const MEASURE_WIDTH=220,START_X=60,STAFF_TOP=92,SYSTEM_HEIGHT=190,STAFF_SPACING=12,GRID_COUNT=16;
-const WHITE_KEY_WIDTH=39,BLACK_KEY_WIDTH=25;
-let state={title:"新しい曲",key:"C",tempo:100,measures:8,systems:2,notes:[],chords:{},lyrics:{},marks:{}};
-let selectedTool="pen",inputMode="pen",soundEnabled=true,selectedDuration=4,selectedNoteId=null;
-let cursor={measure:0,slot:0},octaveBase=4,undoStack=[],redoStack=[],audioContext=null,activeOscillators=[],playTimer=null,panelOpen=true;
-let cursorDragging=false,cursorPointerId=null,ghostNote=null,ghostGroup=null,penPointerId=null,penSystem=null;
-let ghostPreviewOsc=null,ghostPreviewGain=null,ghostPreviewMidi=null;
-/* 【基本設定・データ】ここまで */
-
-/* 【共通処理・操作履歴】ここから */
+/* 【基本設定】 */
 const $=id=>document.getElementById(id);
-function clone(obj){return JSON.parse(JSON.stringify(obj))}
-function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
-function snapshot(){undoStack.push(JSON.stringify(state));if(undoStack.length>80)undoStack.shift();redoStack=[];updateHistoryButtons()}
-function undo(){if(!undoStack.length)return;redoStack.push(JSON.stringify(state));state=JSON.parse(undoStack.pop());selectedNoteId=null;cursor.measure=clamp(cursor.measure,0,state.measures-1);clearGhostNote();renderAll();updateHistoryButtons()}
-function redo(){if(!redoStack.length)return;undoStack.push(JSON.stringify(state));state=JSON.parse(redoStack.pop());selectedNoteId=null;cursor.measure=clamp(cursor.measure,0,state.measures-1);clearGhostNote();renderAll();updateHistoryButtons()}
-function updateHistoryButtons(){$("undoBtn").disabled=!undoStack.length;$("redoBtn").disabled=!redoStack.length}
-function showStatus(message){$("status").textContent=message}
-function measureSystem(m){return Math.floor(m/4)}
-function measureColumn(m){return m%4}
-function measureX(m){return START_X+measureColumn(m)*MEASURE_WIDTH}
-function systemY(s){return STAFF_TOP+s*SYSTEM_HEIGHT}
-function noteX(n){return measureX(n.measure)+12+(n.slot/GRID_COUNT)*(MEASURE_WIDTH-24)}
-function updateCursorPosition(){
+const NS="http://www.w3.org/2000/svg";
+const MW=220,SX=60,TOP=92,SH=190,SS=12,GRID=16;
+let state={title:"新しい曲",key:"C",tempo:100,measures:8,systems:2,notes:[],chords:{},lyrics:{},marks:{}};
+let cursor={measure:0,slot:0},selectedTool="pen",inputMode="pen",selectedDuration=4,selectedNoteId=null;
+let octaveBase=4,soundEnabled=true,panelOpen=true;
+let undoStack=[],redoStack=[],audioContext=null;
+let penPointerId=null,penSystem=null,ghostNote=null,ghostGroup=null;
+let cursorDragging=false,cursorPointerId=null;
+let previewOsc=null,previewGain=null,previewMidi=null;
+let playTimer=null,activeOscillators=[];
+
+/* 【共通処理】 */
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function msg(t){$("status").textContent=t}
+function systemOf(m){return Math.floor(m/4)}
+function colOf(m){return m%4}
+function mx(m){return SX+colOf(m)*MW}
+function sy(s){return TOP+s*SH}
+function nx(n){return mx(n.measure)+12+n.slot/GRID*(MW-24)}
+function snapshot(){undoStack.push(JSON.stringify(state));if(undoStack.length>80)undoStack.shift();redoStack=[];historyButtons()}
+function historyButtons(){$("undoBtn").disabled=!undoStack.length;$("redoBtn").disabled=!redoStack.length}
+function svgEl(tag,attrs,parent){
+const e=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>e.setAttribute(k,v));if(parent)parent.appendChild(e);return e;
+}
+function textEl(parent,x,y,text,cls="",attrs={}){
+const e=svgEl("text",{x,y,class:cls,...attrs},parent);e.textContent=text;return e;
+}
+function coords(e){
+const r=$("score").getBoundingClientRect(),v=$("score").viewBox.baseVal;
+return{x:(e.clientX-r.left)/r.width*v.width,y:(e.clientY-r.top)/r.height*v.height};
+}
+function pitchInfo(midi){
+const names=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
+const name=names[(midi%12+12)%12],octave=Math.floor(midi/12)-1;
+const map={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
+return{name,octave,step:octave*7+map[name[0]],accidental:name.includes("♯")?"♯":""};
+}
+function midiStep(step){
+const letters=["C","D","E","F","G","A","B"],base={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
+return(Math.floor(step/7)+1)*12+base[letters[(step%7+7)%7]];
+}
+function midiAtY(y,top){return midiStep(4*7+2+Math.round((top+48-y)/6))}
+function notePos(n){
+const s=systemOf(n.measure),i=pitchInfo(n.midi),yTop=sy(s);
+return{x:nx(n),y:yTop+48-(i.step-(4*7+2))*6,yTop,info:i};
+}
+function cursorText(){
 $("cursorPosition").textContent=`${cursor.measure+1}小節 ${cursor.slot+1}/16`;
 $("cursorLeftBtn").disabled=cursor.measure===0&&cursor.slot===0;
 $("cursorRightBtn").disabled=cursor.measure===state.measures-1&&cursor.slot===15;
 }
-function moveCursorBy(amount){
-let absolute=clamp(cursor.measure*16+cursor.slot+amount,0,state.measures*16-1);
-cursor={measure:Math.floor(absolute/16),slot:absolute%16};selectedNoteId=null;renderScore();updateCursorPosition();
-showStatus(`${cursor.measure+1}小節・${cursor.slot+1}/16 の位置`);
-}
-function svgCoordinates(event){
-const svg=$("score"),rect=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
-return{x:(event.clientX-rect.left)/rect.width*vb.width,y:(event.clientY-rect.top)/rect.height*vb.height};
-}
-/* 【共通処理・操作履歴】ここまで */
 
-/* 【SVG描画補助】ここから */
-function svgElement(tag,attrs={},parent){
-const el=document.createElementNS(SVG_NS,tag);
-Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,v));
-if(parent)parent.appendChild(el);
-return el;
+/* 【音の再生】 */
+function freq(m){return 440*Math.pow(2,(m-69)/12)}
+function getAudio(){
+const A=window.AudioContext||window.webkitAudioContext;
+if(!A)return null;
+audioContext=audioContext||new A();
+if(audioContext.state==="suspended")audioContext.resume();
+return audioContext;
 }
-function svgText(parent,x,y,text,className,attrs={}){
-const el=svgElement("text",{x,y,class:className||"",...attrs},parent);el.textContent=text;return el;
+function playMidi(m){
+if(!soundEnabled)return;
+const ac=getAudio();if(!ac)return;
+const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;
+o.type="sine";o.frequency.value=freq(m);
+g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.15,t+.02);g.gain.setValueAtTime(.15,t+.18);g.gain.linearRampToValueAtTime(.0001,t+.32);
+o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.34);
+activeOscillators.push(o);o.onended=()=>activeOscillators=activeOscillators.filter(x=>x!==o);
 }
-/* 【SVG描画補助】ここまで */
+function stopPreview(){
+if(previewOsc&&audioContext){
+try{const t=audioContext.currentTime;previewGain.gain.cancelScheduledValues(t);previewGain.gain.setValueAtTime(.08,t);previewGain.gain.linearRampToValueAtTime(.0001,t+.05);previewOsc.stop(t+.06)}catch(e){}
+}
+previewOsc=null;previewGain=null;previewMidi=null;
+}
+function startPreview(m){
+if(!soundEnabled){stopPreview();return}
+if(previewMidi===m&&previewOsc)return;
+stopPreview();const ac=getAudio();if(!ac)return;
+const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;
+o.type="sine";o.frequency.value=freq(m);
+g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.12,t+.025);
+o.connect(g);g.connect(ac.destination);o.start(t);
+previewOsc=o;previewGain=g;previewMidi=m;
+}
 
-/* 【音名・音符の描画】ここから */
-function pitchInfo(midi){
-const names=["C","C♯","D","D♯","E","F","F♯","G","G♯","A","A♯","B"];
-const name=names[((midi%12)+12)%12],octave=Math.floor(midi/12)-1,natural=name[0];
-const map={C:0,D:1,E:2,F:3,G:4,A:5,B:6};
-return{name,octave,step:octave*7+map[natural],accidental:name.includes("♯")?"♯":""};
+/* 【履歴】 */
+function undo(){
+if(!undoStack.length)return;
+redoStack.push(JSON.stringify(state));state=JSON.parse(undoStack.pop());
+selectedNoteId=null;cursor.measure=clamp(cursor.measure,0,state.measures-1);renderAll();historyButtons();
 }
-function midiFromDiatonicStep(step){
-const letters=["C","D","E","F","G","A","B"],base={C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-const octave=Math.floor(step/7),letter=letters[((step%7)+7)%7];
-return(octave+1)*12+base[letter];
+function redo(){
+if(!redoStack.length)return;
+undoStack.push(JSON.stringify(state));state=JSON.parse(redoStack.pop());
+selectedNoteId=null;cursor.measure=clamp(cursor.measure,0,state.measures-1);renderAll();historyButtons();
 }
-function midiFromStaffY(y,top){
-const steps=Math.round((top+48-y)/6);
-return midiFromDiatonicStep(4*7+2+steps);
-}
-function notePosition(note){
-const system=measureSystem(note.measure),x=noteX(note),yTop=systemY(system),info=pitchInfo(note.midi);
-return{x,y:yTop+48-(info.step-(4*7+2))*6,yTop,info};
-}
-function getBeamGroups(){
-const groups=[];
-for(let measure=0;measure<state.measures;measure++){
-const events=state.notes.filter(n=>n.measure===measure).slice().sort((a,b)=>a.slot-b.slot);
+
+/* 【連桁】 */
+function beamGroups(){
+const result=[];
+for(let m=0;m<state.measures;m++){
+const list=state.notes.filter(n=>n.measure===m).sort((a,b)=>a.slot-b.slot);
 let group=[];
-for(const note of events){
-const eligible=!note.rest&&(note.duration===1||note.duration===2);
-if(!eligible){if(group.length>=2)groups.push(group);group=[];continue}
-if(!group.length){group=[note];continue}
-const prev=group[group.length-1];
-const sameBeat=Math.floor(prev.slot/4)===Math.floor(note.slot/4);
-const touching=prev.slot+prev.duration===note.slot;
-if(sameBeat&&touching)group.push(note);
-else{if(group.length>=2)groups.push(group);group=[note]}
+for(const n of list){
+if(n.rest||(n.duration!==1&&n.duration!==2)){
+if(group.length>1)result.push(group);group=[];continue;
 }
-if(group.length>=2)groups.push(group);
+if(!group.length){group=[n];continue}
+const p=group[group.length-1];
+if(Math.floor(p.slot/4)===Math.floor(n.slot/4)&&p.slot+p.duration===n.slot)group.push(n);
+else{if(group.length>1)result.push(group);group=[n]}
 }
-return groups;
+if(group.length>1)result.push(group);
 }
-function isNoteBeamed(note,groups){return groups.some(g=>g.some(n=>n.id===note.id))}
+return result;
+}
+function beamed(n,groups){return groups.some(g=>g.some(x=>x.id===n.id))}
 function drawBeams(svg){
-getBeamGroups().forEach(group=>{
-const positions=group.map(note=>{const p=notePosition(note);return{note,x:p.x+6,y:p.y-37}});
-const first=positions[0],last=positions[positions.length-1];
-svgElement("line",{x1:first.x,y1:first.y,x2:last.x,y2:last.y,stroke:"#292722","stroke-width":4,"stroke-linecap":"round"},svg);
-positions.forEach((p,i)=>{
-if(p.note.duration!==1)return;
-const next=positions[i+1],prev=positions[i-1];
-if(next&&next.note.duration===1){
-svgElement("line",{x1:p.x,y1:p.y+6,x2:next.x,y2:next.y+6,stroke:"#292722","stroke-width":3,"stroke-linecap":"round"},svg);
-}else if(!prev||prev.note.duration!==1){
-svgElement("line",{x1:p.x,y1:p.y+6,x2:p.x+10,y2:p.y+6,stroke:"#292722","stroke-width":3,"stroke-linecap":"round"},svg);
-}
+const groups=beamGroups();
+groups.forEach(g=>{
+const p=g.map(n=>{const a=notePos(n);return{x:a.x+6,y:a.y-37,n}});
+svgEl("line",{x1:p[0].x,y1:p[0].y,x2:p[p.length-1].x,y2:p[p.length-1].y,stroke:"#292722","stroke-width":4,"stroke-linecap":"round"},svg);
+p.forEach((a,i)=>{
+if(a.n.duration!==1)return;
+const next=p[i+1],prev=p[i-1];
+if(next&&next.n.duration===1)svgEl("line",{x1:a.x,y1:a.y+6,x2:next.x,y2:next.y+6,stroke:"#292722","stroke-width":3},svg);
+else if(!prev||prev.n.duration!==1)svgEl("line",{x1:a.x,y1:a.y+6,x2:a.x+10,y2:a.y+6,stroke:"#292722","stroke-width":3},svg);
 });
 });
 }
-function drawNote(svg,note){
-const{x,y,yTop,info}=notePosition(note);
-const group=svgElement("g",{"data-note-id":note.id,cursor:"pointer"},svg);
-const selected=note.id===selectedNoteId,beamed=isNoteBeamed(note);
-if(selected)svgElement("circle",{cx:x,cy:y,r:12,fill:"#e4f1e8",stroke:"#29945b","stroke-width":1.5},group);
-if(y>yTop+48)for(let ly=yTop+60;ly<=y;ly+=12)svgElement("line",{x1:x-10,y1:ly,x2:x+10,y2:ly,class:"staff-line"},group);
-if(y<yTop)for(let ly=yTop-12;ly>=y;ly-=12)svgElement("line",{x1:x-10,y1:ly,x2:x+10,y2:ly,class:"staff-line"},group);
-const open=note.duration>=8&&!note.rest;
-const head=svgElement("ellipse",{cx:x,cy:y,rx:7,ry:4.8,transform:`rotate(-20 ${x} ${y})`,class:"note-head"+(open?" open":"")},group);
-if(selected)head.classList.add("note-selected");
-if(note.rest){svgText(group,x-5,y+5,"𝄽","",{"font-size":"22",fill:"#292722"})}
-else{
-if(info.accidental)svgText(group,x-17,y+4,info.accidental,"",{"font-size":"15",fill:"#292722"});
-if(!open){
-const sx=x+6,sy=y-37;
-svgElement("line",{x1:sx,y1:y,x2:sx,y2:sy,class:"note-stem"},group);
-if(!beamed&&note.duration<=2){
-for(let f=0;f<(note.duration===1?2:1);f++){
-const fy=sy+f*9;
-svgElement("path",{d:`M ${sx} ${fy} Q ${sx+15} ${fy+8} ${sx+8} ${fy+17}`,class:"note-flag"},group);
-}
-}
-}
-}
-group.addEventListener("click",event=>{
-event.stopPropagation();
-if(selectedTool==="eraser"){snapshot();state.notes=state.notes.filter(n=>n.id!==note.id);selectedNoteId=null;renderAll();showStatus("音符を削除したよ");return}
-if(selectedTool==="select"||selectedTool==="pen"){selectedNoteId=note.id;cursor={measure:note.measure,slot:note.slot};renderScore();showStatus("音符を選択したよ")}
-});
-}
-function drawGhostNote(svg,note){
-const{x,y,yTop,info}=notePosition(note);
-const group=svgElement("g",{"data-ghost-note":"true","pointer-events":"none"},svg);ghostGroup=group;
-if(y>yTop+48)for(let ly=yTop+60;ly<=y;ly+=12)svgElement("line",{x1:x-10,y1:ly,x2:x+10,y2:ly,class:"ghost-note-ledger"},group);
-if(y<yTop)for(let ly=yTop-12;ly>=y;ly-=12)svgElement("line",{x1:x-10,y1:ly,x2:x+10,y2:ly,class:"ghost-note-ledger"},group);
-const open=note.duration>=8;
-svgElement("ellipse",{cx:x,cy:y,rx:7,ry:4.8,transform:`rotate(-20 ${x} ${y})`,class:"ghost-note-head"+(open?" open":"")},group);
-if(info.accidental)svgText(group,x-17,y+4,info.accidental,"ghost-note-accidental");
-if(!open){
-const sx=x+6,sy=y-37;
-svgElement("line",{x1:sx,y1:y,x2:sx,y2:sy,class:"ghost-note-stem"},group);
-if(note.duration<=2)for(let f=0;f<(note.duration===1?2:1);f++){
-const fy=sy+f*9;svgElement("path",{d:`M ${sx} ${fy} Q ${sx+15} ${fy+8} ${sx+8} ${fy+17}`,class:"ghost-note-flag"},group);
-}
-}
-}
-/* 【音名・音符の描画】ここまで */
 
-/* 【楽譜表示・小節ガイド】ここから */
+/* 【音符描画】 */
+function drawNote(svg,n,groups){
+const p=notePos(n),{x,y,yTop,info}=p,g=svgEl("g",{"data-note-id":n.id},svg);
+if(n.id===selectedNoteId)svgEl("circle",{cx:x,cy:y,r:12,fill:"#e4f1e8",stroke:"#29945b","stroke-width":1.5},g);
+if(y>yTop+48)for(let a=yTop+60;a<=y;a+=12)svgEl("line",{x1:x-10,y1:a,x2:x+10,y2:a,class:"staff-line"},g);
+if(y<yTop)for(let a=yTop-12;a>=y;a-=12)svgEl("line",{x1:x-10,y1:a,x2:x+10,y2:a,class:"staff-line"},g);
+if(n.rest)textEl(g,x-5,y+5,"𝄽","",{"font-size":"22",fill:"#292722"});
+else{
+const open=n.duration>=8;
+const head=svgEl("ellipse",{cx:x,cy:y,rx:7,ry:4.8,transform:`rotate(-20 ${x} ${y})`,class:"note-head"+(open?" open":"")},g);
+if(n.id===selectedNoteId)head.classList.add("note-selected");
+if(info.accidental)textEl(g,x-17,y+4,info.accidental,"",{"font-size":"15"});
+if(!open){
+const sx=x+6,st=y-37;svgEl("line",{x1:sx,y1:y,x2:sx,y2:st,class:"note-stem"},g);
+if(!beamed(n,groups)&&n.duration<=2)for(let f=0;f<(n.duration===1?2:1);f++){
+const fy=st+f*9;svgEl("path",{d:`M ${sx} ${fy} Q ${sx+15} ${fy+8} ${sx+8} ${fy+17}`,class:"note-flag"},g);
+}
+}
+}
+g.addEventListener("click",e=>{
+e.stopPropagation();
+if(selectedTool==="eraser"){snapshot();state.notes=state.notes.filter(x=>x.id!==n.id);selectedNoteId=null;renderAll();saveData();msg("音符を削除したよ");return}
+if(selectedTool==="select"||selectedTool==="pen"){
+selectedNoteId=n.id;cursor={measure:n.measure,slot:n.slot};renderScore();msg("音符を選択したよ");
+}
+});
+}
+function drawGhost(svg,n){
+const p=notePos(n),{x,y,yTop,info}=p,g=svgEl("g",{"pointer-events":"none"},svg);ghostGroup=g;
+if(y>yTop+48)for(let a=yTop+60;a<=y;a+=12)svgEl("line",{x1:x-10,y1:a,x2:x+10,y2:a,class:"ghost-note-ledger"},g);
+if(y<yTop)for(let a=yTop-12;a>=y;a-=12)svgEl("line",{x1:x-10,y1:a,x2:x+10,y2:a,class:"ghost-note-ledger"},g);
+const open=n.duration>=8;
+svgEl("ellipse",{cx:x,cy:y,rx:7,ry:4.8,transform:`rotate(-20 ${x} ${y})`,class:"ghost-note-head"+(open?" open":"")},g);
+if(info.accidental)textEl(g,x-17,y+4,info.accidental,"ghost-note-accidental");
+if(!open){
+const sx=x+6,st=y-37;svgEl("line",{x1:sx,y1:y,x2:sx,y2:st,class:"ghost-note-stem"},g);
+if(n.duration<=2)for(let f=0;f<(n.duration===1?2:1);f++){const fy=st+f*9;svgEl("path",{d:`M ${sx} ${fy} Q ${sx+15} ${fy+8} ${sx+8} ${fy+17}`,class:"ghost-note-flag"},g)}
+}
+}
+
+/* 【カーソル描画】 */
+function drawCursor(svg){
+const y=sy(systemOf(cursor.measure)),x=mx(cursor.measure)+12+cursor.slot/GRID*(MW-24);
+const g=svgEl("g",{transform:`translate(${x},0)`},svg);
+svgEl("line",{x1:0,y1:y-13,x2:0,y2:y+55,class:"cursor-line"},g);
+svgEl("path",{d:`M -5 ${y-15} L 5 ${y-15} L 0 ${y-7} Z`,class:"cursor-cap"},g);
+const h=svgEl("circle",{cx:0,cy:y-17,r:12,class:"cursor-handle"},g);
+h.addEventListener("pointerdown",e=>{
+e.preventDefault();e.stopPropagation();cursorDragging=true;cursorPointerId=e.pointerId;msg("緑の丸を動かしているよ");
+});
+}
+
+/* 【楽譜描画】 */
 function renderScore(){
 const svg=$("score");svg.innerHTML="";ghostGroup=null;
-const systems=Math.max(1,Math.ceil(state.measures/4));
-const height=Math.max(300,systems*SYSTEM_HEIGHT+65);
+const systems=Math.max(1,Math.ceil(state.measures/4)),height=Math.max(300,systems*SH+65);
 svg.setAttribute("viewBox",`0 0 1000 ${height}`);
-for(let system=0;system<systems;system++){
-const y=systemY(system),first=system*4,last=Math.min(first+4,state.measures);
-for(let line=0;line<5;line++)svgElement("line",{x1:START_X,y1:y+line*STAFF_SPACING,x2:START_X+4*MEASURE_WIDTH,y2:y+line*STAFF_SPACING,class:"staff-line"},svg);
-svgText(svg,18,y+47,"𝄞","",{"font-size":"48",fill:"#292722"});
-svgText(svg,43,y+25,"4","",{"font-size":"17","font-weight":"bold"});
-svgText(svg,43,y+45,"4","",{"font-size":"17","font-weight":"bold"});
-for(let measure=first;measure<last;measure++){
-const x=measureX(measure),inner=x+12,width=MEASURE_WIDTH-24;
-svgText(svg,x+3,y-12,String(measure+1),"measure-number");
-svgElement("line",{x1:x+MEASURE_WIDTH,y1:y,x2:x+MEASURE_WIDTH,y2:y+48,class:"measure-line"},svg);
-for(let i=1;i<GRID_COUNT;i++){
-const gx=inner+width*i/GRID_COUNT,cls=i%4===0?"grid-quarter":i%2===0?"grid-eighth":"grid-sixteenth";
-svgElement("line",{x1:gx,y1:y-3,x2:gx,y2:y+52,class:cls},svg);
+for(let s=0;s<systems;s++){
+const y=sy(s),first=s*4,last=Math.min(first+4,state.measures);
+for(let l=0;l<5;l++)svgEl("line",{x1:SX,y1:y+l*SS,x2:SX+4*MW,y2:y+l*SS,class:"staff-line"},svg);
+textEl(svg,18,y+47,"𝄞","",{"font-size":"48"});
+textEl(svg,43,y+25,"4","",{"font-size":"17","font-weight":"bold"});
+textEl(svg,43,y+45,"4","",{"font-size":"17","font-weight":"bold"});
+for(let m=first;m<last;m++){
+const x=mx(m),inner=x+12,w=MW-24;
+textEl(svg,x+3,y-12,String(m+1),"measure-number");
+svgEl("line",{x1:x+MW,y1:y,x2:x+MW,y2:y+48,class:"measure-line"},svg);
+for(let i=1;i<GRID;i++){
+const gx=inner+w*i/GRID,cl=i%4===0?"grid-quarter":i%2===0?"grid-eighth":"grid-sixteenth";
+svgEl("line",{x1:gx,y1:y-3,x2:gx,y2:y+52,class:cl},svg);
 }
-const hit=svgElement("rect",{x:inner,y:y-9,width,height:75,class:"staff-hit","data-measure":measure},svg);
-hit.addEventListener("pointerdown",event=>{
+const hit=svgEl("rect",{x:inner,y:y-9,width:w,height:75,class:"staff-hit"},svg);
+hit.addEventListener("pointerdown",e=>{
 if(inputMode!=="pen"||selectedTool!=="pen")return;
-event.preventDefault();event.stopPropagation();
+e.preventDefault();e.stopPropagation();
 if(penPointerId!==null)return;
-penPointerId=event.pointerId;penSystem=system;
-try{svg.setPointerCapture(event.pointerId)}catch(e){}
-updateGhostFromPointer(event);
+penPointerId=e.pointerId;penSystem=s;
+updateGhostFromPointer(e);
 });
-hit.addEventListener("click",event=>{
-if(cursorDragging||event.target.closest("[data-note-id]"))return;
+hit.addEventListener("click",e=>{
 if(inputMode==="pen"&&selectedTool==="pen")return;
-const point=svgCoordinates(event),slot=clamp(Math.round((point.x-inner)/width*GRID_COUNT),0,15);
-cursor={measure,slot};selectedNoteId=null;
-if(selectedTool==="eraser"||selectedTool==="select"){renderScore();showStatus(selectedTool==="eraser"?"消したい音符をタップしてね":"音符を選択してね");return}
+const q=coords(e),slot=clamp(Math.round((q.x-inner)/w*16),0,15);
+cursor={measure:m,slot};selectedNoteId=null;
 if(selectedTool==="chord"){editChord();return}
 if(selectedTool==="lyric"){editLyric();return}
 if(selectedTool==="mark"){editMark();return}
-renderScore();updateCursorPosition();showStatus(`${measure+1}小節 ・ ${slot+1}/16 の位置を選択中`);
+renderScore();cursorText();msg("入力位置を選択したよ");
 });
 }
 }
-state.notes.forEach(n=>{if(n.measure<state.measures)drawNote(svg,n)});
+const groups=beamGroups();
+state.notes.forEach(n=>{if(n.measure<state.measures)drawNote(svg,n,groups)});
 drawBeams(svg);
-if(ghostNote)drawGhostNote(svg,ghostNote);
-drawCursor(svg);
-updateCursorPosition();
+if(ghostNote)drawGhost(svg,ghostNote);
+drawCursor(svg);cursorText();
 }
-/* 【楽譜表示・小節ガイド】ここまで */
 
-/* 【カーソル表示・ドラッグ】ここから */
-function drawCursor(svg){
-const y=systemY(measureSystem(cursor.measure)),x=measureX(cursor.measure)+12+(cursor.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
-const group=svgElement("g",{id:"cursorGroup",transform:`translate(${x},0)`},svg);
-svgElement("line",{x1:0,y1:y-13,x2:0,y2:y+55,class:"cursor-line"},group);
-svgElement("path",{d:`M -5 ${y-15} L 5 ${y-15} L 0 ${y-7} Z`,class:"cursor-cap"},group);
-const handle=svgElement("circle",{cx:0,cy:y-17,r:12,class:"cursor-handle","data-cursor-handle":"true"},group);
-handle.addEventListener("pointerdown",event=>{
-event.preventDefault();event.stopPropagation();cursorDragging=true;cursorPointerId=event.pointerId;
-try{svg.setPointerCapture(event.pointerId)}catch(e){}
-showStatus("緑の丸を動かして入力位置を調整中");
-});
-}
-/* 【カーソル表示・ドラッグ】ここまで */
-
-/* 【ペン入力・水色プレビュー】ここから */
-function midiFrequency(midi){return 440*Math.pow(2,(midi-69)/12)}
-function stopGhostPreview(){
-if(ghostPreviewGain&&audioContext){
-const gain=ghostPreviewGain,osc=ghostPreviewOsc;
-try{const now=audioContext.currentTime;gain.gain.cancelScheduledValues(now);gain.gain.setValueAtTime(Math.max(gain.gain.value,.0001),now);gain.gain.linearRampToValueAtTime(.0001,now+.06);if(osc)osc.stop(now+.07)}catch(e){}
-}
-ghostPreviewOsc=null;ghostPreviewGain=null;ghostPreviewMidi=null;
-}
-function startGhostPreview(midi){
-if(!soundEnabled){stopGhostPreview();return}
-if(ghostPreviewMidi===midi&&ghostPreviewOsc)return;
-stopGhostPreview();
-const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
-audioContext=audioContext||new AudioCtx();if(audioContext.state==="suspended")audioContext.resume();
-const osc=audioContext.createOscillator(),gain=audioContext.createGain(),now=audioContext.currentTime;
-osc.type="sine";osc.frequency.value=midiFrequency(midi);
-gain.gain.setValueAtTime(.0001,now);gain.gain.linearRampToValueAtTime(.12,now+.025);
-osc.connect(gain);gain.connect(audioContext.destination);osc.start(now);
-ghostPreviewOsc=osc;ghostPreviewGain=gain;ghostPreviewMidi=midi;
-}
-function clearGhostNote(){
-ghostNote=null;if(ghostGroup){ghostGroup.remove();ghostGroup=null}stopGhostPreview();
-}
-function updateGhostFromPointer(event){
+/* 【ペン入力プレビュー】 */
+function updateGhostFromPointer(e){
 if(penPointerId===null||penSystem===null)return;
-const point=svgCoordinates(event),system=penSystem,first=system*4,last=Math.min(first+3,state.measures-1);
-const column=clamp(Math.floor((point.x-START_X)/MEASURE_WIDTH),0,3);
-const measure=clamp(first+column,first,last),inner=measureX(measure)+12,width=MEASURE_WIDTH-24;
-const slot=clamp(Math.round((point.x-inner)/width*GRID_COUNT),0,15);
-const midi=midiFromStaffY(point.y,systemY(system));
+const q=coords(e),s=penSystem,first=s*4,last=Math.min(first+3,state.measures-1);
+const column=clamp(Math.floor((q.x-SX)/MW),0,3);
+const measure=clamp(first+column,first,last),inner=mx(measure)+12,w=MW-24;
+const slot=clamp(Math.round((q.x-inner)/w*16),0,15);
+const midi=midiAtY(q.y,sy(s));
 ghostNote={measure,slot,midi,duration:selectedDuration,rest:false};
-startGhostPreview(midi);
+startPreview(midi);
 if(ghostGroup){ghostGroup.remove();ghostGroup=null}
-drawGhostNote($("score"),ghostNote);
+drawGhost($("score"),ghostNote);
 }
-function commitGhostNote(){
-if(!ghostNote){stopGhostPreview();return}
-const data={...ghostNote};cursor={measure:data.measure,slot:data.slot};snapshot();
+function clearGhost(){
+ghostNote=null;if(ghostGroup){ghostGroup.remove();ghostGroup=null}stopPreview();
+}
+function advanceCursor(d){
+let a=cursor.measure*16+cursor.slot+(d===16?16:d);
+a=clamp(a,0,state.measures*16-1);cursor={measure:Math.floor(a/16),slot:a%16};
+}
+
+/* 【重要：タッチ終了を画面全体で受け取る】 */
+function finishPenInput(pointerId){
+if(penPointerId===null)return;
+if(pointerId!==undefined&&pointerId!==null&&pointerId!==penPointerId)return;
+const data=ghostNote?{...ghostNote}:null;
+penPointerId=null;penSystem=null;
+stopPreview();
+if(!data){clearGhost();renderScore();return}
+snapshot();
 const note={id:"n"+Date.now()+Math.random().toString(16).slice(2),measure:data.measure,slot:data.slot,midi:data.midi,duration:data.duration,rest:false};
-state.notes.push(note);selectedNoteId=note.id;clearGhostNote();
-if(soundEnabled)playMidi(note.midi);
-advanceCursor(note.duration);renderAll();const info=pitchInfo(note.midi);showStatus(`${info.name}${info.octave} を入力したよ`);
+state.notes.push(note);selectedNoteId=note.id;
+cursor={measure:data.measure,slot:data.slot};
+clearGhost();playMidi(note.midi);advanceCursor(note.duration);
+renderAll();saveData();
+const p=pitchInfo(note.midi);msg(`${p.name}${p.octave} を入力・保存したよ`);
 }
-/* 【ペン入力・水色プレビュー】ここまで */
+function cancelPenInput(pointerId){
+if(penPointerId===null)return;
+if(pointerId!==undefined&&pointerId!==null&&pointerId!==penPointerId)return;
+penPointerId=null;penSystem=null;clearGhost();renderScore();
+}
+function setupPointerEvents(){
+/* SVGの外で指を離しても、windowが確定イベントを受け取る */
+window.addEventListener("pointermove",e=>{
+if(penPointerId===e.pointerId){e.preventDefault();updateGhostFromPointer(e);return}
+if(cursorDragging&&cursorPointerId===e.pointerId){
+e.preventDefault();const q=coords(e);
+const offset=Math.floor((q.x-SX)/MW),m=clamp(offset,0,state.measures-1);
+const inside=q.x-(SX+offset*MW),slot=clamp(Math.round((inside-12)/(MW-24)*16),0,15);
+cursor={measure:m,slot};renderScore();
+}
+},{passive:false});
+window.addEventListener("pointerup",e=>{
+if(penPointerId===e.pointerId){
+/* 指を離した最後の位置も反映してから確定 */
+updateGhostFromPointer(e);finishPenInput(e.pointerId);
+}
+if(cursorDragging&&cursorPointerId===e.pointerId){cursorDragging=false;cursorPointerId=null;renderScore()}
+});
+window.addEventListener("pointercancel",e=>{
+/* キャンセルでも、すでにプレビューがあれば音符として確定 */
+if(penPointerId===e.pointerId){
+if(ghostNote)finishPenInput(e.pointerId);else cancelPenInput(e.pointerId);
+}
+if(cursorDragging&&cursorPointerId===e.pointerId){cursorDragging=false;cursorPointerId=null;renderScore()}
+});
+}
 
-/* 【五線譜のタッチ操作】ここから */
-function setupScorePointerEvents(){
-const svg=$("score");
-svg.addEventListener("pointermove",event=>{
-if(penPointerId===event.pointerId){
-event.preventDefault();updateGhostFromPointer(event);return;
-}
-if(cursorDragging&&cursorPointerId===event.pointerId){
-event.preventDefault();
-const point=svgCoordinates(event);
-cursorFromSvgX(point.x);
-const system=clamp(Math.round((point.y-STAFF_TOP)/SYSTEM_HEIGHT),0,Math.ceil(state.measures/4)-1);
-const targetMeasure=clamp(system*4+measureColumn(cursor.measure),0,state.measures-1);
-cursor.measure=targetMeasure;
-renderScore();
-}
-});
-function finishPointer(event){
-if(penPointerId===event.pointerId){
-penPointerId=null;penSystem=null;commitGhostNote();
-}
-if(cursorDragging&&cursorPointerId===event.pointerId){
-cursorDragging=false;cursorPointerId=null;renderScore();updateCursorPosition();
-}
-}
-svg.addEventListener("pointerup",finishPointer);
-svg.addEventListener("pointercancel",event=>{
-if(penPointerId===event.pointerId){penPointerId=null;penSystem=null;clearGhostNote();renderScore()}
-if(cursorPointerId===event.pointerId){cursorDragging=false;cursorPointerId=null;renderScore()}
-});
-svg.addEventListener("lostpointercapture",event=>{
-if(penPointerId===event.pointerId){penPointerId=null;penSystem=null;commitGhostNote()}
-if(cursorPointerId===event.pointerId){cursorDragging=false;cursorPointerId=null;renderScore()}
-});
-}
-/* 【五線譜のタッチ操作】ここまで */
-
-/* 【鍵盤の表示】ここから */
+/* 【鍵盤】 */
 function buildKeyboard(){
-const keyboard=$("keyboard");keyboard.innerHTML="";
-const start=octaveBase*12+12,total=24,whiteNotes=[0,2,4,5,7,9,11],positions={};let wi=0;
+const el=$("keyboard");el.innerHTML="";
+const start=octaveBase*12+12,total=24,white=[0,2,4,5,7,9,11],positions={};let wi=0;
 for(let i=0;i<total;i++){
-const midi=start+i,pitch=midi%12;if(!whiteNotes.includes(pitch))continue;
-const info=pitchInfo(midi),key=document.createElement("button");
-key.className="white-key";key.textContent=info.name+info.octave;key.dataset.midi=midi;positions[midi]=wi++;
-key.addEventListener("click",()=>handleKeyboardPress(midi,key));keyboard.appendChild(key);
+const midi=start+i,p=midi%12;if(!white.includes(p))continue;
+const info=pitchInfo(midi),b=document.createElement("button");
+b.className="white-key";b.textContent=info.name+info.octave;positions[midi]=wi++;
+b.addEventListener("click",()=>keyboardPress(midi,b));el.appendChild(b);
 }
-const blackBefore={1:0,3:2,6:5,8:7,10:9};
+const before={1:0,3:2,6:5,8:7,10:9};
 for(let i=0;i<total;i++){
-const midi=start+i,pitch=midi%12;if(!(pitch in blackBefore))continue;
-const natural=(midi-pitch)+blackBefore[pitch],index=positions[natural];if(index===undefined)continue;
-const key=document.createElement("button");key.className="black-key";key.textContent=pitchInfo(midi).name;key.dataset.midi=midi;
-key.style.left=((index+1)*WHITE_KEY_WIDTH-BLACK_KEY_WIDTH/2)+"px";
-key.addEventListener("click",()=>handleKeyboardPress(midi,key));keyboard.appendChild(key);
+const midi=start+i,p=midi%12;if(!(p in before))continue;
+const natural=midi-p+before[p],index=positions[natural];if(index===undefined)continue;
+const b=document.createElement("button");b.className="black-key";b.textContent=pitchInfo(midi).name;
+b.style.left=((index+1)*39-12.5)+"px";b.addEventListener("click",()=>keyboardPress(midi,b));el.appendChild(b);
 }
 $("octaveLabel").textContent=`C${octaveBase}〜B${octaveBase+1}`;
 }
-function handleKeyboardPress(midi,key){
-key.classList.add("pressed");setTimeout(()=>key.classList.remove("pressed"),130);
-if(inputMode==="keyboard"&&selectedTool==="pen")insertPitch(midi);
-else{playMidi(midi);const info=pitchInfo(midi);showStatus(soundEnabled?`${info.name}${info.octave} を試し弾き`:"音はOFFになっているよ")}
+function keyboardPress(m,b){
+b.classList.add("pressed");setTimeout(()=>b.classList.remove("pressed"),130);
+if(inputMode==="keyboard"&&selectedTool==="pen")insertPitch(m);
+else{playMidi(m);const p=pitchInfo(m);msg(`${p.name}${p.octave} を試し弾き`)}
 }
-/* 【鍵盤の表示】ここまで */
-
-/* 【音の発音・試し弾き】ここから */
-function playMidi(midi){
-if(!soundEnabled)return;
-const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)return;
-audioContext=audioContext||new AudioCtx();if(audioContext.state==="suspended")audioContext.resume();
-const start=audioContext.currentTime,osc=audioContext.createOscillator(),gain=audioContext.createGain();
-osc.type="sine";osc.frequency.value=midiFrequency(midi);
-gain.gain.setValueAtTime(.0001,start);gain.gain.linearRampToValueAtTime(.16,start+.015);gain.gain.setValueAtTime(.16,start+.18);gain.gain.linearRampToValueAtTime(.0001,start+.32);
-osc.connect(gain);gain.connect(audioContext.destination);osc.start(start);osc.stop(start+.34);
-activeOscillators.push(osc);osc.onended=()=>{activeOscillators=activeOscillators.filter(o=>o!==osc)};
-}
-function updateSoundButton(){$("soundToggleBtn").textContent=soundEnabled?"音 ON":"音 OFF";$("soundToggleBtn").classList.toggle("active",soundEnabled)}
-$("soundToggleBtn").addEventListener("click",()=>{
-soundEnabled=!soundEnabled;if(!soundEnabled)stopGhostPreview();updateSoundButton();
-showStatus(soundEnabled?"入力音・試し弾きをONにしたよ":"入力音・試し弾きをOFFにしたよ");
-});
-/* 【音の発音・試し弾き】ここまで */
-
-/* 【音符・休符の入力】ここから */
-function insertPitch(midi){
-if(cursor.measure>=state.measures){showStatus("入力できる小節がないよ");return}
-snapshot();const note={id:"n"+Date.now()+Math.random().toString(16).slice(2),measure:cursor.measure,slot:cursor.slot,midi,duration:selectedDuration,rest:false};
-state.notes.push(note);selectedNoteId=note.id;if(soundEnabled)playMidi(midi);advanceCursor(note.duration);renderAll();
-const info=pitchInfo(midi);showStatus(`${info.name}${info.octave} を入力したよ`);
+function insertPitch(m){
+snapshot();const n={id:"n"+Date.now()+Math.random(),measure:cursor.measure,slot:cursor.slot,midi:m,duration:selectedDuration,rest:false};
+state.notes.push(n);selectedNoteId=n.id;playMidi(m);advanceCursor(selectedDuration);renderAll();saveData();
 }
 function insertRest(){
-if(cursor.measure>=state.measures)return;
-snapshot();state.notes.push({id:"n"+Date.now()+Math.random().toString(16).slice(2),measure:cursor.measure,slot:cursor.slot,midi:64,duration:selectedDuration,rest:true});
-advanceCursor(selectedDuration);renderAll();showStatus("休符を入力したよ");
+snapshot();state.notes.push({id:"n"+Date.now()+Math.random(),measure:cursor.measure,slot:cursor.slot,midi:64,duration:selectedDuration,rest:true});
+advanceCursor(selectedDuration);renderAll();saveData();msg("休符を入力・保存したよ");
 }
-function advanceCursor(duration){
-let absolute=cursor.measure*16+cursor.slot+(duration===16?16:duration);
-absolute=clamp(absolute,0,state.measures*16-1);
-cursor={measure:Math.floor(absolute/16),slot:absolute%16};
-}
-/* 【音符・休符の入力】ここまで */
 
-/* 【入力モード・ツール・音符の長さ】ここから */
-function updateInputModeButtons(){
-$("penModeBtn").classList.toggle("active",inputMode==="pen");$("keyboardModeBtn").classList.toggle("active",inputMode==="keyboard");
+/* 【モード・ツール】 */
+function updateModes(){
+$("penModeBtn").classList.toggle("active",inputMode==="pen");
+$("keyboardModeBtn").classList.toggle("active",inputMode==="keyboard");
+document.querySelectorAll(".tool").forEach(b=>b.classList.toggle("active",b.dataset.tool===selectedTool));
+document.querySelectorAll(".duration").forEach(b=>b.classList.toggle("active",Number(b.dataset.duration)===selectedDuration));
 }
-function updateToolButtons(){document.querySelectorAll(".tool").forEach(b=>b.classList.toggle("active",b.dataset.tool===selectedTool))}
-function updateDurationButtons(){document.querySelectorAll(".duration").forEach(b=>b.classList.toggle("active",Number(b.dataset.duration)===selectedDuration))}
-$("penModeBtn").addEventListener("click",()=>{inputMode="pen";selectedTool="pen";updateInputModeButtons();updateToolButtons();showStatus("ペン入力モード。五線譜を押さえて音符を入力してね")});
-$("keyboardModeBtn").addEventListener("click",()=>{inputMode="keyboard";selectedTool="pen";updateInputModeButtons();updateToolButtons();showStatus("鍵盤入力モード。五線譜をタップして位置を決めてね")});
-document.querySelectorAll(".tool").forEach(btn=>btn.addEventListener("click",()=>{
-selectedTool=btn.dataset.tool;updateToolButtons();
+$("penModeBtn").addEventListener("click",()=>{inputMode="pen";selectedTool="pen";updateModes();msg("ペン入力モード。五線譜を押さえて音符を入力してね")});
+$("keyboardModeBtn").addEventListener("click",()=>{inputMode="keyboard";selectedTool="pen";updateModes();msg("鍵盤入力モード。五線譜で位置を決めて鍵盤を押してね")});
+document.querySelectorAll(".tool").forEach(b=>b.addEventListener("click",()=>{
+selectedTool=b.dataset.tool;updateModes();
 if(selectedTool==="chord")editChord();else if(selectedTool==="lyric")editLyric();else if(selectedTool==="mark")editMark();
-else showStatus(selectedTool==="eraser"?"消したい音符をタップしてね":selectedTool==="select"?"編集したい音符をタップしてね":inputMode==="pen"?"五線譜を押さえて音符を入力してね":"五線譜で位置を選び、鍵盤から入力してね");
+else msg(selectedTool==="eraser"?"消したい音符をタップしてね":selectedTool==="select"?"音符を選択してね":"ペン入力を使えるよ");
 }));
-document.querySelectorAll(".duration").forEach(btn=>btn.addEventListener("click",()=>{
-const v=Number(btn.dataset.duration);if(v===0){insertRest();return}selectedDuration=v;updateDurationButtons();
+document.querySelectorAll(".duration").forEach(b=>b.addEventListener("click",()=>{
+const d=Number(b.dataset.duration);if(d===0){insertRest();return}selectedDuration=d;updateModes();
 }));
-/* 【入力モード・ツール・音符の長さ】ここまで */
 
-/* 【カーソル左右移動】ここから */
-$("cursorLeftBtn").addEventListener("click",()=>moveCursorBy(-1));
-$("cursorRightBtn").addEventListener("click",()=>moveCursorBy(1));
-function cursorFromSvgX(x){
-const offset=Math.floor((x-START_X)/MEASURE_WIDTH),measure=clamp(offset,0,state.measures-1),inside=x-(START_X+offset*MEASURE_WIDTH);
-const slot=clamp(Math.round((inside-12)/(MEASURE_WIDTH-24)*16),0,15);
-cursor={measure,slot};
+/* 【カーソル移動】 */
+function moveCursor(d){
+let a=clamp(cursor.measure*16+cursor.slot+d,0,state.measures*16-1);
+cursor={measure:Math.floor(a/16),slot:a%16};selectedNoteId=null;renderScore();
 }
-/* 【カーソル左右移動】ここまで */
+$("cursorLeftBtn").addEventListener("click",()=>moveCursor(-1));
+$("cursorRightBtn").addEventListener("click",()=>moveCursor(1));
 
-/* 【コード名・歌詞・記号】ここから */
-function editChord(){
-const value=prompt(`小節 ${cursor.measure+1} のコード名を入力してね`,state.chords[cursor.measure]||"");if(value===null)return;snapshot();
-if(value.trim())state.chords[cursor.measure]=value.trim();else delete state.chords[cursor.measure];renderAll();
+/* 【コード・歌詞・記号】 */
+function editValue(kind,label){
+const value=prompt(`${cursor.measure+1}小節の${label}`,state[kind][cursor.measure]||"");
+if(value===null)return;snapshot();
+if(value.trim())state[kind][cursor.measure]=value.trim();else delete state[kind][cursor.measure];
+renderAll();saveData();
 }
-function editLyric(){
-const value=prompt(`小節 ${cursor.measure+1} の歌詞を入力してね`,state.lyrics[cursor.measure]||"");if(value===null)return;snapshot();
-if(value.trim())state.lyrics[cursor.measure]=value.trim();else delete state.lyrics[cursor.measure];renderAll();
-}
-function editMark(){
-const value=prompt(`小節 ${cursor.measure+1} の記号を入力してね（A、Bなど）`,state.marks[cursor.measure]||"");if(value===null)return;snapshot();
-if(value.trim())state.marks[cursor.measure]=value.trim();else delete state.marks[cursor.measure];renderAll();
-}
+function editChord(){editValue("chords","コード名")}
+function editLyric(){editValue("lyrics","歌詞")}
+function editMark(){editValue("marks","記号")}
 $("chordEditBtn").addEventListener("click",editChord);
 $("lyricEditBtn").addEventListener("click",editLyric);
-/* 【コード名・歌詞・記号】ここまで */
 
-/* 【曲情報の更新】ここから */
+/* 【曲情報】 */
 function syncMeta(){
 $("titleInput").value=state.title;$("keyInput").value=state.key;$("tempoInput").value=state.tempo;
 $("displayTitle").textContent=state.title||"無題";$("displayKey").textContent=state.key;$("displayTempo").textContent=state.tempo;
 }
-$("titleInput").addEventListener("change",()=>{snapshot();state.title=$("titleInput").value;syncMeta()});
-$("keyInput").addEventListener("change",()=>{snapshot();state.key=$("keyInput").value;syncMeta()});
-$("tempoInput").addEventListener("change",()=>{snapshot();state.tempo=clamp(Number($("tempoInput").value)||100,30,240);syncMeta()});
-/* 【曲情報の更新】ここまで */
+$("titleInput").addEventListener("change",()=>{snapshot();state.title=$("titleInput").value;syncMeta();saveData()});
+$("keyInput").addEventListener("change",()=>{snapshot();state.key=$("keyInput").value;syncMeta();saveData()});
+$("tempoInput").addEventListener("change",()=>{snapshot();state.tempo=clamp(Number($("tempoInput").value)||100,30,240);syncMeta();saveData()});
 
-/* 【小節・五線譜の追加削除】ここから */
-$("addMeasureBtn").addEventListener("click",()=>{snapshot();state.measures++;state.systems=Math.ceil(state.measures/4);renderAll();showStatus("小節を追加したよ")});
-$("addSystemBtn").addEventListener("click",()=>{snapshot();state.measures+=4;state.systems=Math.ceil(state.measures/4);renderAll();showStatus("五線譜を追加したよ")});
+/* 【小節追加・削除】 */
+$("addMeasureBtn").addEventListener("click",()=>{snapshot();state.measures++;state.systems=Math.ceil(state.measures/4);renderAll();saveData()});
+$("addSystemBtn").addEventListener("click",()=>{snapshot();state.measures+=4;state.systems=Math.ceil(state.measures/4);renderAll();saveData()});
 $("removeSystemBtn").addEventListener("click",()=>{
-if(state.measures<=4){showStatus("これ以上は削除できないよ");return}
+if(state.measures<=4)return msg("これ以上は削除できないよ");
 if(!confirm("最後の五線譜を削除する？"))return;
-snapshot();const count=Math.max(4,state.measures-4);state.measures=count;state.notes=state.notes.filter(n=>n.measure<count);
+snapshot();const count=state.measures-4;state.measures=count;
+state.notes=state.notes.filter(n=>n.measure<count);
 ["chords","lyrics","marks"].forEach(k=>Object.keys(state[k]).forEach(i=>{if(Number(i)>=count)delete state[k][i]}));
-cursor.measure=Math.min(cursor.measure,count-1);renderAll();
+cursor.measure=Math.min(cursor.measure,count-1);renderAll();saveData();
 });
-/* 【小節・五線譜の追加削除】ここまで */
 
-/* 【保存・読み込み・書き出し】ここから */
-function saveData(){localStorage.setItem("otolis_myscore_data",JSON.stringify(state));showStatus("この端末に保存したよ")}
-$("saveBtn").addEventListener("click",saveData);
-function loadSavedData(){
-const saved=localStorage.getItem("otolis_myscore_data");if(!saved)return;
-try{const data=JSON.parse(saved);state={...state,...data};if(!Array.isArray(state.notes))state.notes=[];state.measures=Math.max(1,Number(state.measures)||8)}catch(e){console.warn("保存データを読み込めませんでした",e)}
+/* 【保存・読み込み】 */
+function saveData(){
+try{localStorage.setItem("otolis_myscore_data",JSON.stringify(state));msg("この端末に保存したよ")}
+catch(e){msg("保存できなかったよ。端末の空き容量を確認してね")}
 }
+function loadSavedData(){
+try{
+const raw=localStorage.getItem("otolis_myscore_data");if(!raw)return;
+const data=JSON.parse(raw);state={...state,...data};
+if(!Array.isArray(state.notes))state.notes=[];
+state.measures=Math.max(1,Number(state.measures)||8);
+}catch(e){console.warn("保存データを読み込めませんでした",e)}
+}
+$("saveBtn").addEventListener("click",saveData);
 $("exportBtn").addEventListener("click",()=>{
 const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");
-a.href=url;a.download=(state.title||"myscore")+".json";a.click();URL.revokeObjectURL(url);showStatus("データを書き出したよ");
+a.href=url;a.download=(state.title||"myscore")+".json";a.click();URL.revokeObjectURL(url);
 });
 $("importBtn").addEventListener("click",()=>$("fileInput").click());
-$("fileInput").addEventListener("change",event=>{
-const file=event.target.files[0];if(!file)return;
+$("fileInput").addEventListener("change",e=>{
+const file=e.target.files[0];if(!file)return;
 const reader=new FileReader();
 reader.onload=()=>{
-try{const data=JSON.parse(reader.result);if(!data||!Array.isArray(data.notes))throw new Error("形式違い");
-snapshot();state={...state,...data};cursor={measure:0,slot:0};selectedNoteId=null;renderAll();showStatus("データを読み込んだよ");
-}catch(e){alert("ファイルを読み込めなかったよ。JSONデータを確認してね。")}
-event.target.value="";
-};
-reader.readAsText(file);
+try{const d=JSON.parse(reader.result);if(!Array.isArray(d.notes))throw Error();
+snapshot();state={...state,...d};cursor={measure:0,slot:0};renderAll();saveData();
+}catch(err){alert("ファイルを読み込めなかったよ")}
+e.target.value="";
+};reader.readAsText(file);
 });
-/* 【保存・読み込み・書き出し】ここまで */
 
-/* 【音の再生・停止】ここから */
-function renderAll(){clearGhostNote();syncMeta();renderScore();updateHistoryButtons();updateCursorPosition()}
+/* 【再生】 */
 function stopPlayback(){
 if(playTimer){clearTimeout(playTimer);playTimer=null}
 activeOscillators.forEach(o=>{try{o.stop()}catch(e){}});activeOscillators=[];
 }
 function playScore(){
-stopPlayback();const notes=state.notes.filter(n=>!n.rest).slice().sort((a,b)=>(a.measure*16+a.slot)-(b.measure*16+b.slot));
-if(!notes.length){showStatus("まだ音符がないよ");return}
-const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx){showStatus("この端末では音を再生できないみたい");return}
-audioContext=audioContext||new AudioCtx();audioContext.resume();
-const beat=60/state.tempo;let index=0;
+stopPlayback();const list=state.notes.filter(n=>!n.rest).slice().sort((a,b)=>a.measure*16+a.slot-b.measure*16-b.slot);
+if(!list.length)return msg("まだ音符がないよ");
+const ac=getAudio();if(!ac)return;
+let i=0;const beat=60/state.tempo;
 function next(){
-if(index>=notes.length){showStatus("再生が終わったよ");playTimer=null;return}
-const note=notes[index],start=audioContext.currentTime,osc=audioContext.createOscillator(),gain=audioContext.createGain();
-osc.type="sine";osc.frequency.value=midiFrequency(note.midi);
-gain.gain.setValueAtTime(.0001,start);gain.gain.linearRampToValueAtTime(.16,start+.02);gain.gain.setValueAtTime(.16,start+beat*.65);gain.gain.linearRampToValueAtTime(.0001,start+beat*.75);
-osc.connect(gain);gain.connect(audioContext.destination);osc.start(start);osc.stop(start+beat*.8);activeOscillators.push(osc);
-cursor={measure:note.measure,slot:note.slot};renderScore();
-const duration=beat*((note.duration===16?16:note.duration)/4);index++;playTimer=setTimeout(next,Math.max(100,duration*1000));
+if(i>=list.length){playTimer=null;msg("再生が終わったよ");return}
+const n=list[i],o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime;
+o.type="sine";o.frequency.value=freq(n.midi);
+g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.15,t+.02);g.gain.setValueAtTime(.15,t+beat*.65);g.gain.linearRampToValueAtTime(.0001,t+beat*.75);
+o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+beat*.8);activeOscillators.push(o);
+cursor={measure:n.measure,slot:n.slot};renderScore();
+const dur=beat*((n.duration===16?16:n.duration)/4);i++;playTimer=setTimeout(next,Math.max(100,dur*1000));
 }
-showStatus("再生中…");next();
+msg("再生中…");next();
 }
 $("playBtn").addEventListener("click",playScore);
-$("stopBtn").addEventListener("click",()=>{stopPlayback();showStatus("再生を停止したよ")});
-/* 【音の再生・停止】ここまで */
+$("stopBtn").addEventListener("click",()=>{stopPlayback();msg("再生を停止したよ")});
 
-/* 【オクターブ変更】ここから */
+/* 【音のON/OFF】 */
+function updateSoundButton(){
+$("soundToggleBtn").textContent=soundEnabled?"音 ON":"音 OFF";
+$("soundToggleBtn").classList.toggle("active",soundEnabled);
+}
+$("soundToggleBtn").addEventListener("click",()=>{
+soundEnabled=!soundEnabled;if(!soundEnabled)stopPreview();updateSoundButton();
+msg(soundEnabled?"音をONにしたよ":"音をOFFにしたよ");
+});
+
+/* 【オクターブ】 */
 $("octaveDown").addEventListener("click",()=>{octaveBase=clamp(octaveBase-1,2,6);buildKeyboard()});
 $("octaveUp").addEventListener("click",()=>{octaveBase=clamp(octaveBase+1,2,6);buildKeyboard()});
-/* 【オクターブ変更】ここまで */
 
-/* 【パレット開閉・印刷】ここから */
+/* 【パネル・印刷】 */
 $("collapseBtn").addEventListener("click",()=>{
-panelOpen=!panelOpen;$("panelContent").style.display=panelOpen?"block":"none";$("collapseBtn").textContent=panelOpen?"閉じる ▲":"開く ▼";
+panelOpen=!panelOpen;$("panelContent").style.display=panelOpen?"block":"none";
+$("collapseBtn").textContent=panelOpen?"閉じる ▲":"開く ▼";
 });
 $("printBtn").addEventListener("click",()=>window.print());
 $("undoBtn").addEventListener("click",undo);
 $("redoBtn").addEventListener("click",redo);
-/* 【パレット開閉・印刷】ここまで */
 
-/* 【アプリ起動・初期化】ここから */
+/* 【全体描画】 */
+function renderAll(){
+clearGhost();syncMeta();renderScore();historyButtons();cursorText();
+}
+
+/* 【起動】 */
 loadSavedData();
 buildKeyboard();
-setupScorePointerEvents();
+setupPointerEvents();
 renderAll();
-updateDurationButtons();
-updateToolButtons();
-updateInputModeButtons();
+updateModes();
 updateSoundButton();
-/* 【アプリ起動・初期化】ここまで */
 </script>
 </body>
 </html>
