@@ -1,1 +1,324 @@
 
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f6f0">
+<title>マイスコア｜オトリス</title>
+<style>
+:root{--bg:#f4f6f0;--paper:#fff;--ink:#29332c;--muted:#748078;--green:#477b58;--line:#dce4da;--soft:#eaf0e8;--danger:#a34b45}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,sans-serif}
+header{padding:18px 16px 12px;max-width:1100px;margin:auto}
+header .brand{font-size:12px;letter-spacing:.12em;color:var(--green);font-weight:700}
+h1{font-size:24px;margin:4px 0 2px}
+header p{margin:0;color:var(--muted);font-size:13px}
+main{max-width:1100px;margin:auto;padding:0 12px 36px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 2px 10px #273b2910}
+.controls{display:flex;flex-wrap:wrap;gap:10px 12px;align-items:end}
+.field{display:flex;flex-direction:column;gap:5px;min-width:105px;flex:1}
+.field.wide{flex:2;min-width:180px}
+label{font-size:12px;color:var(--muted);font-weight:600}
+input,select,button{font:inherit}
+input,select{width:100%;min-height:40px;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:#fff;color:var(--ink)}
+button{border:0;border-radius:9px;padding:10px 14px;min-height:40px;background:var(--green);color:white;font-weight:650;cursor:pointer}
+button.secondary{background:var(--soft);color:var(--ink)}
+button.danger{background:#f6e9e7;color:var(--danger)}
+button:active{transform:translateY(1px)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.hint{font-size:12px;color:var(--muted);line-height:1.6;margin:10px 2px 0}
+.sheet-wrap{overflow:auto;padding:8px 0}
+.sheet{width:100%;min-width:650px;max-width:850px;margin:auto;background:white;box-shadow:0 3px 18px #25362818;border:1px solid #e6e8e3}
+.sheet svg{display:block;width:100%;height:auto;touch-action:manipulation}
+.sheet svg text{font-family:"Times New Roman",serif;fill:#202820}
+.sheet svg .staff{stroke:#222;stroke-width:1}
+.sheet svg .bar{stroke:#222;stroke-width:1}
+.sheet svg .note{cursor:pointer}
+.sheet svg .note.selected ellipse{stroke:var(--green);stroke-width:3}
+.sheet svg .chord{font-family:Arial,sans-serif;font-size:13px;font-weight:600;fill:#354c39}
+.sheet svg .lyric{font-family:serif;font-size:13px;fill:#343434}
+.sheet svg .system-label{font-family:Arial,sans-serif;font-size:9px;fill:#999}
+.status{font-size:12px;color:var(--muted);margin-left:auto}
+.section-title{font-size:14px;font-weight:700;margin:0 0 10px}
+.small{font-size:12px;color:var(--muted)}
+@media(max-width:600px){
+ header{padding-top:14px}
+ h1{font-size:21px}
+ .panel{padding:12px}
+ .field{min-width:calc(50% - 8px)}
+ .field.wide{min-width:100%}
+ .status{width:100%;margin:0}
+}
+</style>
+</head>
+<body>
+<header>
+<div class="brand">OTOLIS MUSIC TOOLS</div>
+<h1>マイスコア</h1>
+<p>自分の音楽を、自分の楽譜に。</p>
+</header>
+<main>
+<section class="panel">
+ <div class="controls">
+  <div class="field wide">
+   <label for="songTitle">曲タイトル</label>
+   <input id="songTitle" placeholder="曲名を入力">
+  </div>
+  <div class="field">
+   <label for="songKey">キー</label>
+   <select id="songKey">
+    <option>C</option><option>G</option><option>D</option><option>A</option><option>E</option><option>B</option><option>F#</option><option>F</option><option>B♭</option><option>E♭</option><option>A♭</option><option>D♭</option>
+   </select>
+  </div>
+  <div class="field">
+   <label for="duration">入力する音符</label>
+   <select id="duration">
+    <option value="1">全音符</option>
+    <option value="2">2分音符</option>
+    <option value="4" selected>4分音符</option>
+    <option value="8">8分音符</option>
+    <option value="16">16分音符</option>
+   </select>
+  </div>
+  <div class="field">
+   <label for="tempo">テンポ（BPM）</label>
+   <input id="tempo" type="number" min="30" max="240" value="100">
+  </div>
+ </div>
+ <p class="hint">五線譜をタップすると音符を置けるよ。音符を選択してから別の場所をタップすると移動。小節の上部をタップするとコード名、下部をタップすると歌詞を入力できるよ。</p>
+</section>
+<section class="panel">
+ <div class="toolbar">
+  <button id="deleteNote" class="danger">選択した音符を削除</button>
+  <button id="clearSelection" class="secondary">選択解除</button>
+  <button id="play">▶ 再生</button>
+  <button id="stop" class="secondary">■ 停止</button>
+  <span id="status" class="status">音符をタップして入力</span>
+ </div>
+</section>
+<section class="panel">
+ <div class="sheet-wrap">
+  <div class="sheet">
+   <svg id="score" viewBox="0 0 820 1120" role="img" aria-label="A4縦の五線譜"></svg>
+  </div>
+ </div>
+ <p class="hint">試作版ではト音記号・ハ長調を基本にした簡易表示だよ。五線譜の位置は音の高さとして記録される。印刷向けの細かな組版や複雑な記譜は、これから整えていく部分だよ。</p>
+</section>
+<section class="panel">
+ <p class="section-title">保存・読み込み</p>
+ <div class="toolbar">
+  <button id="save">この端末に保存</button>
+  <button id="load" class="secondary">保存データを読み込む</button>
+  <button id="export" class="secondary">データを書き出す</button>
+  <label class="toolbar" style="font-size:13px">
+   <input id="importFile" type="file" accept="application/json" style="width:auto;min-height:0">
+   データを読み込む
+  </label>
+ </div>
+ <p class="hint">「この端末に保存」は、このブラウザ内に保存する簡易機能。大切な楽譜は「データを書き出す」でもバックアップしてね。</p>
+</section>
+</main>
+<script>
+(()=>{
+'use strict';
+const svg=document.getElementById('score');
+const NS='http://www.w3.org/2000/svg';
+const W=820,H=1120,LEFT=70,RIGHT=790,STAFF_TOP=120,SYSTEM_GAP=99,STAFF_GAP=9,BAR_COUNT=4;
+let notes=[],chords={},lyrics={},selected=null,audioNodes=[],playing=false;
+const $=id=>document.getElementById(id);
+const state=()=>({title:$('songTitle').value,key:$('songKey').value,tempo:Number($('tempo').value)||100,notes,chords,lyrics});
+function el(tag,attrs={},text){
+ const n=document.createElementNS(NS,tag);
+ Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));
+ if(text!==undefined)n.textContent=text;
+ return n;
+}
+function addText(parent,x,y,text,cls,attrs={}){
+ const n=el('text',{x,y,class:cls||'',...attrs},text);
+ parent.appendChild(n);
+ return n;
+}
+function systemY(s){return STAFF_TOP+s*SYSTEM_GAP}
+function render(){
+ svg.innerHTML='';
+ addText(svg,LEFT,42,$('songTitle').value||'曲タイトル','',{'font-size':22,'font-weight':'bold'});
+ addText(svg,LEFT,66,'Key: '+$('songKey').value+'     ♩ = '+($('tempo').value||100),'',{'font-size':12});
+ for(let s=0;s<10;s++){
+  const y=systemY(s),usable=RIGHT-LEFT,barW=usable/4;
+  for(let l=0;l<5;l++)svg.appendChild(el('line',{x1:LEFT,y1:y+l*STAFF_GAP,x2:RIGHT,y2:y+l*STAFF_GAP,class:'staff'}));
+  addText(svg,LEFT-34,y+31,'𝄞','',{'font-size':38});
+  for(let b=0;b<=4;b++)svg.appendChild(el('line',{x1:LEFT+b*barW,y1:y,x2:LEFT+b*barW,y2:y+4*STAFF_GAP,class:'bar'}));
+  addText(svg,LEFT-18,y-8,String(s+1),'system-label');
+  for(let b=0;b<4;b++){
+   const idx=s*4+b,x=LEFT+b*barW;
+   if(chords[idx])addText(svg,x+8,y-10,chords[idx],'chord');
+   if(lyrics[idx])addText(svg,x+8,y+68,lyrics[idx],'lyric');
+  }
+ }
+ notes.forEach((n,i)=>drawNote(n,i));
+}
+function drawNote(n,i){
+ const y=systemY(n.system),barW=(RIGHT-LEFT)/4,x=LEFT+n.bar*barW+14+n.slot*(barW-28),yy=y+(4-n.step)*STAFF_GAP/2;
+ const g=el('g',{class:'note'+(selected===i?' selected':''),'data-index':i});
+ if(n.step<0||n.step>8){
+  for(let st=n.step<0?0:10;n.step<0?st>=n.step:st<=n.step;n.step<0?st-=2:st+=2){
+   const ly=y+(4-st)*STAFF_GAP/2;
+   g.appendChild(el('line',{x1:x-9,y1:ly,x2:x+9,y2:ly,stroke:'#222','stroke-width':1}));
+  }
+ }
+ const filled=n.duration!==1&&n.duration!==2;
+ g.appendChild(el('ellipse',{cx:x,cy:yy,rx:6.8,ry:4.7,transform:`rotate(-18 ${x} ${yy})`,fill:filled?'#222':'white',stroke:'#222','stroke-width':1.3}));
+ if(n.duration!==1){
+  g.appendChild(el('line',{x1:x+6,y1:yy,x2:x+6,y2:yy-31,stroke:'#222','stroke-width':1.3}));
+  if(n.duration>=8){
+   let flags=n.duration===8?1:2;
+   for(let f=0;f<flags;f++)g.appendChild(el('path',{d:`M ${x+6} ${yy-31+f*6} q 13 7 3 16`,fill:'none',stroke:'#222','stroke-width':1.3}));
+  }
+ }
+ if(n.duration===1)g.appendChild(el('ellipse',{cx:x,cy:yy,rx:3,ry:2,fill:'white'}));
+ g.addEventListener('click',e=>{
+  e.stopPropagation();
+  selected=i;
+  render();
+  $('status').textContent='音符を選択中。別の位置をタップすると移動できるよ';
+ });
+ svg.appendChild(g);
+}
+function svgPoint(evt){
+ const p=svg.createSVGPoint();
+ p.x=evt.clientX;p.y=evt.clientY;
+ return p.matrixTransform(svg.getScreenCTM().inverse());
+}
+svg.addEventListener('click',e=>{
+ const p=svgPoint(e);
+ if(p.x<LEFT||p.x>RIGHT)return;
+ const s=Math.round((p.y-STAFF_TOP)/SYSTEM_GAP);
+ if(s<0||s>9)return;
+ const y=systemY(s);
+ const b=Math.floor((p.x-LEFT)/((RIGHT-LEFT)/4));
+ if(b<0||b>3)return;
+ const localY=p.y-y;
+ if(localY < -2){
+  const v=prompt('この小節のコード名を入力',chords[s*4+b]||'');
+  if(v===null)return;
+  if(v.trim())chords[s*4+b]=v.trim();else delete chords[s*4+b];
+  render();return;
+ }
+ if(localY>53){
+  const v=prompt('この小節の歌詞を入力',lyrics[s*4+b]||'');
+  if(v===null)return;
+  if(v.trim())lyrics[s*4+b]=v.trim();else delete lyrics[s*4+b];
+  render();return;
+ }
+ const step=Math.max(-4,Math.min(12,Math.round((y+36-p.y)/(STAFF_GAP/2))));
+ const barW=(RIGHT-LEFT)/4;
+ const slot=Math.max(0,Math.min(3,Math.round(((p.x-(LEFT+b*barW)-14)/(barW-28))*3)));
+ if(selected!==null){
+  notes[selected]={...notes[selected],system:s,bar:b,step,slot};
+  selected=null;
+ }else{
+  notes.push({system:s,bar:b,step,slot,duration:Number($('duration').value)});
+  selected=notes.length-1;
+ }
+ render();
+ $('status').textContent='音符を配置したよ';
+});
+$('deleteNote').onclick=()=>{
+ if(selected===null)return;
+ notes.splice(selected,1);
+ selected=null;
+ render();
+ $('status').textContent='音符を削除したよ';
+};
+$('clearSelection').onclick=()=>{
+ selected=null;render();
+ $('status').textContent='選択解除';
+};
+['songTitle','songKey','tempo'].forEach(id=>$(id).addEventListener('input',render));
+function midiFromStep(step){
+ const scale=[0,2,4,5,7,9,11];
+ let octave=Math.floor(step/7),degree=((step%7)+7)%7;
+ return 64+octave*12+scale[degree];
+}
+function stopPlayback(){
+ audioNodes.forEach(n=>{try{n.stop()}catch(e){}});
+ audioNodes=[];playing=false;
+ $('play').textContent='▶ 再生';
+}
+$('stop').onclick=stopPlayback;
+$('play').onclick=()=>{
+ if(playing){stopPlayback();return}
+ if(!notes.length){$('status').textContent='先に音符を入力してね';return}
+ const Ctx=window.AudioContext||window.webkitAudioContext;
+ if(!Ctx){$('status').textContent='このブラウザでは音声再生に対応していないよ';return}
+ const ctx=new Ctx();
+ const ordered=[...notes].sort((a,b)=>(a.system*4+a.bar)-(b.system*4+b.bar)||a.slot-b.slot);
+ const beat=60/Math.max(30,Math.min(240,Number($('tempo').value)||100));
+ let t=ctx.currentTime+.12;
+ ordered.forEach(n=>{
+  const dur=beat*4/n.duration;
+  const osc=ctx.createOscillator(),gain=ctx.createGain();
+  osc.type='triangle';
+  osc.frequency.value=440*Math.pow(2,(midiFromStep(n.step)-69)/12);
+  gain.gain.setValueAtTime(.0001,t);
+  gain.gain.linearRampToValueAtTime(.18,t+.015);
+  gain.gain.exponentialRampToValueAtTime(.0001,t+Math.max(.06,dur*.88));
+  osc.connect(gain);gain.connect(ctx.destination);
+  osc.start(t);osc.stop(t+dur);
+  audioNodes.push(osc);t+=dur;
+ });
+ playing=true;
+ $('play').textContent='■ 再生中';
+ $('status').textContent='簡易ピアノ音で再生中';
+ setTimeout(()=>{
+  playing=false;
+  $('play').textContent='▶ 再生';
+  $('status').textContent='再生が終わったよ';
+ },Math.max(500,(t-ctx.currentTime)*1000+150));
+};
+$('save').onclick=()=>{
+ localStorage.setItem('otolis_myscore_v1',JSON.stringify(state()));
+ $('status').textContent='この端末に保存したよ';
+};
+$('load').onclick=()=>{
+ const raw=localStorage.getItem('otolis_myscore_v1');
+ if(!raw){$('status').textContent='保存データが見つからないよ';return}
+ try{apply(JSON.parse(raw));$('status').textContent='保存データを読み込んだよ'}
+ catch(e){$('status').textContent='保存データを読み込めなかったよ'}
+};
+function apply(d){
+ $('songTitle').value=d.title||'';
+ $('songKey').value=d.key||'C';
+ $('tempo').value=d.tempo||100;
+ notes=Array.isArray(d.notes)?d.notes:[];
+ chords=d.chords||{};
+ lyrics=d.lyrics||{};
+ selected=null;
+ render();
+}
+$('export').onclick=()=>{
+ const blob=new Blob([JSON.stringify(state(),null,2)],{type:'application/json'});
+ const a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);
+ a.download='myscore-data.json';
+ a.click();
+ URL.revokeObjectURL(a.href);
+};
+$('importFile').onchange=async e=>{
+ const f=e.target.files[0];
+ if(!f)return;
+ try{
+  apply(JSON.parse(await f.text()));
+  $('status').textContent='データを読み込んだよ';
+ }catch(err){
+  $('status').textContent='ファイルを読み込めなかったよ';
+ }
+ e.target.value='';
+};
+render();
+})();
+</script>
+</body>
+</html>
+
