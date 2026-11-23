@@ -221,7 +221,9 @@ if(group.length>1)result.push(group);group=[];continue;
 }
 if(!group.length){group=[n];continue}
 const p=group[group.length-1];
-if(Math.floor(p.slot/4)===Math.floor(n.slot/4)&&p.slot+p.duration===n.slot)group.push(n);
+
+/* 拍の境目では区切らず、同じ小節内で連続する音符をつなぐ */
+if(p.slot+p.duration===n.slot)group.push(n);
 else{if(group.length>1)result.push(group);group=[n]}
 }
 if(group.length>1)result.push(group);
