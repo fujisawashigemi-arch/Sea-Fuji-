@@ -900,7 +900,7 @@ function renderScore(){
         }
 
         if(inputMode==="pen"&&selectedTool==="pen"){
-          const midi=midiFromStaffY(point.y-systemYTop,systemYTop);
+          const midi=midiFromStaffY(point.y,systemYTop);
           insertPitch(midi);
         }else{
           renderScore();
@@ -920,6 +920,7 @@ function renderScore(){
   drawCursor(svg);
   updateCursorPosition();
 }
+
 
 /* =========================================
    【楽譜表示・小節ガイド】ここまで
