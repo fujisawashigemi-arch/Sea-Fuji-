@@ -741,3 +741,368 @@ function handleKeyboardPress(midi,key){
   }
 }
 /* 【鍵盤の表示】ここまで */
+
+/* 【音の発音・試し弾き】ここから */
+function midiFrequency(midi){
+  return 440*Math.pow(2,(midi-69)/12);
+}
+function playMidi(midi){
+  if(!soundEnabled)return;
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+
+  audioContext=audioContext||new AudioCtx();
+  if(audioContext.state==="suspended")audioContext.resume();
+
+  const start=audioContext.currentTime;
+  const osc=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+
+  osc.type="sine";
+  osc.frequency.value=midiFrequency(midi);
+  gain.gain.setValueAtTime(.0001,start);
+  gain.gain.linearRampToValueAtTime(.16,start+.015);
+  gain.gain.setValueAtTime(.16,start+.18);
+  gain.gain.linearRampToValueAtTime(.0001,start+.32);
+
+  osc.connect(gain);gain.connect(audioContext.destination);
+  osc.start(start);osc.stop(start+.34);
+  activeOscillators.push(osc);
+  osc.onended=()=>{activeOscillators=activeOscillators.filter(item=>item!==osc)};
+}
+function updateSoundButton(){
+  $("soundToggleBtn").textContent=soundEnabled?"音 ON":"音 OFF";
+  $("soundToggleBtn").classList.toggle("active",soundEnabled);
+}
+$("soundToggleBtn").addEventListener("click",()=>{
+  soundEnabled=!soundEnabled;
+  updateSoundButton();
+  showStatus(soundEnabled?"入力音・試し弾きをONにしたよ":"入力音・試し弾きをOFFにしたよ");
+});
+/* 【音の発音・試し弾き】ここまで */
+
+/* 【音符・休符の入力】ここから */
+function insertPitch(midi){
+  if(cursor.measure>=state.measures){
+    showStatus("入力できる小節がないよ");return;
+  }
+  snapshot();
+  const note={
+    id:"n"+Date.now()+Math.random().toString(16).slice(2),
+    measure:cursor.measure,slot:cursor.slot,midi,
+    duration:selectedDuration,rest:false
+  };
+  state.notes.push(note);
+  selectedNoteId=note.id;
+  if(soundEnabled)playMidi(midi);
+  advanceCursor(note.duration);
+  renderAll();
+  const info=pitchInfo(midi);
+  showStatus(`${info.name}${info.octave} を入力したよ`);
+}
+function insertRest(){
+  if(cursor.measure>=state.measures)return;
+  snapshot();
+  const note={
+    id:"n"+Date.now()+Math.random().toString(16).slice(2),
+    measure:cursor.measure,slot:cursor.slot,midi:64,
+    duration:selectedDuration,rest:true
+  };
+  state.notes.push(note);
+  selectedNoteId=note.id;
+  advanceCursor(note.duration);
+  renderAll();
+  showStatus("休符を入力したよ");
+}
+function advanceCursor(duration){
+  const slots=duration===16?16:duration;
+  let absolute=cursor.measure*16+cursor.slot+slots;
+  if(absolute>=state.measures*16)absolute=state.measures*16-1;
+  cursor.measure=Math.floor(absolute/16);
+  cursor.slot=absolute%16;
+}
+/* 【音符・休符の入力】ここまで */
+
+/* 【入力モード・ツール・音符の長さ】ここから */
+function updateInputModeButtons(){
+  $("penModeBtn").classList.toggle("active",inputMode==="pen");
+  $("keyboardModeBtn").classList.toggle("active",inputMode==="keyboard");
+}
+$("penModeBtn").addEventListener("click",()=>{
+  inputMode="pen";selectedTool="pen";
+  updateInputModeButtons();updateToolButtons();
+  showStatus("ペン入力モード。五線譜を押さえて音符を入力してね");
+});
+$("keyboardModeBtn").addEventListener("click",()=>{
+  inputMode="keyboard";selectedTool="pen";
+  updateInputModeButtons();updateToolButtons();
+  showStatus("鍵盤入力モード。五線譜で位置を選んで鍵盤を押してね");
+});
+function updateToolButtons(){
+  document.querySelectorAll(".tool").forEach(btn=>{
+    btn.classList.toggle("active",btn.dataset.tool===selectedTool);
+  });
+}
+function updateDurationButtons(){
+  document.querySelectorAll(".duration").forEach(btn=>{
+    btn.classList.toggle("active",Number(btn.dataset.duration)===selectedDuration);
+  });
+}
+document.querySelectorAll(".tool").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    selectedTool=btn.dataset.tool;
+    updateToolButtons();
+    if(selectedTool==="chord")editChord();
+    else if(selectedTool==="lyric")editLyric();
+    else if(selectedTool==="mark")editMark();
+    else{
+      showStatus(
+        selectedTool==="eraser"?"消したい音符をタップしてね":
+        selectedTool==="select"?"編集したい音符をタップしてね":
+        inputMode==="pen"?"五線譜を押さえて音符を入力してね":
+        "五線譜で位置を選び、鍵盤から入力してね"
+      );
+    }
+  });
+});
+document.querySelectorAll(".duration").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const value=Number(btn.dataset.duration);
+    if(value===0){insertRest();return}
+    selectedDuration=value;
+    updateDurationButtons();
+  });
+});
+/* 【入力モード・ツール・音符の長さ】ここまで */
+
+/* 【カーソル左右移動】ここから */
+$("cursorLeftBtn").addEventListener("click",()=>moveCursorBy(-1));
+$("cursorRightBtn").addEventListener("click",()=>moveCursorBy(1));
+
+/* カーソルのドラッグ操作。SVG側でpointer captureした後も追跡する */
+$("score").addEventListener("pointermove",event=>{
+  if(!cursorDragging||penPointerId!==null)return;
+  const point=svgCoordinates(event);
+  cursorFromSvgX(point.x);
+  const newX=measureX(cursor.measure)+12+(cursor.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
+  const group=$("cursorGroup");
+  if(group)group.setAttribute("transform",`translate(${newX},0)`);
+  updateCursorPosition();
+});
+$("score").addEventListener("pointerup",()=>{
+  if(!cursorDragging)return;
+  cursorDragging=false;
+  renderScore();
+  showStatus(`${cursor.measure+1}小節・${cursor.slot+1}/16 に移動したよ`);
+});
+$("score").addEventListener("pointercancel",()=>{
+  if(!cursorDragging)return;
+  cursorDragging=false;
+  renderScore();
+});
+/* 【カーソル左右移動】ここまで */
+
+/* 【コード名・歌詞・記号】ここから */
+function editChord(){
+  const value=prompt(`小節 ${cursor.measure+1} のコード名を入力してね`,state.chords[cursor.measure]||"");
+  if(value===null)return;
+  snapshot();
+  if(value.trim())state.chords[cursor.measure]=value.trim();
+  else delete state.chords[cursor.measure];
+  renderAll();
+}
+function editLyric(){
+  const value=prompt(`小節 ${cursor.measure+1} の歌詞を入力してね`,state.lyrics[cursor.measure]||"");
+  if(value===null)return;
+  snapshot();
+  if(value.trim())state.lyrics[cursor.measure]=value.trim();
+  else delete state.lyrics[cursor.measure];
+  renderAll();
+}
+function editMark(){
+  const value=prompt(`小節 ${cursor.measure+1} の記号を入力してね（A、Bなど）`,state.marks[cursor.measure]||"");
+  if(value===null)return;
+  snapshot();
+  if(value.trim())state.marks[cursor.measure]=value.trim();
+  else delete state.marks[cursor.measure];
+  renderAll();
+}
+$("chordEditBtn").addEventListener("click",editChord);
+$("lyricEditBtn").addEventListener("click",editLyric);
+/* 【コード名・歌詞・記号】ここまで */
+
+/* 【曲情報の更新】ここから */
+function syncMeta(){
+  $("titleInput").value=state.title;
+  $("keyInput").value=state.key;
+  $("tempoInput").value=state.tempo;
+  $("displayTitle").textContent=state.title||"無題";
+  $("displayKey").textContent=state.key;
+  $("displayTempo").textContent=state.tempo;
+}
+$("titleInput").addEventListener("change",()=>{
+  snapshot();state.title=$("titleInput").value;syncMeta();
+});
+$("keyInput").addEventListener("change",()=>{
+  snapshot();state.key=$("keyInput").value;syncMeta();
+});
+$("tempoInput").addEventListener("change",()=>{
+  snapshot();
+  state.tempo=clamp(Number($("tempoInput").value)||100,30,240);
+  syncMeta();
+});
+/* 【曲情報の更新】ここまで */
+
+/* 【小節・五線譜の追加削除】ここから */
+$("addMeasureBtn").addEventListener("click",()=>{
+  snapshot();state.measures++;state.systems=Math.ceil(state.measures/4);
+  renderAll();showStatus("小節を追加したよ");
+});
+$("addSystemBtn").addEventListener("click",()=>{
+  snapshot();state.measures+=4;state.systems=Math.ceil(state.measures/4);
+  renderAll();showStatus("五線譜を追加したよ");
+});
+$("removeSystemBtn").addEventListener("click",()=>{
+  if(state.measures<=4){showStatus("これ以上は削除できないよ");return}
+  if(!confirm("最後の五線譜を削除する？"))return;
+  snapshot();
+  const newCount=Math.max(4,state.measures-4);
+  state.measures=newCount;
+  state.notes=state.notes.filter(n=>n.measure<newCount);
+  Object.keys(state.chords).forEach(k=>{if(Number(k)>=newCount)delete state.chords[k]});
+  Object.keys(state.lyrics).forEach(k=>{if(Number(k)>=newCount)delete state.lyrics[k]});
+  Object.keys(state.marks).forEach(k=>{if(Number(k)>=newCount)delete state.marks[k]});
+  cursor.measure=Math.min(cursor.measure,newCount-1);
+  renderAll();
+});
+/* 【小節・五線譜の追加削除】ここまで */
+
+/* 【保存・読み込み・書き出し】ここから */
+function saveData(){
+  localStorage.setItem("otolis_myscore_data",JSON.stringify(state));
+  showStatus("この端末に保存したよ");
+}
+$("saveBtn").addEventListener("click",saveData);
+function loadSavedData(){
+  const saved=localStorage.getItem("otolis_myscore_data");
+  if(!saved)return;
+  try{
+    const data=JSON.parse(saved);
+    state={...state,...data};
+  }catch(e){
+    console.warn("保存データを読み込めませんでした",e);
+  }
+}
+$("exportBtn").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;a.download=(state.title||"myscore")+".json";
+  a.click();URL.revokeObjectURL(url);
+  showStatus("データを書き出したよ");
+});
+$("importBtn").addEventListener("click",()=>$("fileInput").click());
+$("fileInput").addEventListener("change",event=>{
+  const file=event.target.files[0];
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      if(!data||!Array.isArray(data.notes))throw new Error("データ形式が違います");
+      snapshot();state={...state,...data};
+      cursor={measure:0,slot:0};selectedNoteId=null;
+      renderAll();showStatus("データを読み込んだよ");
+    }catch(e){
+      alert("ファイルを読み込めなかったよ。JSONデータを確認してね。");
+    }
+    event.target.value="";
+  };
+  reader.readAsText(file);
+});
+/* 【保存・読み込み・書き出し】ここまで */
+
+/* 【音の再生・停止】ここから */
+function renderAll(){
+  syncMeta();renderScore();updateHistoryButtons();updateCursorPosition();
+}
+function stopPlayback(){
+  if(playTimer){clearTimeout(playTimer);playTimer=null}
+  activeOscillators.forEach(osc=>{try{osc.stop()}catch(e){}});
+  activeOscillators=[];
+}
+function playScore(){
+  stopPlayback();
+  const notes=state.notes.filter(n=>!n.rest).slice().sort((a,b)=>
+    (a.measure*16+a.slot)-(b.measure*16+b.slot)
+  );
+  if(!notes.length){showStatus("まだ音符がないよ");return}
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx){showStatus("この端末では音を再生できないみたい");return}
+  audioContext=audioContext||new AudioCtx();
+  audioContext.resume();
+  const beat=60/state.tempo;
+  let index=0;
+
+  function next(){
+    if(index>=notes.length){
+      showStatus("再生が終わったよ");playTimer=null;return;
+    }
+    const note=notes[index],start=audioContext.currentTime;
+    const osc=audioContext.createOscillator();
+    const gain=audioContext.createGain();
+    osc.type="sine";osc.frequency.value=midiFrequency(note.midi);
+    gain.gain.setValueAtTime(.0001,start);
+    gain.gain.linearRampToValueAtTime(.16,start+.02);
+    gain.gain.setValueAtTime(.16,start+beat*.65);
+    gain.gain.linearRampToValueAtTime(.0001,start+beat*.75);
+    osc.connect(gain);gain.connect(audioContext.destination);
+    osc.start(start);osc.stop(start+beat*.8);
+    activeOscillators.push(osc);
+    cursor={measure:note.measure,slot:note.slot};
+    renderScore();
+    const slots=note.duration===16?16:note.duration;
+    const duration=beat*(slots/4);
+    index++;
+    playTimer=setTimeout(next,Math.max(100,duration*1000));
+  }
+  showStatus("再生中…");next();
+}
+$("playBtn").addEventListener("click",playScore);
+$("stopBtn").addEventListener("click",()=>{
+  stopPlayback();showStatus("再生を停止したよ");
+});
+/* 【音の再生・停止】ここまで */
+
+/* 【オクターブ変更】ここから */
+$("octaveDown").addEventListener("click",()=>{
+  octaveBase=clamp(octaveBase-1,2,6);buildKeyboard();
+});
+$("octaveUp").addEventListener("click",()=>{
+  octaveBase=clamp(octaveBase+1,2,6);buildKeyboard();
+});
+/* 【オクターブ変更】ここまで */
+
+/* 【パレット開閉・印刷】ここから */
+$("collapseBtn").addEventListener("click",()=>{
+  panelOpen=!panelOpen;
+  $("panelContent").style.display=panelOpen?"block":"none";
+  $("collapseBtn").textContent=panelOpen?"閉じる ▲":"開く ▼";
+});
+$("printBtn").addEventListener("click",()=>window.print());
+$("undoBtn").addEventListener("click",undo);
+$("redoBtn").addEventListener("click",redo);
+/* 【パレット開閉・印刷】ここまで */
+
+/* 【アプリ起動・初期化】ここから */
+loadSavedData();
+buildKeyboard();
+renderAll();
+updateDurationButtons();
+updateToolButtons();
+updateInputModeButtons();
+updateSoundButton();
+/* 【アプリ起動・初期化】ここまで */
+</script>
+</body>
+</html>
