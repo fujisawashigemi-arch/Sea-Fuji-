@@ -1319,15 +1319,94 @@ function drawGhostNote(svg,note){
 
 
 
+
 /* 【ペン入力・水色プレビュー】ここから */
+
+let ghostPreviewOsc=null;
+let ghostPreviewGain=null;
+let ghostPreviewMidi=null;
+
+/* ゴーストの試聴音を止める */
+
+function stopGhostPreview(){
+  if(ghostPreviewGain&&audioContext){
+    const gain=ghostPreviewGain;
+    const osc=ghostPreviewOsc;
+
+    try{
+      const now=audioContext.currentTime;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueAtTime(
+        Math.max(gain.gain.value,0.0001),
+        now
+      );
+      gain.gain.linearRampToValueAtTime(0.0001,now+0.06);
+
+      if(osc)osc.stop(now+0.07);
+    }catch(e){}
+  }
+
+  ghostPreviewOsc=null;
+  ghostPreviewGain=null;
+  ghostPreviewMidi=null;
+}
+
+/* ゴーストの音を鳴らす */
+
+function startGhostPreview(midi){
+  if(!soundEnabled){
+    stopGhostPreview();
+    return;
+  }
+
+  /* 同じ音なら鳴らし直さない */
+  if(ghostPreviewMidi===midi&&ghostPreviewOsc)return;
+
+  stopGhostPreview();
+
+  const AudioCtx=window.AudioContext||window.webkitAudioContext;
+  if(!AudioCtx)return;
+
+  audioContext=audioContext||new AudioCtx();
+
+  if(audioContext.state==="suspended"){
+    audioContext.resume();
+  }
+
+  const osc=audioContext.createOscillator();
+  const gain=audioContext.createGain();
+  const now=audioContext.currentTime;
+
+  osc.type="sine";
+  osc.frequency.value=midiFrequency(midi);
+
+  gain.gain.setValueAtTime(0.0001,now);
+  gain.gain.linearRampToValueAtTime(0.12,now+0.025);
+
+  osc.connect(gain);
+  gain.connect(audioContext.destination);
+
+  osc.start(now);
+
+  ghostPreviewOsc=osc;
+  ghostPreviewGain=gain;
+  ghostPreviewMidi=midi;
+}
+
+/* ゴースト表示を消す */
 
 function clearGhostNote(){
   ghostNote=null;
+
   if(ghostGroup){
     ghostGroup.remove();
     ghostGroup=null;
   }
+
+  stopGhostPreview();
 }
+
+/* 指の位置から仮音符を計算する */
 
 function updateGhostFromPointer(event){
   if(penPointerId===null||penSystem===null)return;
@@ -1343,7 +1422,11 @@ function updateGhostFromPointer(event){
     0,3
   );
 
-  const measure=clamp(firstMeasure+column,firstMeasure,lastMeasure);
+  const measure=clamp(
+    firstMeasure+column,
+    firstMeasure,
+    lastMeasure
+  );
 
   const innerStart=measureX(measure)+12;
   const innerWidth=MEASURE_WIDTH-24;
@@ -1363,6 +1446,9 @@ function updateGhostFromPointer(event){
     rest:false
   };
 
+  /* 音程が変わったときだけ音を鳴らす */
+  startGhostPreview(midi);
+
   if(ghostGroup){
     ghostGroup.remove();
     ghostGroup=null;
@@ -1371,8 +1457,13 @@ function updateGhostFromPointer(event){
   drawGhostNote($("score"),ghostNote);
 }
 
+/* 指を離したら通常の音符として確定 */
+
 function commitGhostNote(){
-  if(!ghostNote)return;
+  if(!ghostNote){
+    stopGhostPreview();
+    return;
+  }
 
   const noteData={...ghostNote};
 
@@ -1406,82 +1497,8 @@ function commitGhostNote(){
   showStatus(`${info.name}${info.octave} を入力したよ`);
 }
 
-function setupScorePointerEvents(){
-  const svg=$("score");
-
-  svg.addEventListener("pointermove",event=>{
-    if(penPointerId!==null&&event.pointerId===penPointerId){
-      event.preventDefault();
-      updateGhostFromPointer(event);
-      return;
-    }
-
-    if(cursorDragging&&event.pointerId===cursorPointerId){
-      event.preventDefault();
-
-      const point=svgCoordinates(event);
-      cursorFromSvgX(point.x);
-
-      const newX=measureX(cursor.measure)+12+
-        (cursor.slot/GRID_COUNT)*(MEASURE_WIDTH-24);
-
-      const group=$("cursorGroup");
-      if(group){
-        group.setAttribute("transform",`translate(${newX},0)`);
-      }
-
-      updateCursorPosition();
-    }
-  });
-
-  svg.addEventListener("pointerup",event=>{
-    if(penPointerId!==null&&event.pointerId===penPointerId){
-      event.preventDefault();
-      penPointerId=null;
-      penSystem=null;
-      commitGhostNote();
-      return;
-    }
-
-    if(cursorDragging&&event.pointerId===cursorPointerId){
-      cursorDragging=false;
-      cursorPointerId=null;
-      renderScore();
-      showStatus(`${cursor.measure+1}小節・${cursor.slot+1}/16 に移動したよ`);
-    }
-  });
-
-  svg.addEventListener("pointercancel",event=>{
-    if(penPointerId!==null&&event.pointerId===penPointerId){
-      penPointerId=null;
-      penSystem=null;
-      clearGhostNote();
-      return;
-    }
-
-    if(cursorDragging&&event.pointerId===cursorPointerId){
-      cursorDragging=false;
-      cursorPointerId=null;
-      renderScore();
-    }
-  });
-
-  svg.addEventListener("lostpointercapture",event=>{
-    if(penPointerId!==null&&event.pointerId===penPointerId){
-      penPointerId=null;
-      penSystem=null;
-      clearGhostNote();
-    }
-
-    if(cursorDragging&&event.pointerId===cursorPointerId){
-      cursorDragging=false;
-      cursorPointerId=null;
-      renderScore();
-    }
-  });
-}
-
 /* 【ペン入力・水色プレビュー】ここまで */
+
 
 
 /* 【鍵盤の表示】ここから */
