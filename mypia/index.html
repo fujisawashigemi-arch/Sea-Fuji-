@@ -22,9 +22,16 @@
   --blue:#a9c7dc;
   --blue-dark:#628ba9;
   --shadow:0 3px 14px rgba(65,52,40,.07);
+  --white-key-width:43px;
 }
 
-*{box-sizing:border-box}
+/* 文字選択を防止 */
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;
+  user-select:none;
+}
 
 body{
   margin:0;
@@ -32,13 +39,14 @@ body{
   color:var(--ink);
   font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",
   "Yu Gothic",Meiryo,sans-serif;
-  -webkit-tap-highlight-color:transparent;
 }
 
 button{
   font:inherit;
   cursor:pointer;
   border:0;
+  -webkit-user-select:none;
+  user-select:none;
 }
 
 .app{
@@ -256,45 +264,63 @@ header{
   overflow-x:auto;
   overflow-y:hidden;
   scrollbar-width:thin;
-  padding-bottom:7px;
+  padding:2px 2px 9px;
   touch-action:pan-x;
 }
 
+/* ピアノ鍵盤の土台 */
 .keys{
-  display:flex;
+  position:relative;
+  display:block;
+  height:128px;
   width:max-content;
-  gap:3px;
-  padding:2px 2px 4px;
+  padding:0;
+  margin:0;
+  touch-action:none;
+  --white-count:12;
 }
 
+/* 白鍵・黒鍵共通 */
 .key{
-  width:43px;
-  height:128px;
-  flex-shrink:0;
-  position:relative;
-  border:1px solid #d9d3ca;
-  border-radius:0 0 7px 7px;
-  background:#fffefa;
-  box-shadow:0 3px 2px #0000000b;
+  position:absolute;
+  top:0;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
   padding-bottom:9px;
+  border:1px solid #d9d3ca;
+  border-radius:0 0 7px 7px;
   color:#5e5851;
+  box-shadow:0 3px 2px #0000000b;
+  touch-action:none;
   user-select:none;
   -webkit-user-select:none;
-  touch-action:manipulation;
+  -webkit-touch-callout:none;
 }
 
+/* 白鍵 */
+.key.white{
+  left:var(--key-left);
+  width:calc(100% / var(--white-count));
+  height:100%;
+  background:#fffefa;
+  z-index:1;
+}
+
+/* 黒鍵 */
 .key.black{
+  left:var(--key-left);
+  transform:translateX(-50%);
+  width:calc(100% / var(--white-count) * .62);
+  height:72%;
   background:#494641;
   color:#fff;
-  border-color:#35322f;
-  height:92px;
+  border:1px solid #35322f;
   border-radius:0 0 6px 6px;
-  justify-content:flex-end;
   padding-bottom:7px;
+  z-index:3;
+  box-shadow:0 3px 4px #00000030;
 }
 
 .key.selected.main-selected{
@@ -315,6 +341,10 @@ header{
 
 .key:active{
   transform:translateY(1px);
+}
+
+.key.black:active{
+  transform:translateX(-50%) translateY(1px);
 }
 
 .key-name{
@@ -350,19 +380,19 @@ header{
   font-size:10px;
 }
 
+.keys.bass-keys{
+  height:100px;
+}
+
+.keys.bass-keys .key{
+  padding-bottom:7px;
+}
+
 .keyboard-hint{
   font-size:10px;
   color:#aaa197;
   margin-top:7px;
   text-align:center;
-}
-
-.bass-key{
-  height:100px;
-}
-
-.bass-key.black{
-  height:75px;
 }
 
 .info-row{
@@ -412,12 +442,14 @@ footer{
 }
 
 @media(max-width:480px){
+  :root{
+    --white-key-width:39px;
+  }
+
   .app{padding:14px 11px 30px}
   .card{padding:13px}
-  .key{width:39px;height:116px}
-  .key.black{height:84px}
-  .bass-key{height:94px}
-  .bass-key.black{height:69px}
+  .keys{height:116px}
+  .keys.bass-keys{height:94px}
   .chord-name{font-size:34px}
 }
 </style>
@@ -504,7 +536,7 @@ footer{
     </div>
   </div>
   <div class="keyboard-scroll" id="bassScroll">
-    <div class="keys" id="bassKeys"></div>
+    <div class="keys bass-keys" id="bassKeys"></div>
   </div>
   <div class="keyboard-hint">コードの基準音をひとつ選択</div>
 </section>
@@ -566,11 +598,22 @@ let activeVoices=new Map();
 
 function getAudio(){
   if(!audioContext){
-    audioContext=new (window.AudioContext||window.webkitAudioContext)();
+    const AudioContextClass=
+      window.AudioContext||window.webkitAudioContext;
+
+    if(!AudioContextClass){
+      return null;
+    }
+
+    audioContext=new AudioContextClass();
   }
+
   if(audioContext.state==="suspended"){
-    audioContext.resume();
+    audioContext.resume().catch(error=>{
+      console.log("音声の再開に失敗しました:",error);
+    });
   }
+
   return audioContext;
 }
 
@@ -580,26 +623,27 @@ function frequency(midi){
 
 function startSound(midi){
   const ctx=getAudio();
+  if(!ctx)return;
+
   stopSound(midi);
 
   const osc=ctx.createOscillator();
   const gain=ctx.createGain();
-
   const volume=ctx.createGain();
 
   osc.type="triangle";
   osc.frequency.value=frequency(midi);
 
-  gain.gain.value=.16;
   volume.gain.value=.32;
+
+  gain.gain.setValueAtTime(.0001,ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(
+    .16,ctx.currentTime+.025
+  );
 
   osc.connect(gain);
   gain.connect(volume);
   volume.connect(ctx.destination);
-
-  const now=ctx.currentTime;
-  gain.gain.setValueAtTime(.0001,now);
-  gain.gain.exponentialRampToValueAtTime(.16,now+.025);
 
   osc.start();
 
@@ -611,6 +655,8 @@ function stopSound(midi){
   if(!voice)return;
 
   const ctx=getAudio();
+  if(!ctx)return;
+
   const now=ctx.currentTime;
 
   voice.gain.gain.cancelScheduledValues(now);
@@ -667,12 +713,16 @@ function degreeName(semitones){
     10:"♭7",
     11:"7"
   };
+
   return degrees[((semitones%12)+12)%12];
 }
 
 function degreeFor(midi){
   if(bassSelected===null)return "";
-  return degreeName(pitchClass(midi)-pitchClass(bassSelected));
+
+  return degreeName(
+    pitchClass(midi)-pitchClass(bassSelected)
+  );
 }
 
 /* =====================================
@@ -722,11 +772,12 @@ function detectChord(){
   }
 
   const root=pitchClass(bassSelected);
-
   const intervals=new Set([0]);
 
   for(const midi of mainSelected){
-    intervals.add((pitchClass(midi)-root+12)%12);
+    intervals.add(
+      (pitchClass(midi)-root+12)%12
+    );
   }
 
   let best=null;
@@ -747,7 +798,8 @@ function detectChord(){
       if(!required.includes(interval))extra++;
     }
 
-    const score=missing*2.2+extra*10-required.length*.025;
+    const score=
+      missing*2.2+extra*10-required.length*.025;
 
     if(score<bestScore){
       bestScore=score;
@@ -764,11 +816,18 @@ function detectChord(){
    鍵盤の作成
 ===================================== */
 
-function createKey(midi,type){
+/*
+  白鍵を先に並べ、その上に黒鍵を重ねる。
+  黒鍵は直前の白鍵と次の白鍵の境界に配置する。
+*/
+
+function createKey(midi,type,whiteIndex){
   const key=document.createElement("button");
+  key.type="button";
+
   const black=isBlack(midi);
 
-  key.className="key"+(black?" black":"");
+  key.className="key "+(black?"black":"white");
 
   if(type==="bass"){
     key.classList.add("bass-key");
@@ -780,7 +839,9 @@ function createKey(midi,type){
 
   if(selected){
     key.classList.add("selected");
-    key.classList.add(type==="main"?"main-selected":"bass-selected");
+    key.classList.add(
+      type==="main"?"main-selected":"bass-selected"
+    );
   }
 
   const name=document.createElement("span");
@@ -801,6 +862,22 @@ function createKey(midi,type){
     key.appendChild(degree);
   }
 
+  /*
+    白鍵は白鍵の番号を使って配置。
+    黒鍵は白鍵の境界に配置。
+  */
+  if(black){
+    key.style.setProperty(
+      "--key-left",
+      `calc(${whiteIndex+1} * 100% / var(--white-count))`
+    );
+  }else{
+    key.style.setProperty(
+      "--key-left",
+      `calc(${whiteIndex} * 100% / var(--white-count))`
+    );
+  }
+
   let pointerDown=false;
 
   key.addEventListener("pointerdown",e=>{
@@ -814,12 +891,24 @@ function createKey(midi,type){
           mainSelected.add(midi);
         }
       }else{
-        bassSelected=bassSelected===midi?null:midi;
+        bassSelected=
+          bassSelected===midi?null:midi;
       }
+
       renderAll();
     }else{
       pointerDown=true;
+
+      /*
+        iPhone Safariではユーザー操作中に
+        AudioContextを再開する必要がある。
+      */
+      getAudio();
       startSound(midi);
+
+      try{
+        key.setPointerCapture(e.pointerId);
+      }catch(error){}
     }
   });
 
@@ -833,24 +922,73 @@ function createKey(midi,type){
   key.addEventListener("pointerup",release);
   key.addEventListener("pointerleave",release);
   key.addEventListener("pointercancel",release);
+  key.addEventListener("lostpointercapture",release);
 
   return key;
 }
 
+function renderOneKeyboard(containerId,start,count,type){
+  const container=document.getElementById(containerId);
+  container.innerHTML="";
+
+  const whiteNotes=[];
+  const blackNotes=[];
+
+  let whiteIndex=0;
+
+  for(let i=0;i<count;i++){
+    const midi=start+i;
+
+    if(isBlack(midi)){
+      blackNotes.push({
+        midi,
+        whiteIndex:whiteIndex-1
+      });
+    }else{
+      whiteNotes.push({
+        midi,
+        whiteIndex:whiteIndex
+      });
+
+      whiteIndex++;
+    }
+  }
+
+  /*
+    白鍵の数をCSSに渡す。
+    鍵盤全体の横幅も白鍵の数で決める。
+  */
+  container.style.setProperty(
+    "--white-count",
+    whiteNotes.length
+  );
+
+  container.style.width=
+    `calc(${whiteNotes.length} * var(--white-key-width))`;
+
+  /*
+    まず白鍵をすべて作る。
+  */
+  whiteNotes.forEach(item=>{
+    container.appendChild(
+      createKey(item.midi,type,item.whiteIndex)
+    );
+  });
+
+  /*
+    次に黒鍵を重ねる。
+    DOM上でも白鍵より後にすることで手前に表示する。
+  */
+  blackNotes.forEach(item=>{
+    container.appendChild(
+      createKey(item.midi,type,item.whiteIndex)
+    );
+  });
+}
+
 function renderKeyboard(){
-  const main=document.getElementById("mainKeys");
-  const bass=document.getElementById("bassKeys");
-
-  main.innerHTML="";
-  bass.innerHTML="";
-
-  for(let i=0;i<=18;i++){
-    main.appendChild(createKey(mainStart+i,"main"));
-  }
-
-  for(let i=0;i<=12;i++){
-    bass.appendChild(createKey(bassStart+i,"bass"));
-  }
+  renderOneKeyboard("mainKeys",mainStart,19,"main");
+  renderOneKeyboard("bassKeys",bassStart,13,"bass");
 
   document.getElementById("mainRange").textContent=
     noteName(mainStart)+" ～ "+noteName(mainStart+18);
@@ -869,6 +1007,7 @@ function staffPosition(letter,oct){
   const index=STAFF_LETTERS.indexOf(letter);
   const absolute=oct*7+index;
   const base=4*7+2;
+
   return 140-(absolute-base)*10;
 }
 
@@ -887,6 +1026,7 @@ function staffSpelling(pc){
     10:["A","♯"],
     11:["B",""]
   };
+
   return spellings[pc];
 }
 
@@ -898,11 +1038,14 @@ function renderStaff(){
     const empty=document.createElementNS(
       "http://www.w3.org/2000/svg","text"
     );
+
     empty.setAttribute("x","360");
     empty.setAttribute("y","108");
     empty.setAttribute("text-anchor","middle");
     empty.setAttribute("class","staff-empty");
-    empty.textContent="メイン鍵盤で和音を選択すると表示されます";
+    empty.textContent=
+      "メイン鍵盤で和音を選択すると表示されます";
+
     group.appendChild(empty);
     return;
   }
@@ -914,35 +1057,45 @@ function renderStaff(){
   pcs.sort((a,b)=>a-b);
 
   const startX=330;
-  const gap=Math.min(65,300/Math.max(1,pcs.length-1));
+  const gap=Math.min(
+    65,
+    300/Math.max(1,pcs.length-1)
+  );
 
   pcs.forEach((pc,index)=>{
     const [letter,accidental]=staffSpelling(pc);
-    const midi=60+pc;
     const oct=4+Math.floor(pc/12);
     const y=staffPosition(letter,oct);
-    const x=startX+(index-(pcs.length-1)/2)*gap;
+    const x=
+      startX+(index-(pcs.length-1)/2)*gap;
 
     const note=document.createElementNS(
       "http://www.w3.org/2000/svg","ellipse"
     );
+
     note.setAttribute("cx",x);
     note.setAttribute("cy",y);
     note.setAttribute("rx","8");
     note.setAttribute("ry","5.5");
-    note.setAttribute("transform",`rotate(-20 ${x} ${y})`);
+    note.setAttribute(
+      "transform",
+      `rotate(-20 ${x} ${y})`
+    );
     note.setAttribute("class","staff-note");
+
     group.appendChild(note);
 
     if(y>65){
       const stem=document.createElementNS(
         "http://www.w3.org/2000/svg","line"
       );
+
       stem.setAttribute("x1",x+7);
       stem.setAttribute("x2",x+7);
       stem.setAttribute("y1",y);
       stem.setAttribute("y2",y-38);
       stem.setAttribute("class","staff-stem");
+
       group.appendChild(stem);
     }
 
@@ -950,10 +1103,12 @@ function renderStaff(){
       const acc=document.createElementNS(
         "http://www.w3.org/2000/svg","text"
       );
+
       acc.setAttribute("x",x-21);
       acc.setAttribute("y",y+6);
       acc.setAttribute("class","staff-accidental");
       acc.textContent=accidental;
+
       group.appendChild(acc);
     }
 
@@ -962,11 +1117,13 @@ function renderStaff(){
         const line=document.createElementNS(
           "http://www.w3.org/2000/svg","line"
         );
+
         line.setAttribute("x1",x-12);
         line.setAttribute("x2",x+12);
         line.setAttribute("y1",lineY);
         line.setAttribute("y2",lineY);
         line.setAttribute("class","staff-lines");
+
         group.appendChild(line);
       }
     }
@@ -988,11 +1145,13 @@ function renderInfo(){
 
   document.getElementById("chordNotes").textContent=
     selectedNotes.length
-    ? "選択音： "+selectedNotes.join(" ・ ")
-    : "メイン鍵盤の音を選択してね";
+    ?"選択音： "+selectedNotes.join(" ・ ")
+    :"メイン鍵盤の音を選択してね";
 
   document.getElementById("bassInfo").textContent=
-    bassSelected===null?"---":shortNote(bassSelected);
+    bassSelected===null
+    ?"---"
+    :shortNote(bassSelected);
 
   document.getElementById("selectedCount").textContent=
     mainSelected.size+"音";
@@ -1006,8 +1165,11 @@ function renderInfo(){
       .map(m=>shortNote(m)+" = "+degreeFor(m));
 
     document.getElementById("degreeInfo").textContent=
-      "ベース音 "+shortNote(bassSelected)+" を 1 とした度数："+
-      (degrees.length?degrees.join(" ／ "):"メイン鍵盤の音を選択してね");
+      "ベース音 "+shortNote(bassSelected)+
+      " を 1 とした度数："+
+      (degrees.length
+        ?degrees.join(" ／ ")
+        :"メイン鍵盤の音を選択してね");
   }
 }
 
@@ -1088,7 +1250,9 @@ if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("./sw.js")
       .then(()=>{
-        console.log("マイピア：オフライン対応が有効になりました");
+        console.log(
+          "マイピア：オフライン対応が有効になりました"
+        );
       })
       .catch(error=>{
         console.log("オフライン登録エラー:",error);
