@@ -7,7 +7,11 @@
 <meta name="theme-color" content="#f6f3ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
 <link rel="manifest" href="./manifest.json">
+<link rel="icon" type="image/png" href="./mypiaicon.png">
+<link rel="apple-touch-icon" href="./mypiaicon.png">
+
 <title>マイピア｜おとりす</title>
 
 <style>
@@ -41,9 +45,7 @@ html,body{
   "Yu Gothic",Meiryo,sans-serif;
 }
 
-body{
-  overflow-x:hidden;
-}
+body{overflow-x:hidden;}
 
 button{
   font:inherit;
@@ -90,9 +92,7 @@ button{
   transition:transform .25s ease;
 }
 
-.menu-handle.open .handle-arrow{
-  transform:rotate(180deg);
-}
+.menu-handle.open .handle-arrow{transform:rotate(180deg);}
 
 /* 上部メニュー */
 
@@ -115,10 +115,7 @@ button{
   pointer-events:auto;
 }
 
-.menu-inner{
-  min-height:0;
-  overflow:hidden;
-}
+.menu-inner{min-height:0;overflow:hidden;}
 
 .menu-content{
   background:var(--paper);
@@ -164,48 +161,20 @@ button{
   min-height:13px;
 }
 
-.staff-wrap{
-  flex:1;
-  min-width:0;
-  overflow:hidden;
-}
+.staff-wrap{flex:1;min-width:0;overflow:hidden;}
 
-#staff{
-  display:block;
-  width:100%;
-  height:auto;
-}
+#staff{display:block;width:100%;height:auto;}
 
-.staff-lines{
-  stroke:#827d75;
-  stroke-width:1.2;
-}
-
-.staff-note{
-  fill:#302d29;
-}
-
-.staff-stem{
-  stroke:#302d29;
-  stroke-width:1.5;
-}
-
+.staff-lines{stroke:#827d75;stroke-width:1.2;}
+.staff-note{fill:#302d29;}
+.staff-stem{stroke:#302d29;stroke-width:1.5;}
 .staff-accidental{
   font-size:18px;
   fill:#302d29;
   font-family:serif;
 }
-
-.staff-clef{
-  font-family:serif;
-  font-size:75px;
-  fill:#665f56;
-}
-
-.staff-empty{
-  font-size:13px;
-  fill:#b1aaa1;
-}
+.staff-clef{font-family:serif;font-size:75px;fill:#665f56;}
+.staff-empty{font-size:13px;fill:#b1aaa1;}
 
 /* ベース音 */
 
@@ -228,10 +197,7 @@ button{
   color:#716b63;
 }
 
-.bass-selector-hint{
-  font-size:9px;
-  color:#aaa197;
-}
+.bass-selector-hint{font-size:9px;color:#aaa197;}
 
 .bass-buttons{
   display:grid;
@@ -258,9 +224,7 @@ button{
   font-weight:800;
 }
 
-.bass-btn:active{
-  transform:scale(.96);
-}
+.bass-btn:active{transform:scale(.96);}
 
 /* 音の情報 */
 
@@ -278,34 +242,12 @@ button{
   text-align:center;
 }
 
-.info-title{
-  font-size:9px;
-  color:var(--muted);
-  margin-bottom:3px;
-}
+.info-title{font-size:9px;color:var(--muted);margin-bottom:3px;}
+.info-value{font-size:14px;font-weight:750;}
+.degree-info{margin-top:7px;font-size:10px;color:#827b72;line-height:1.5;}
 
-.info-value{
-  font-size:14px;
-  font-weight:750;
-}
-
-.degree-info{
-  margin-top:7px;
-  font-size:10px;
-  color:#827b72;
-  line-height:1.5;
-}
-
-.info-heading{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.section-title{
-  font-size:11px;
-  font-weight:750;
-}
+.info-heading{display:flex;justify-content:space-between;align-items:center;}
+.section-title{font-size:11px;font-weight:750;}
 
 .clear-btn{
   background:#f3f0eb;
@@ -339,21 +281,10 @@ button{
   font-size:11px;
 }
 
-.color-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-}
+.color-dot{width:8px;height:8px;border-radius:50%;}
+.main-dot{background:var(--pink);}
 
-.main-dot{
-  background:var(--pink);
-}
-
-.range-controls{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
+.range-controls{display:flex;align-items:center;gap:6px;}
 
 .range-btn{
   background:#f3f0eb;
@@ -437,30 +368,12 @@ button{
   color:#70454b;
 }
 
-.key.black.selected{
-  filter:brightness(1.35);
-}
+.key.black.selected{filter:brightness(1.35);}
+.key:active{transform:translateY(1px);}
+.key.black:active{transform:translateX(-50%) translateY(1px);}
 
-.key:active{
-  transform:translateY(1px);
-}
-
-.key.black:active{
-  transform:translateX(-50%) translateY(1px);
-}
-
-.key-name{
-  font-size:12px;
-  font-weight:650;
-  pointer-events:none;
-}
-
-.key-octave{
-  font-size:9px;
-  opacity:.65;
-  margin-top:2px;
-  pointer-events:none;
-}
+.key-name{font-size:12px;font-weight:650;pointer-events:none;}
+.key-octave{font-size:9px;opacity:.65;margin-top:2px;pointer-events:none;}
 
 .key-degree{
   position:absolute;
@@ -473,90 +386,33 @@ button{
   pointer-events:none;
 }
 
-.key.black .key-degree{
-  top:7px;
-  font-size:9px;
-}
+.key.black .key-degree{top:7px;font-size:9px;}
+.key.black .key-name{font-size:10px;}
 
-.key.black .key-name{
-  font-size:10px;
-}
-
-.keyboard-hint{
-  font-size:9px;
-  color:#aaa197;
-  margin-top:4px;
-  text-align:center;
-}
-
-.mode-indicator{
-  font-size:9px;
-  color:#a69d93;
-  text-align:right;
-}
+.keyboard-hint{font-size:9px;color:#aaa197;margin-top:4px;text-align:center;}
+.mode-indicator{font-size:9px;color:#a69d93;text-align:right;}
 
 /* スマートフォン */
 
 @media(max-width:480px){
-  :root{
-    --white-key-width:39px;
-  }
-
-  .app{
-    padding:6px 8px 12px;
-  }
-
-  .menu-handle{
-    height:27px;
-  }
-
-  .menu-content{
-    padding:8px;
-  }
-
-  .chord-display{
-    min-height:69px;
-    gap:4px;
-  }
-
-  .chord-info{
-    width:28%;
-    min-width:80px;
-  }
-
-  .chord-name{
-    font-size:24px;
-    min-height:30px;
-  }
-
-  .chord-notes{
-    font-size:8px;
-  }
-
-  .bass-buttons{
-    gap:3px;
-  }
-
-  .bass-btn{
-    height:28px;
-    font-size:9px;
-  }
-
-  .keyboard-card{
-    padding:9px 8px;
-  }
-
-  .keys{
-    height:clamp(116px,23vh,190px);
-  }
+  :root{--white-key-width:39px;}
+  .app{padding:6px 8px 12px;}
+  .menu-handle{height:27px;}
+  .menu-content{padding:8px;}
+  .chord-display{min-height:69px;gap:4px;}
+  .chord-info{width:28%;min-width:80px;}
+  .chord-name{font-size:24px;min-height:30px;}
+  .chord-notes{font-size:8px;}
+  .bass-buttons{gap:3px;}
+  .bass-btn{height:28px;font-size:9px;}
+  .keyboard-card{padding:9px 8px;}
+  .keys{height:clamp(116px,23vh,190px);}
 }
 </style>
 </head>
 
 <body>
 <div class="app">
-
-<!-- メニュー開閉ボタン -->
 
 <button class="menu-handle" id="menuToggle"
         type="button" aria-expanded="false">
@@ -566,14 +422,11 @@ button{
   <span class="handle-line"></span>
 </button>
 
-<!-- 開閉式メニュー -->
-
 <div class="menu-panel" id="menuPanel">
 <div class="menu-inner">
 <div class="menu-content">
 
   <div class="chord-display">
-
     <div class="chord-info">
       <div class="chord-label">CHORD NAME</div>
       <div class="chord-name" id="chordName">---</div>
@@ -594,7 +447,6 @@ button{
         <g id="staffNotes"></g>
       </svg>
     </div>
-
   </div>
 
   <div class="bass-selector">
@@ -624,7 +476,6 @@ button{
       <div class="info-title">ベース音 / ROOT</div>
       <div class="info-value" id="bassInfo">---</div>
     </div>
-
     <div class="info-box">
       <div class="info-title">選択した音</div>
       <div class="info-value" id="selectedCount">0音</div>
@@ -643,8 +494,6 @@ button{
 </div>
 </div>
 </div>
-
-<!-- メイン鍵盤 -->
 
 <section class="keyboard-card">
 
@@ -665,23 +514,13 @@ button{
     <div class="keys" id="mainKeys"></div>
   </div>
 
-  <div class="keyboard-hint" id="keyboardHint">
-    鍵盤を押して演奏
-  </div>
-
-  <div class="mode-indicator" id="modeIndicator">
-    PLAY MODE
-  </div>
+  <div class="keyboard-hint" id="keyboardHint">鍵盤を押して演奏</div>
+  <div class="mode-indicator" id="modeIndicator">PLAY MODE</div>
 
 </section>
-
 </div>
 
 <script>
-/* =====================================
-   基本設定
-===================================== */
-
 const NOTE_NAMES=[
   "C","C♯","D","D♯","E","F",
   "F♯","G","G♯","A","A♯","B"
@@ -694,54 +533,25 @@ let mainSelected=new Set();
 let bassSelected=null;
 let mode="play";
 let menuOpen=false;
-
 let audioContext=null;
-
-/*
-  音の管理
-
-  main:60  = メイン鍵盤のC4
-  bass:0   = ベース音のC3
-
-  メイン鍵盤とベース音を別々に管理することで、
-  同じ音程になっても互いに停止しないようにする。
-*/
-
 let activeVoices=new Map();
-
-/* =====================================
-   音声処理
-===================================== */
 
 function getAudio(){
   if(!audioContext){
     const AudioContextClass=
       window.AudioContext||window.webkitAudioContext;
-
     if(!AudioContextClass)return null;
-
     audioContext=new AudioContextClass();
   }
-
   if(audioContext.state==="suspended"){
-    audioContext.resume().catch(error=>{
-      console.log(error);
-    });
+    audioContext.resume().catch(error=>console.log(error));
   }
-
   return audioContext;
 }
 
 function frequency(midi){
   return 440*Math.pow(2,(midi-69)/12);
 }
-
-/*
-  音を鳴らす
-
-  voiceId：音を区別するためのID
-  midi：実際に鳴らす音程
-*/
 
 function startSound(voiceId,midi){
   const ctx=getAudio();
@@ -755,26 +565,18 @@ function startSound(voiceId,midi){
 
   osc.type="triangle";
   osc.frequency.value=frequency(midi);
-
   volume.gain.value=.32;
 
   gain.gain.setValueAtTime(.0001,ctx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(
-    .16,ctx.currentTime+.025
-  );
+  gain.gain.exponentialRampToValueAtTime(.16,ctx.currentTime+.025);
 
   osc.connect(gain);
   gain.connect(volume);
   volume.connect(ctx.destination);
-
   osc.start();
 
   activeVoices.set(voiceId,{osc,gain});
 }
-
-/*
-  指定した音だけ止める
-*/
 
 function stopSound(voiceId){
   const voice=activeVoices.get(voiceId);
@@ -784,28 +586,16 @@ function stopSound(voiceId){
   if(!ctx)return;
 
   const now=ctx.currentTime;
-
   voice.gain.gain.cancelScheduledValues(now);
   voice.gain.gain.setTargetAtTime(.0001,now,.04);
 
-  try{
-    voice.osc.stop(now+.2);
-  }catch(error){}
-
+  try{voice.osc.stop(now+.2);}catch(error){}
   activeVoices.delete(voiceId);
 }
-
-/*
-  すべての音を止める
-*/
 
 function stopAllSounds(){
   [...activeVoices.keys()].forEach(stopSound);
 }
-
-/* =====================================
-   音名処理
-===================================== */
 
 function pitchClass(midi){
   return ((midi%12)+12)%12;
@@ -827,40 +617,18 @@ function isBlack(midi){
   return BLACK.includes(pitchClass(midi));
 }
 
-/* =====================================
-   度数表示
-===================================== */
-
 function degreeName(semitones){
   const degrees={
-    0:"1",
-    1:"♭2",
-    2:"2",
-    3:"♭3",
-    4:"3",
-    5:"4",
-    6:"♭5",
-    7:"5",
-    8:"♯5",
-    9:"6",
-    10:"♭7",
-    11:"7"
+    0:"1",1:"♭2",2:"2",3:"♭3",4:"3",5:"4",
+    6:"♭5",7:"5",8:"♯5",9:"6",10:"♭7",11:"7"
   };
-
   return degrees[((semitones%12)+12)%12];
 }
 
 function degreeFor(midi){
   if(bassSelected===null)return "";
-
-  return degreeName(
-    pitchClass(midi)-bassSelected
-  );
+  return degreeName(pitchClass(midi)-bassSelected);
 }
-
-/* =====================================
-   コード判定
-===================================== */
 
 const CHORDS=[
   ["m7(♭5)",[0,3,6,10]],
@@ -900,17 +668,13 @@ const CHORDS=[
 ];
 
 function detectChord(){
-  if(bassSelected===null||mainSelected.size===0){
-    return "---";
-  }
+  if(bassSelected===null||mainSelected.size===0)return "---";
 
   const root=bassSelected;
   const intervals=new Set([0]);
 
   for(const midi of mainSelected){
-    intervals.add(
-      (pitchClass(midi)-root+12)%12
-    );
+    intervals.add((pitchClass(midi)-root+12)%12);
   }
 
   let best=null;
@@ -919,20 +683,17 @@ function detectChord(){
   for(const chord of CHORDS){
     const name=chord[0];
     const required=chord[1];
-
     let missing=0;
     let extra=0;
 
     for(const interval of required){
       if(!intervals.has(interval))missing++;
     }
-
     for(const interval of intervals){
       if(!required.includes(interval))extra++;
     }
 
-    const score=
-      missing*2.2+extra*10-required.length*.025;
+    const score=missing*2.2+extra*10-required.length*.025;
 
     if(score<bestScore){
       bestScore=score;
@@ -941,13 +702,8 @@ function detectChord(){
   }
 
   if(best===null)return "---";
-
   return NOTE_NAMES[root]+best;
 }
-
-/* =====================================
-   メニュー開閉
-===================================== */
 
 function setMenu(open){
   menuOpen=open;
@@ -960,21 +716,14 @@ function setMenu(open){
   toggle.classList.toggle("open",open);
   toggle.setAttribute("aria-expanded",String(open));
 
-  handleText.textContent=
-    open?"メニューを閉じる":"メニューを開く";
+  handleText.textContent=open?"メニューを閉じる":"メニューを開く";
 
   if(open){
     mode="select";
   }else{
     mode="play";
-
-    // メイン鍵盤の選択を解除
     mainSelected.clear();
-
-    // 選択中のベース音も解除
     bassSelected=null;
-
-    // メイン・ベースを含むすべての音を停止
     stopAllSounds();
   }
 
@@ -985,18 +734,10 @@ document.getElementById("menuToggle").onclick=()=>{
   setMenu(!menuOpen);
 };
 
-/* =====================================
-   ベース音選択
-===================================== */
-
 function renderBassButtons(){
   document.querySelectorAll(".bass-btn").forEach(button=>{
     const note=Number(button.dataset.note);
-
-    button.classList.toggle(
-      "active",
-      bassSelected===note
-    );
+    button.classList.toggle("active",bassSelected===note);
   });
 }
 
@@ -1005,22 +746,12 @@ document.querySelectorAll(".bass-btn").forEach(button=>{
     const note=Number(button.dataset.note);
 
     if(bassSelected===note){
-
-      // 同じベース音をもう一度押したら解除
       bassSelected=null;
       stopSound("bass");
-
     }else{
-
-      // 前のベース音を停止
       stopSound("bass");
-
-      // 新しいベース音を選択
       bassSelected=note;
-
-      // C3～B3の音域で鳴らし続ける
       const bassMidi=48+note;
-
       startSound("bass",bassMidi);
     }
 
@@ -1028,28 +759,21 @@ document.querySelectorAll(".bass-btn").forEach(button=>{
   });
 });
 
-/* =====================================
-   鍵盤作成
-===================================== */
-
 function createKey(midi,whiteIndex){
   const key=document.createElement("button");
   key.type="button";
 
   const black=isBlack(midi);
-
   key.className="key "+(black?"black":"white");
 
   if(mainSelected.has(midi)){
     key.classList.add("selected","main-selected");
   }
 
-  // 音名
   const name=document.createElement("span");
   name.className="key-name";
   name.textContent=shortNote(midi);
 
-  // オクターブ数字
   const oct=document.createElement("span");
   oct.className="key-octave";
   oct.textContent=octave(midi);
@@ -1057,7 +781,6 @@ function createKey(midi,whiteIndex){
   key.appendChild(name);
   key.appendChild(oct);
 
-  // 度数表示
   if(bassSelected!==null){
     const degree=document.createElement("span");
     degree.className="key-degree";
@@ -1066,15 +789,11 @@ function createKey(midi,whiteIndex){
   }
 
   if(black){
-    key.style.setProperty(
-      "--key-left",
-      `calc(${whiteIndex+1} * 100% / var(--white-count))`
-    );
+    key.style.setProperty("--key-left",
+      `calc(${whiteIndex+1} * 100% / var(--white-count))`);
   }else{
-    key.style.setProperty(
-      "--key-left",
-      `calc(${whiteIndex} * 100% / var(--white-count))`
-    );
+    key.style.setProperty("--key-left",
+      `calc(${whiteIndex} * 100% / var(--white-count))`);
   }
 
   let pointerDown=false;
@@ -1083,35 +802,23 @@ function createKey(midi,whiteIndex){
     e.preventDefault();
 
     if(mode==="select"){
-
       const voiceId="main:"+midi;
 
       if(mainSelected.has(midi)){
-
-        // 選択解除した音だけ停止
         mainSelected.delete(midi);
         stopSound(voiceId);
-
       }else{
-
-        // 選択した音を追加して鳴らし続ける
         mainSelected.add(midi);
         startSound(voiceId,midi);
       }
 
       renderAll();
-
     }else{
-
-      // 通常モードは押している間だけ鳴らす
       pointerDown=true;
-
       getAudio();
       startSound("main:"+midi,midi);
 
-      try{
-        key.setPointerCapture(e.pointerId);
-      }catch(error){}
+      try{key.setPointerCapture(e.pointerId);}catch(error){}
     }
   });
 
@@ -1130,69 +837,44 @@ function createKey(midi,whiteIndex){
   return key;
 }
 
-/* =====================================
-   鍵盤描画
-===================================== */
-
 function renderOneKeyboard(containerId,start,count){
   const container=document.getElementById(containerId);
   container.innerHTML="";
 
   const whiteNotes=[];
   const blackNotes=[];
-
   let whiteIndex=0;
 
   for(let i=0;i<count;i++){
     const midi=start+i;
 
     if(isBlack(midi)){
-      blackNotes.push({
-        midi,
-        whiteIndex:whiteIndex-1
-      });
+      blackNotes.push({midi,whiteIndex:whiteIndex-1});
     }else{
-      whiteNotes.push({
-        midi,
-        whiteIndex:whiteIndex
-      });
-
+      whiteNotes.push({midi,whiteIndex:whiteIndex});
       whiteIndex++;
     }
   }
 
-  container.style.setProperty(
-    "--white-count",
-    whiteNotes.length
-  );
-
+  container.style.setProperty("--white-count",whiteNotes.length);
   container.style.width=
     `calc(${whiteNotes.length} * var(--white-key-width))`;
 
   whiteNotes.forEach(item=>{
-    container.appendChild(
-      createKey(item.midi,item.whiteIndex)
-    );
+    container.appendChild(createKey(item.midi,item.whiteIndex));
   });
 
   blackNotes.forEach(item=>{
-    container.appendChild(
-      createKey(item.midi,item.whiteIndex)
-    );
+    container.appendChild(createKey(item.midi,item.whiteIndex));
   });
 }
 
 function renderKeyboard(){
-  // 19鍵から31鍵へ拡張（約2.5オクターブ）
   renderOneKeyboard("mainKeys",mainStart,31);
 
   document.getElementById("mainRange").textContent=
     noteName(mainStart)+" ～ "+noteName(mainStart+30);
 }
-
-/* =====================================
-   五線譜
-===================================== */
 
 const STAFF_LETTERS=["C","D","E","F","G","A","B"];
 
@@ -1200,26 +882,15 @@ function staffPosition(letter,oct){
   const index=STAFF_LETTERS.indexOf(letter);
   const absolute=oct*7+index;
   const base=4*7+2;
-
   return 140-(absolute-base)*10;
 }
 
 function staffSpelling(pc){
   const spellings={
-    0:["C",""],
-    1:["C","♯"],
-    2:["D",""],
-    3:["D","♯"],
-    4:["E",""],
-    5:["F",""],
-    6:["F","♯"],
-    7:["G",""],
-    8:["G","♯"],
-    9:["A",""],
-    10:["A","♯"],
-    11:["B",""]
+    0:["C",""],1:["C","♯"],2:["D",""],3:["D","♯"],
+    4:["E",""],5:["F",""],6:["F","♯"],7:["G",""],
+    8:["G","♯"],9:["A",""],10:["A","♯"],11:["B",""]
   };
-
   return spellings[pc];
 }
 
@@ -1227,114 +898,76 @@ function renderStaff(){
   const group=document.getElementById("staffNotes");
   group.innerHTML="";
 
-  const noteSet=new Set(
-    [...mainSelected].map(m=>pitchClass(m))
-  );
+  const noteSet=new Set([...mainSelected].map(m=>pitchClass(m)));
 
-  if(bassSelected!==null){
-    noteSet.add(bassSelected);
-  }
+  if(bassSelected!==null)noteSet.add(bassSelected);
 
   const pcs=[...noteSet].sort((a,b)=>a-b);
 
   if(pcs.length===0){
-    const empty=document.createElementNS(
-      "http://www.w3.org/2000/svg","text"
-    );
-
+    const empty=document.createElementNS("http://www.w3.org/2000/svg","text");
     empty.setAttribute("x","390");
     empty.setAttribute("y","108");
     empty.setAttribute("text-anchor","middle");
     empty.setAttribute("class","staff-empty");
     empty.textContent="音を選択すると表示";
-
     group.appendChild(empty);
     return;
   }
 
   const startX=330;
-  const gap=Math.min(
-    65,
-    300/Math.max(1,pcs.length-1)
-  );
+  const gap=Math.min(65,300/Math.max(1,pcs.length-1));
 
   pcs.forEach((pc,index)=>{
     const [letter,accidental]=staffSpelling(pc);
-
     const oct=4;
     const y=staffPosition(letter,oct);
+    const x=startX+(index-(pcs.length-1)/2)*gap;
 
-    const x=
-      startX+(index-(pcs.length-1)/2)*gap;
-
-    const note=document.createElementNS(
-      "http://www.w3.org/2000/svg","ellipse"
-    );
-
+    const note=document.createElementNS("http://www.w3.org/2000/svg","ellipse");
     note.setAttribute("cx",x);
     note.setAttribute("cy",y);
     note.setAttribute("rx","8");
     note.setAttribute("ry","5.5");
-    note.setAttribute(
-      "transform",
-      `rotate(-20 ${x} ${y})`
-    );
+    note.setAttribute("transform",`rotate(-20 ${x} ${y})`);
     note.setAttribute("class","staff-note");
-
     group.appendChild(note);
 
     if(y>65){
-      const stem=document.createElementNS(
-        "http://www.w3.org/2000/svg","line"
-      );
-
+      const stem=document.createElementNS("http://www.w3.org/2000/svg","line");
       stem.setAttribute("x1",x+7);
       stem.setAttribute("x2",x+7);
       stem.setAttribute("y1",y);
       stem.setAttribute("y2",y-38);
       stem.setAttribute("class","staff-stem");
-
       group.appendChild(stem);
     }
 
     if(accidental){
-      const acc=document.createElementNS(
-        "http://www.w3.org/2000/svg","text"
-      );
-
+      const acc=document.createElementNS("http://www.w3.org/2000/svg","text");
       acc.setAttribute("x",x-21);
       acc.setAttribute("y",y+6);
       acc.setAttribute("class","staff-accidental");
       acc.textContent=accidental;
-
       group.appendChild(acc);
     }
 
     if(y>=150){
       for(let lineY=160;lineY<=y;lineY+=20){
-        const line=document.createElementNS(
-          "http://www.w3.org/2000/svg","line"
-        );
-
+        const line=document.createElementNS("http://www.w3.org/2000/svg","line");
         line.setAttribute("x1",x-12);
         line.setAttribute("x2",x+12);
         line.setAttribute("y1",lineY);
         line.setAttribute("y2",lineY);
         line.setAttribute("class","staff-lines");
-
         group.appendChild(line);
       }
     }
   });
 }
 
-/* =====================================
-   情報表示
-===================================== */
-
 function renderInfo(){
   const chord=detectChord();
-
   document.getElementById("chordName").textContent=chord;
 
   const selectedNotes=[...mainSelected]
@@ -1347,9 +980,7 @@ function renderInfo(){
     :"メイン音を選択";
 
   document.getElementById("bassInfo").textContent=
-    bassSelected===null
-    ?"---"
-    :NOTE_NAMES[bassSelected];
+    bassSelected===null?"---":NOTE_NAMES[bassSelected];
 
   document.getElementById("selectedCount").textContent=
     mainSelected.size+"音";
@@ -1365,31 +996,17 @@ function renderInfo(){
     document.getElementById("degreeInfo").textContent=
       "ベース音 "+NOTE_NAMES[bassSelected]+
       " を 1 とした度数："+ 
-      (degrees.length
-        ?degrees.join(" ／ ")
-        :"メイン鍵盤の音を選択してね");
+      (degrees.length?degrees.join(" ／ "):"メイン鍵盤の音を選択してね");
   }
 }
 
-/* =====================================
-   モード表示
-===================================== */
-
 function renderMode(){
   document.getElementById("keyboardHint").textContent=
-    mode==="play"
-    ?"鍵盤を押して演奏"
-    :"タップして音を選択・コードを認識";
+    mode==="play"?"鍵盤を押して演奏":"タップして音を選択・コードを認識";
 
   document.getElementById("modeIndicator").textContent=
-    mode==="play"
-    ?"PLAY MODE"
-    :"CHORD SELECT MODE";
+    mode==="play"?"PLAY MODE":"CHORD SELECT MODE";
 }
-
-/* =====================================
-   全体更新
-===================================== */
 
 function renderAll(){
   renderKeyboard();
@@ -1398,10 +1015,6 @@ function renderAll(){
   renderStaff();
   renderMode();
 }
-
-/* =====================================
-   音域移動
-===================================== */
 
 document.getElementById("mainLeft").onclick=()=>{
   mainStart-=12;
@@ -1413,40 +1026,20 @@ document.getElementById("mainRight").onclick=()=>{
   renderAll();
 };
 
-/* =====================================
-   選択クリア
-===================================== */
-
 document.getElementById("clearAll").onclick=()=>{
-
-  // 選択中の音をすべて解除
   mainSelected.clear();
   bassSelected=null;
-
-  // 鳴っている音もすべて停止
   stopAllSounds();
-
   renderAll();
 };
 
-/* =====================================
-   初期表示
-===================================== */
-
-// 最初はメニューを閉じた演奏モード
 setMenu(false);
-
-/* =====================================
-   オフライン対応
-===================================== */
 
 if("serviceWorker" in navigator){
   window.addEventListener("load",()=>{
     navigator.serviceWorker.register("./sw.js")
       .then(()=>{
-        console.log(
-          "マイピア：オフライン対応が有効になりました"
-        );
+        console.log("マイピア：オフライン対応が有効になりました");
       })
       .catch(error=>{
         console.log("オフライン登録エラー:",error);
