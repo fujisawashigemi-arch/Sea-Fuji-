@@ -25,7 +25,6 @@
   --white-key-width:43px;
 }
 
-/* 文字選択を防止 */
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
@@ -59,18 +58,18 @@ header{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  margin-bottom:20px;
+  margin-bottom:13px;
 }
 
 .logo{
-  font-size:27px;
+  font-size:25px;
   font-weight:800;
   letter-spacing:.08em;
 }
 
 .logo small{
   display:block;
-  font-size:10px;
+  font-size:9px;
   letter-spacing:.22em;
   color:var(--muted);
   font-weight:500;
@@ -84,27 +83,10 @@ header{
 
 .card{
   background:var(--paper);
-  border-radius:17px;
-  padding:16px;
-  margin-bottom:15px;
+  border-radius:15px;
+  padding:13px;
+  margin-bottom:11px;
   box-shadow:var(--shadow);
-}
-
-.section-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:13px;
-}
-
-.section-title{
-  font-size:14px;
-  font-weight:750;
-}
-
-.section-sub{
-  font-size:11px;
-  color:var(--muted);
 }
 
 .mode-area{
@@ -115,17 +97,27 @@ header{
   flex-wrap:wrap;
 }
 
+.section-title{
+  font-size:13px;
+  font-weight:750;
+}
+
+.section-sub{
+  font-size:10px;
+  color:var(--muted);
+}
+
 .mode-buttons{
   display:flex;
   background:#f2eee9;
-  padding:4px;
-  border-radius:10px;
+  padding:3px;
+  border-radius:9px;
   gap:3px;
 }
 
 .mode-btn{
-  padding:9px 15px;
-  border-radius:8px;
+  padding:8px 14px;
+  border-radius:7px;
   background:transparent;
   color:#777;
   font-size:12px;
@@ -138,45 +130,57 @@ header{
   box-shadow:0 1px 4px #00000012;
 }
 
-.sound-note{
-  font-size:11px;
-  color:var(--muted);
-}
+/* コード名と五線譜 */
 
 .chord-card{
+  padding:10px 12px;
+}
+
+.chord-display{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-height:91px;
+}
+
+.chord-info{
+  width:29%;
+  min-width:95px;
   text-align:center;
-  padding:20px 12px;
+  flex-shrink:0;
 }
 
 .chord-label{
-  font-size:11px;
+  font-size:9px;
   color:var(--muted);
-  letter-spacing:.12em;
+  letter-spacing:.1em;
 }
 
 .chord-name{
-  font-size:38px;
+  font-size:32px;
   font-weight:750;
-  margin:7px 0 5px;
-  min-height:48px;
+  margin:2px 0;
+  min-height:39px;
+  line-height:1.2;
 }
 
 .chord-notes{
-  font-size:13px;
+  font-size:10px;
   color:#8d857b;
-  min-height:20px;
+  line-height:1.4;
+  min-height:14px;
 }
 
 .staff-wrap{
+  flex:1;
+  min-width:0;
   overflow:hidden;
-  margin-top:12px;
 }
 
 #staff{
   display:block;
   width:100%;
   height:auto;
-  min-height:135px;
 }
 
 .staff-lines{
@@ -210,15 +214,72 @@ header{
   fill:#b1aaa1;
 }
 
+/* ベース音選択 */
+
+.bass-selector{
+  border-top:1px solid #eee9e2;
+  padding-top:9px;
+  margin-top:5px;
+}
+
+.bass-selector-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:7px;
+}
+
+.bass-selector-title{
+  font-size:11px;
+  font-weight:700;
+  color:#716b63;
+}
+
+.bass-selector-hint{
+  font-size:9px;
+  color:#aaa197;
+}
+
+.bass-buttons{
+  display:grid;
+  grid-template-columns:repeat(12,minmax(0,1fr));
+  gap:4px;
+}
+
+.bass-btn{
+  min-width:0;
+  height:31px;
+  border-radius:7px;
+  background:#f2f5f7;
+  color:#647786;
+  font-size:11px;
+  font-weight:650;
+  padding:0;
+  border:1px solid transparent;
+}
+
+.bass-btn.active{
+  background:#c5dceb;
+  color:#365b76;
+  border-color:var(--blue-dark);
+  font-weight:800;
+}
+
+.bass-btn:active{
+  transform:scale(.96);
+}
+
+/* メイン鍵盤 */
+
 .keyboard-card{
-  padding:15px 12px 17px;
+  padding:13px 12px 12px;
 }
 
 .keyboard-heading{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:12px;
+  margin-bottom:10px;
 }
 
 .keyboard-name{
@@ -226,7 +287,7 @@ header{
   align-items:center;
   gap:8px;
   font-weight:750;
-  font-size:14px;
+  font-size:13px;
 }
 
 .color-dot{
@@ -236,7 +297,6 @@ header{
 }
 
 .main-dot{background:var(--pink)}
-.bass-dot{background:var(--blue)}
 
 .range-controls{
   display:flex;
@@ -268,7 +328,6 @@ header{
   touch-action:pan-x;
 }
 
-/* ピアノ鍵盤の土台 */
 .keys{
   position:relative;
   display:block;
@@ -280,7 +339,6 @@ header{
   --white-count:12;
 }
 
-/* 白鍵・黒鍵共通 */
 .key{
   position:absolute;
   top:0;
@@ -299,7 +357,6 @@ header{
   -webkit-touch-callout:none;
 }
 
-/* 白鍵 */
 .key.white{
   left:var(--key-left);
   width:calc(100% / var(--white-count));
@@ -308,7 +365,6 @@ header{
   z-index:1;
 }
 
-/* 黒鍵 */
 .key.black{
   left:var(--key-left);
   transform:translateX(-50%);
@@ -327,12 +383,6 @@ header{
   background:#f1cbd0;
   border-color:var(--pink-dark);
   color:#70454b;
-}
-
-.key.selected.bass-selected{
-  background:#c5dceb;
-  border-color:var(--blue-dark);
-  color:#365b76;
 }
 
 .key.black.selected{
@@ -380,65 +430,66 @@ header{
   font-size:10px;
 }
 
-.keys.bass-keys{
-  height:100px;
-}
-
-.keys.bass-keys .key{
-  padding-bottom:7px;
-}
-
 .keyboard-hint{
   font-size:10px;
   color:#aaa197;
-  margin-top:7px;
+  margin-top:5px;
   text-align:center;
 }
+
+/* 音の情報 */
 
 .info-row{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
+  gap:8px;
 }
 
 .info-box{
   background:#faf8f5;
-  border-radius:11px;
-  padding:12px;
+  border-radius:10px;
+  padding:9px;
   text-align:center;
 }
 
 .info-title{
   font-size:10px;
   color:var(--muted);
-  margin-bottom:6px;
+  margin-bottom:4px;
 }
 
 .info-value{
-  font-size:17px;
+  font-size:16px;
   font-weight:750;
 }
 
 .degree-info{
-  margin-top:13px;
-  font-size:12px;
+  margin-top:9px;
+  font-size:11px;
   color:#827b72;
-  line-height:1.7;
+  line-height:1.6;
+}
+
+.info-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:9px;
 }
 
 .clear-btn{
   background:#f3f0eb;
   color:#70685f;
   border-radius:8px;
-  padding:8px 12px;
-  font-size:11px;
+  padding:7px 11px;
+  font-size:10px;
 }
 
 footer{
   text-align:center;
   color:#aaa197;
   font-size:10px;
-  padding:10px;
+  padding:8px;
 }
 
 @media(max-width:480px){
@@ -446,11 +497,16 @@ footer{
     --white-key-width:39px;
   }
 
-  .app{padding:14px 11px 30px}
-  .card{padding:13px}
+  .app{padding:13px 10px 25px}
+  .card{padding:11px}
+  .chord-card{padding:9px 9px}
+  .chord-display{min-height:82px;gap:4px}
+  .chord-info{width:28%;min-width:88px}
+  .chord-name{font-size:29px;min-height:35px}
+  .chord-notes{font-size:9px}
   .keys{height:116px}
-  .keys.bass-keys{height:94px}
-  .chord-name{font-size:34px}
+  .bass-buttons{gap:3px}
+  .bass-btn{height:30px;font-size:10px}
 }
 </style>
 </head>
@@ -461,9 +517,9 @@ footer{
 <header>
   <div class="logo">
     マイピア
-    <small>MY PIA  /  OTORIS</small>
+    <small>MY PIA / OTORIS</small>
   </div>
-  <div class="version">Ver. 1.0</div>
+  <div class="version">Ver. 1.1</div>
 </header>
 
 <section class="card">
@@ -479,31 +535,59 @@ footer{
   </div>
 </section>
 
+<!-- コード名・五線譜・ベース音選択 -->
+
 <section class="card chord-card">
-  <div class="chord-label">CHORD NAME</div>
-  <div class="chord-name" id="chordName">---</div>
-  <div class="chord-notes" id="chordNotes">ベース音とメインの音を選択</div>
+
+  <div class="chord-display">
+
+    <div class="chord-info">
+      <div class="chord-label">CHORD NAME</div>
+      <div class="chord-name" id="chordName">---</div>
+      <div class="chord-notes" id="chordNotes">音を選択してね</div>
+    </div>
+
+    <div class="staff-wrap">
+      <svg id="staff" viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
+        <g class="staff-lines">
+          <line x1="65" y1="60" x2="675" y2="60"/>
+          <line x1="65" y1="80" x2="675" y2="80"/>
+          <line x1="65" y1="100" x2="675" y2="100"/>
+          <line x1="65" y1="120" x2="675" y2="120"/>
+          <line x1="65" y1="140" x2="675" y2="140"/>
+        </g>
+        <text x="72" y="130" class="staff-clef">𝄞</text>
+        <g id="staffNotes"></g>
+      </svg>
+    </div>
+
+  </div>
+
+  <div class="bass-selector">
+    <div class="bass-selector-head">
+      <div class="bass-selector-title">BASS / ベース音</div>
+      <div class="bass-selector-hint">コードの基準音を選択</div>
+    </div>
+
+    <div class="bass-buttons" id="bassButtons">
+      <button class="bass-btn" data-note="0">C</button>
+      <button class="bass-btn" data-note="1">C♯</button>
+      <button class="bass-btn" data-note="2">D</button>
+      <button class="bass-btn" data-note="3">D♯</button>
+      <button class="bass-btn" data-note="4">E</button>
+      <button class="bass-btn" data-note="5">F</button>
+      <button class="bass-btn" data-note="6">F♯</button>
+      <button class="bass-btn" data-note="7">G</button>
+      <button class="bass-btn" data-note="8">G♯</button>
+      <button class="bass-btn" data-note="9">A</button>
+      <button class="bass-btn" data-note="10">A♯</button>
+      <button class="bass-btn" data-note="11">B</button>
+    </div>
+  </div>
+
 </section>
 
-<section class="card">
-  <div class="section-head">
-    <div class="section-title">五線譜</div>
-    <div class="section-sub">メイン鍵盤の選択音のみ</div>
-  </div>
-  <div class="staff-wrap">
-    <svg id="staff" viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
-      <g class="staff-lines">
-        <line x1="65" y1="60" x2="675" y2="60"/>
-        <line x1="65" y1="80" x2="675" y2="80"/>
-        <line x1="65" y1="100" x2="675" y2="100"/>
-        <line x1="65" y1="120" x2="675" y2="120"/>
-        <line x1="65" y1="140" x2="675" y2="140"/>
-      </g>
-      <text x="72" y="130" class="staff-clef">𝄞</text>
-      <g id="staffNotes"></g>
-    </svg>
-  </div>
-</section>
+<!-- メイン鍵盤 -->
 
 <section class="card keyboard-card">
   <div class="keyboard-heading">
@@ -517,51 +601,43 @@ footer{
       <button class="range-btn" id="mainRight">›</button>
     </div>
   </div>
+
   <div class="keyboard-scroll" id="mainScroll">
     <div class="keys" id="mainKeys"></div>
   </div>
-  <div class="keyboard-hint">タップで音を選択 ／ 演奏モードでは押している間だけ発音</div>
+
+  <div class="keyboard-hint">
+    タップで音を選択 ／ 演奏モードでは押している間だけ発音
+  </div>
 </section>
 
-<section class="card keyboard-card">
-  <div class="keyboard-heading">
-    <div class="keyboard-name">
-      <span class="color-dot bass-dot"></span>
-      ベース鍵盤
-    </div>
-    <div class="range-controls">
-      <button class="range-btn" id="bassLeft">‹</button>
-      <span class="range-text" id="bassRange"></span>
-      <button class="range-btn" id="bassRight">›</button>
-    </div>
-  </div>
-  <div class="keyboard-scroll" id="bassScroll">
-    <div class="keys bass-keys" id="bassKeys"></div>
-  </div>
-  <div class="keyboard-hint">コードの基準音をひとつ選択</div>
-</section>
+<!-- 音の情報 -->
 
 <section class="card">
-  <div class="section-head">
+  <div class="info-heading">
     <div class="section-title">音の情報</div>
     <button class="clear-btn" id="clearAll">選択をクリア</button>
   </div>
+
   <div class="info-row">
     <div class="info-box">
       <div class="info-title">ベース音 / ROOT</div>
       <div class="info-value" id="bassInfo">---</div>
     </div>
+
     <div class="info-box">
       <div class="info-title">選択した音</div>
       <div class="info-value" id="selectedCount">0音</div>
     </div>
   </div>
+
   <div class="degree-info" id="degreeInfo">
     ベース音を選ぶと、メイン鍵盤に度数が表示されるよ。
   </div>
 </section>
 
 <footer>OTORIS · MY PIA</footer>
+
 </div>
 
 <script>
@@ -582,9 +658,9 @@ const NOTE_JP=[
 const BLACK=[1,3,6,8,10];
 
 let mainStart=60;
-let bassStart=48;
-
 let mainSelected=new Set();
+
+/* ベース音は音名12種類から選択 */
 let bassSelected=null;
 
 let mode="play";
@@ -601,9 +677,7 @@ function getAudio(){
     const AudioContextClass=
       window.AudioContext||window.webkitAudioContext;
 
-    if(!AudioContextClass){
-      return null;
-    }
+    if(!AudioContextClass)return null;
 
     audioContext=new AudioContextClass();
   }
@@ -686,10 +760,6 @@ function shortNote(midi){
   return NOTE_NAMES[pitchClass(midi)];
 }
 
-function japaneseNote(midi){
-  return NOTE_JP[pitchClass(midi)];
-}
-
 function isBlack(midi){
   return BLACK.includes(pitchClass(midi));
 }
@@ -721,7 +791,7 @@ function degreeFor(midi){
   if(bassSelected===null)return "";
 
   return degreeName(
-    pitchClass(midi)-pitchClass(bassSelected)
+    pitchClass(midi)-bassSelected
   );
 }
 
@@ -771,7 +841,7 @@ function detectChord(){
     return "---";
   }
 
-  const root=pitchClass(bassSelected);
+  const root=bassSelected;
   const intervals=new Set([0]);
 
   for(const midi of mainSelected){
@@ -809,19 +879,40 @@ function detectChord(){
 
   if(best===null)return "---";
 
-  return shortNote(bassSelected)+best;
+  return NOTE_NAMES[root]+best;
 }
+
+/* =====================================
+   ベース音ボタン
+===================================== */
+
+function renderBassButtons(){
+  document.querySelectorAll(".bass-btn").forEach(button=>{
+    const note=Number(button.dataset.note);
+
+    button.classList.toggle(
+      "active",
+      bassSelected===note
+    );
+  });
+}
+
+document.querySelectorAll(".bass-btn").forEach(button=>{
+  button.addEventListener("click",()=>{
+    const note=Number(button.dataset.note);
+
+    bassSelected=
+      bassSelected===note?null:note;
+
+    renderAll();
+  });
+});
 
 /* =====================================
    鍵盤の作成
 ===================================== */
 
-/*
-  白鍵を先に並べ、その上に黒鍵を重ねる。
-  黒鍵は直前の白鍵と次の白鍵の境界に配置する。
-*/
-
-function createKey(midi,type,whiteIndex){
+function createKey(midi,whiteIndex){
   const key=document.createElement("button");
   key.type="button";
 
@@ -829,19 +920,8 @@ function createKey(midi,type,whiteIndex){
 
   key.className="key "+(black?"black":"white");
 
-  if(type==="bass"){
-    key.classList.add("bass-key");
-  }
-
-  const selected=type==="main"
-    ?mainSelected.has(midi)
-    :bassSelected===midi;
-
-  if(selected){
-    key.classList.add("selected");
-    key.classList.add(
-      type==="main"?"main-selected":"bass-selected"
-    );
+  if(mainSelected.has(midi)){
+    key.classList.add("selected","main-selected");
   }
 
   const name=document.createElement("span");
@@ -855,17 +935,13 @@ function createKey(midi,type,whiteIndex){
   key.appendChild(name);
   key.appendChild(oct);
 
-  if(type==="main"&&bassSelected!==null){
+  if(bassSelected!==null){
     const degree=document.createElement("span");
     degree.className="key-degree";
     degree.textContent=degreeFor(midi);
     key.appendChild(degree);
   }
 
-  /*
-    白鍵は白鍵の番号を使って配置。
-    黒鍵は白鍵の境界に配置。
-  */
   if(black){
     key.style.setProperty(
       "--key-left",
@@ -884,25 +960,17 @@ function createKey(midi,type,whiteIndex){
     e.preventDefault();
 
     if(mode==="select"){
-      if(type==="main"){
-        if(mainSelected.has(midi)){
-          mainSelected.delete(midi);
-        }else{
-          mainSelected.add(midi);
-        }
+      if(mainSelected.has(midi)){
+        mainSelected.delete(midi);
       }else{
-        bassSelected=
-          bassSelected===midi?null:midi;
+        mainSelected.add(midi);
       }
 
       renderAll();
+
     }else{
       pointerDown=true;
 
-      /*
-        iPhone Safariではユーザー操作中に
-        AudioContextを再開する必要がある。
-      */
       getAudio();
       startSound(midi);
 
@@ -927,7 +995,7 @@ function createKey(midi,type,whiteIndex){
   return key;
 }
 
-function renderOneKeyboard(containerId,start,count,type){
+function renderOneKeyboard(containerId,start,count){
   const container=document.getElementById(containerId);
   container.innerHTML="";
 
@@ -954,10 +1022,6 @@ function renderOneKeyboard(containerId,start,count,type){
     }
   }
 
-  /*
-    白鍵の数をCSSに渡す。
-    鍵盤全体の横幅も白鍵の数で決める。
-  */
   container.style.setProperty(
     "--white-count",
     whiteNotes.length
@@ -966,35 +1030,24 @@ function renderOneKeyboard(containerId,start,count,type){
   container.style.width=
     `calc(${whiteNotes.length} * var(--white-key-width))`;
 
-  /*
-    まず白鍵をすべて作る。
-  */
   whiteNotes.forEach(item=>{
     container.appendChild(
-      createKey(item.midi,type,item.whiteIndex)
+      createKey(item.midi,item.whiteIndex)
     );
   });
 
-  /*
-    次に黒鍵を重ねる。
-    DOM上でも白鍵より後にすることで手前に表示する。
-  */
   blackNotes.forEach(item=>{
     container.appendChild(
-      createKey(item.midi,type,item.whiteIndex)
+      createKey(item.midi,item.whiteIndex)
     );
   });
 }
 
 function renderKeyboard(){
-  renderOneKeyboard("mainKeys",mainStart,19,"main");
-  renderOneKeyboard("bassKeys",bassStart,13,"bass");
+  renderOneKeyboard("mainKeys",mainStart,19);
 
   document.getElementById("mainRange").textContent=
     noteName(mainStart)+" ～ "+noteName(mainStart+18);
-
-  document.getElementById("bassRange").textContent=
-    noteName(bassStart)+" ～ "+noteName(bassStart+12);
 }
 
 /* =====================================
@@ -1034,27 +1087,35 @@ function renderStaff(){
   const group=document.getElementById("staffNotes");
   group.innerHTML="";
 
-  if(mainSelected.size===0){
+  /*
+    メイン選択音にベース音も加える。
+    音域は中央のオクターブにそろえて表示する。
+  */
+
+  const noteSet=new Set(
+    [...mainSelected].map(m=>pitchClass(m))
+  );
+
+  if(bassSelected!==null){
+    noteSet.add(bassSelected);
+  }
+
+  const pcs=[...noteSet].sort((a,b)=>a-b);
+
+  if(pcs.length===0){
     const empty=document.createElementNS(
       "http://www.w3.org/2000/svg","text"
     );
 
-    empty.setAttribute("x","360");
+    empty.setAttribute("x","390");
     empty.setAttribute("y","108");
     empty.setAttribute("text-anchor","middle");
     empty.setAttribute("class","staff-empty");
-    empty.textContent=
-      "メイン鍵盤で和音を選択すると表示されます";
+    empty.textContent="音を選択すると表示";
 
     group.appendChild(empty);
     return;
   }
-
-  const pcs=[...new Set(
-    [...mainSelected].map(m=>pitchClass(m))
-  )];
-
-  pcs.sort((a,b)=>a-b);
 
   const startX=330;
   const gap=Math.min(
@@ -1064,8 +1125,11 @@ function renderStaff(){
 
   pcs.forEach((pc,index)=>{
     const [letter,accidental]=staffSpelling(pc);
-    const oct=4+Math.floor(pc/12);
+
+    /* 中央の音域に統一 */
+    const oct=4;
     const y=staffPosition(letter,oct);
+
     const x=
       startX+(index-(pcs.length-1)/2)*gap;
 
@@ -1145,13 +1209,13 @@ function renderInfo(){
 
   document.getElementById("chordNotes").textContent=
     selectedNotes.length
-    ?"選択音： "+selectedNotes.join(" ・ ")
-    :"メイン鍵盤の音を選択してね";
+    ?"選択音："+selectedNotes.join("・")
+    :"メイン音を選択";
 
   document.getElementById("bassInfo").textContent=
     bassSelected===null
     ?"---"
-    :shortNote(bassSelected);
+    :NOTE_NAMES[bassSelected];
 
   document.getElementById("selectedCount").textContent=
     mainSelected.size+"音";
@@ -1165,8 +1229,8 @@ function renderInfo(){
       .map(m=>shortNote(m)+" = "+degreeFor(m));
 
     document.getElementById("degreeInfo").textContent=
-      "ベース音 "+shortNote(bassSelected)+
-      " を 1 とした度数："+
+      "ベース音 "+NOTE_NAMES[bassSelected]+
+      " を 1 とした度数："+ 
       (degrees.length
         ?degrees.join(" ／ ")
         :"メイン鍵盤の音を選択してね");
@@ -1175,12 +1239,13 @@ function renderInfo(){
 
 function renderAll(){
   renderKeyboard();
+  renderBassButtons();
   renderInfo();
   renderStaff();
 }
 
 /* =====================================
-   音域移動
+   メイン鍵盤の音域移動
 ===================================== */
 
 document.getElementById("mainLeft").onclick=()=>{
@@ -1190,16 +1255,6 @@ document.getElementById("mainLeft").onclick=()=>{
 
 document.getElementById("mainRight").onclick=()=>{
   mainStart+=12;
-  renderAll();
-};
-
-document.getElementById("bassLeft").onclick=()=>{
-  bassStart-=12;
-  renderAll();
-};
-
-document.getElementById("bassRight").onclick=()=>{
-  bassStart+=12;
   renderAll();
 };
 
