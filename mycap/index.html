@@ -70,28 +70,6 @@ header{
   font-weight:700;
   margin-bottom:13px;
 }
-.tabs{
-  display:flex;
-  background:#ece8e0;
-  border-radius:12px;
-  padding:4px;
-  margin-bottom:16px;
-}
-.tab{
-  flex:1;
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:11px 5px;
-  border-radius:9px;
-  font-size:13px;
-}
-.tab.active{
-  background:white;
-  color:var(--green-dark);
-  font-weight:700;
-  box-shadow:0 1px 4px #0000000c;
-}
 .input-row{
   display:flex;
   gap:8px;
@@ -242,7 +220,6 @@ textarea{
   font-size:12px;
   padding:7px;
 }
-.hidden{display:none!important}
 .footer{
   text-align:center;
   color:#aaa399;
@@ -271,32 +248,15 @@ textarea{
 <div class="section">
   <div class="section-title">サイトを読み込む</div>
 
-  <div class="tabs">
-    <button class="tab active" id="urlTab">URL入力</button>
-    <button class="tab" id="browserTab">ブラウザ</button>
+  <div class="input-row">
+    <input id="urlInput" type="url"
+      placeholder="https://example.com/article"
+      autocomplete="url">
+    <button class="primary" id="loadBtn">読み込む</button>
   </div>
 
-  <div id="urlPanel">
-    <div class="input-row">
-      <input id="urlInput" type="url"
-        placeholder="https://example.com/article"
-        autocomplete="url">
-      <button class="primary" id="loadBtn">読み込む</button>
-    </div>
-    <div class="small">
-      読み込みたいサイトのURLを入力してね。
-    </div>
-  </div>
-
-  <div id="browserPanel" class="hidden">
-    <div class="input-row">
-      <input id="browserInput" type="url"
-        placeholder="サイトのURLを入力">
-      <button class="primary" id="browserLoadBtn">開く</button>
-    </div>
-    <div class="small">
-      このアプリ内で文章を閲覧し、必要な部分を選択できるよ。
-    </div>
+  <div class="small">
+    読み込みたいサイトのURLを入力してね。
   </div>
 
   <div class="status" id="loadStatus"></div>
@@ -313,7 +273,7 @@ textarea{
       <span>文章を選択</span>
     </div>
     <div class="reader-content empty" id="readerContent">
-      サイトを読み込むと、ここに文章が表示されるよ。<br>
+      サイトを読み込むと、ここに文章が表示されるよ。
       必要な部分を選択して追加してね。
     </div>
   </div>
@@ -367,28 +327,26 @@ function setStatus(message,error=false){
 
 function normalizeUrl(value){
   let url=value.trim();
+
   if(!url) throw new Error("URLを入力してね。");
-  if(!/^https?:\/\//i.test(url)) url="https://"+url;
+
+  if(!/^https?:\/\//i.test(url)){
+    url="https://"+url;
+  }
+
   const parsed=new URL(url);
+
   if(!["http:","https:"].includes(parsed.protocol)){
     throw new Error("HTTPまたはHTTPSのURLを入力してね。");
   }
+
   return parsed.href;
 }
 
-function switchTab(mode){
-  const browser=mode==="browser";
-  $("urlTab").classList.toggle("active",!browser);
-  $("browserTab").classList.toggle("active",browser);
-  $("urlPanel").classList.toggle("hidden",browser);
-  $("browserPanel").classList.toggle("hidden",!browser);
-}
-
-$("urlTab").addEventListener("click",()=>switchTab("url"));
-$("browserTab").addEventListener("click",()=>switchTab("browser"));
-
 async function loadSite(rawUrl){
+
   let url;
+
   try{
     url=normalizeUrl(rawUrl);
   }catch(e){
@@ -397,12 +355,15 @@ async function loadSite(rawUrl){
   }
 
   currentUrl=url;
+
   $("readerTitle").textContent="読み込み中…";
   $("readerContent").classList.add("empty");
   $("readerContent").textContent="サイトから文章を取得しています…";
+
   setStatus("サイトを読み込んでいます…");
 
   try{
+
     const readerUrl="https://r.jina.ai/"+url;
 
     const response=await fetch(readerUrl,{
@@ -433,13 +394,20 @@ async function loadSite(rawUrl){
     setStatus("読み込み完了。必要な文章を選択してね。");
 
   }catch(error){
+
     $("readerTitle").textContent="読み込みできませんでした";
+
     $("readerContent").classList.add("empty");
+
     $("readerContent").textContent=
       "このサイトから文章を取得できませんでした。\n\n"+
       "サイト側の制限や通信環境が原因の可能性があります。\n"+
       "別の公開サイトで試してみてね。";
-    setStatus(error.message+" 別のサイトでも試してみてね。",true);
+
+    setStatus(
+      error.message+" 別のサイトでも試してみてね。",
+      true
+    );
   }
 }
 
@@ -447,20 +415,16 @@ $("loadBtn").addEventListener("click",()=>{
   loadSite($("urlInput").value);
 });
 
-$("browserLoadBtn").addEventListener("click",()=>{
-  loadSite($("browserInput").value);
-});
-
 $("urlInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter") loadSite($("urlInput").value);
-});
-
-$("browserInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter") loadSite($("browserInput").value);
+  if(e.key==="Enter"){
+    loadSite($("urlInput").value);
+  }
 });
 
 function appendText(text){
+
   const value=text.trim();
+
   if(!value){
     $("resultStatus").textContent="追加する文章がありません。";
     return;
@@ -468,13 +432,16 @@ function appendText(text){
 
   const area=$("resultText");
   const separator=area.value.trim()?"\n\n":"";
+
   area.value+=separator+value;
+
   updateCount();
 
   $("resultStatus").textContent="文章を追加したよ。";
 }
 
 $("addSelection").addEventListener("click",()=>{
+
   const selection=window.getSelection();
   const selected=selection ? selection.toString() : "";
 
@@ -499,16 +466,20 @@ $("addSelection").addEventListener("click",()=>{
 });
 
 $("addAll").addEventListener("click",()=>{
+
   if(!currentText){
     $("resultStatus").textContent=
       "先にサイトを読み込んでね。";
     return;
   }
+
   appendText(currentText);
 });
 
 function updateCount(){
+
   const length=$("resultText").value.length;
+
   $("charCount").textContent=
     length.toLocaleString()+"文字";
 }
@@ -516,6 +487,7 @@ function updateCount(){
 $("resultText").addEventListener("input",updateCount);
 
 async function copyText(){
+
   const text=$("resultText").value;
 
   if(!text.trim()){
@@ -525,19 +497,28 @@ async function copyText(){
   }
 
   try{
+
     await navigator.clipboard.writeText(text);
-    $("resultStatus").textContent=
-      "コピーしました！";
+
+    $("resultStatus").textContent="コピーしました！";
+
   }catch(e){
+
     const area=$("resultText");
+
     area.focus();
     area.select();
+
     try{
+
       const success=document.execCommand("copy");
+
       $("resultStatus").textContent=success
         ?"コピーしました！"
         :"文章を選択したよ。コピーしてね。";
+
     }catch(err){
+
       $("resultStatus").textContent=
         "文章を選択したのでコピーしてね。";
     }
@@ -556,19 +537,19 @@ $("copyBtn").addEventListener("click",copyText);
 
 function makeFileName(text){
 
-  // 最初に文字が入っている行を探す
   const lines=text.split(/\r\n|\r|\n/);
 
   let firstLine="";
 
+  // 最初に文字が入っている行を探す
   for(const line of lines){
+
     if(line.trim()){
       firstLine=line.trim();
       break;
     }
   }
 
-  // 文字がない場合の初期ファイル名
   if(!firstLine){
     return "マイキャプ.txt";
   }
@@ -582,12 +563,11 @@ function makeFileName(text){
   // 前後の空白やピリオドを除去
   name=name.trim().replace(/^\.+|\.+$/g,"");
 
-  // ファイル名の長さを調整
+  // 長すぎるファイル名を調整
   if(name.length>60){
     name=name.substring(0,60).trim();
   }
 
-  // 名前が空になった場合
   if(!name){
     name="マイキャプ";
   }
@@ -616,7 +596,7 @@ async function saveText(){
     }
   );
 
-  // iPhone・iPadなど、ファイル共有に対応する環境
+  // ファイル共有に対応している場合
   if(
     navigator.share &&
     navigator.canShare &&
@@ -636,19 +616,21 @@ async function saveText(){
     }catch(error){
 
       if(error.name==="AbortError"){
+
         $("resultStatus").textContent=
           "保存をキャンセルしました。文章はそのままだよ。";
+
       }else{
+
         $("resultStatus").textContent=
           "共有画面を開けませんでした。もう一度試してね。";
       }
-
     }
 
     return;
   }
 
-  // ファイル共有に対応していない環境では通常ダウンロード
+  // 非対応環境では通常ダウンロード
   const blob=new Blob(
     ["\uFEFF"+text],
     {type:"text/plain;charset=utf-8"}
@@ -676,12 +658,15 @@ $("saveBtn").addEventListener("click",saveText);
 
 
 $("clearBtn").addEventListener("click",()=>{
+
   if(!$("resultText").value)return;
 
   if(!confirm("抽出した文章をすべて消去する？"))return;
 
   $("resultText").value="";
+
   updateCount();
+
   $("resultStatus").textContent="消去しました。";
 });
 
