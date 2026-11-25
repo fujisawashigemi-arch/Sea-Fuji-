@@ -546,7 +546,57 @@ async function copyText(){
 
 $("copyBtn").addEventListener("click",copyText);
 
-$("saveBtn").addEventListener("click",()=>{
+
+/* --------------------------------
+   TXT保存機能
+   ・最初に文字が入っている行をファイル名にする
+   ・iPhone/iPadでは共有画面から保存先を選べる
+   ・対応していない環境では通常ダウンロード
+-------------------------------- */
+
+function makeFileName(text){
+
+  // 最初に文字が入っている行を探す
+  const lines=text.split(/\r\n|\r|\n/);
+
+  let firstLine="";
+
+  for(const line of lines){
+    if(line.trim()){
+      firstLine=line.trim();
+      break;
+    }
+  }
+
+  // 文字がない場合の初期ファイル名
+  if(!firstLine){
+    return "マイキャプ.txt";
+  }
+
+  // ファイル名に使用できない記号を置き換える
+  let name=firstLine.replace(/[\\/:*?"<>|]/g,"_");
+
+  // 制御文字を除去
+  name=name.replace(/[\u0000-\u001f\u007f]/g,"");
+
+  // 前後の空白やピリオドを除去
+  name=name.trim().replace(/^\.+|\.+$/g,"");
+
+  // ファイル名の長さを調整
+  if(name.length>60){
+    name=name.substring(0,60).trim();
+  }
+
+  // 名前が空になった場合
+  if(!name){
+    name="マイキャプ";
+  }
+
+  return name+".txt";
+}
+
+async function saveText(){
+
   const text=$("resultText").value;
 
   if(!text.trim()){
@@ -555,6 +605,50 @@ $("saveBtn").addEventListener("click",()=>{
     return;
   }
 
+  const fileName=makeFileName(text);
+
+  // UTF-8 BOM付きのTXTファイルを作成
+  const file=new File(
+    ["\uFEFF"+text],
+    fileName,
+    {
+      type:"text/plain;charset=utf-8"
+    }
+  );
+
+  // iPhone・iPadなど、ファイル共有に対応する環境
+  if(
+    navigator.share &&
+    navigator.canShare &&
+    navigator.canShare({files:[file]})
+  ){
+
+    try{
+
+      await navigator.share({
+        files:[file],
+        title:fileName
+      });
+
+      $("resultStatus").textContent=
+        "共有画面を開きました。「ファイルに保存」から保存先を選んでね。";
+
+    }catch(error){
+
+      if(error.name==="AbortError"){
+        $("resultStatus").textContent=
+          "保存をキャンセルしました。文章はそのままだよ。";
+      }else{
+        $("resultStatus").textContent=
+          "共有画面を開けませんでした。もう一度試してね。";
+      }
+
+    }
+
+    return;
+  }
+
+  // ファイル共有に対応していない環境では通常ダウンロード
   const blob=new Blob(
     ["\uFEFF"+text],
     {type:"text/plain;charset=utf-8"}
@@ -562,17 +656,24 @@ $("saveBtn").addEventListener("click",()=>{
 
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
+
   link.href=url;
-  link.download="マイキャプ.txt";
+  link.download=fileName;
+
   document.body.appendChild(link);
   link.click();
   link.remove();
 
-  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  setTimeout(()=>{
+    URL.revokeObjectURL(url);
+  },1500);
 
   $("resultStatus").textContent=
-    "TXTファイルを作成しました。";
-});
+    "「"+fileName+"」をダウンロードしました。";
+}
+
+$("saveBtn").addEventListener("click",saveText);
+
 
 $("clearBtn").addEventListener("click",()=>{
   if(!$("resultText").value)return;
