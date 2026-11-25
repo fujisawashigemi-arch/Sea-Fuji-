@@ -1207,7 +1207,14 @@ $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
-$('exportBtn').onclick=()=>{
+/* ==========================================
+   バックアップ保存
+   パソコン：保存先選択ダイアログ
+   iPhone/iPad：共有画面から「ファイルに保存」
+   その他：通常のダウンロード
+========================================== */
+
+$('exportBtn').onclick=async()=>{
 const now=new Date();
 const y=now.getFullYear();
 const m=String(now.getMonth()+1).padStart(2,'0');
@@ -1227,6 +1234,53 @@ const blob=new Blob([json],{
 type:'application/json;charset=utf-8'
 });
 
+const file=new File([blob],filename,{
+type:'application/json'
+});
+
+/* パソコンなど：保存場所を選択できる場合 */
+if(window.showSaveFilePicker){
+try{
+const handle=await window.showSaveFilePicker({
+suggestedName:filename,
+types:[{
+description:'マイレパ バックアップ',
+accept:{
+'application/json':['.json']
+}
+}]
+});
+
+const writable=await handle.createWritable();
+await writable.write(blob);
+await writable.close();
+
+alert('バックアップを保存したよ！');
+return;
+
+}catch(err){
+if(err.name==='AbortError')return;
+console.error('保存先選択エラー:',err);
+}
+}
+
+/* iPhone・iPad：共有シートから保存先を選ぶ */
+if(navigator.canShare&&navigator.share&&navigator.canShare({files:[file]})){
+try{
+await navigator.share({
+files:[file],
+title:'マイレパ バックアップ',
+text:'マイレパのバックアップデータ'
+});
+return;
+
+}catch(err){
+if(err.name==='AbortError')return;
+console.error('共有保存エラー:',err);
+}
+}
+
+/* 対応していないブラウザ用の通常ダウンロード */
 const url=URL.createObjectURL(blob);
 const a=document.createElement('a');
 a.href=url;
