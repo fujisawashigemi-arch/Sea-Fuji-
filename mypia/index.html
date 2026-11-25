@@ -388,7 +388,7 @@ button{
   padding:0;
   margin:0;
   touch-action:none;
-  --white-count:12;
+  --white-count:18;
 }
 
 .key{
@@ -1004,8 +1004,6 @@ document.querySelectorAll(".bass-btn").forEach(button=>{
   button.addEventListener("click",()=>{
     const note=Number(button.dataset.note);
 
-    const previousBass=bassSelected;
-
     if(bassSelected===note){
 
       // 同じベース音をもう一度押したら解除
@@ -1185,10 +1183,11 @@ function renderOneKeyboard(containerId,start,count){
 }
 
 function renderKeyboard(){
-  renderOneKeyboard("mainKeys",mainStart,19);
+  // 19鍵から31鍵へ拡張（約2.5オクターブ）
+  renderOneKeyboard("mainKeys",mainStart,31);
 
   document.getElementById("mainRange").textContent=
-    noteName(mainStart)+" ～ "+noteName(mainStart+18);
+    noteName(mainStart)+" ～ "+noteName(mainStart+30);
 }
 
 /* =====================================
