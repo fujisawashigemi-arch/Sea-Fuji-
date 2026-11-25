@@ -3,11 +3,12 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
+<link rel="apple-touch-icon" href="./mycapicon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="theme-color" content="#f6f3ee">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>マイテキスト｜オトリス</title>
+<title>マイキャプ｜オトリス</title>
 
 <style>
 :root{
@@ -262,8 +263,8 @@ textarea{
 <header>
   <div class="logo">文</div>
   <div>
-    <div class="brand">マイテキスト</div>
-    <div class="subbrand">OTOLIS SERIES</div>
+    <div class="brand">マイキャプ</div>
+    <div class="subbrand">MY CAP · OTOLIS SERIES</div>
   </div>
 </header>
 
@@ -350,7 +351,7 @@ textarea{
   <div class="status" id="resultStatus"></div>
 </div>
 
-<div class="footer">OTOLIS · MY TEXT</div>
+<div class="footer">OTOLIS · MY CAP</div>
 </div>
 
 <script>
@@ -402,11 +403,6 @@ async function loadSite(rawUrl){
   setStatus("サイトを読み込んでいます…");
 
   try{
-    /*
-      Jina Readerを利用して公開サイトを
-      読みやすいテキストに変換する。
-      元サイトの埋め込み制限を回避できる場合がある。
-    */
     const readerUrl="https://r.jina.ai/"+url;
 
     const response=await fetch(readerUrl,{
@@ -567,7 +563,7 @@ $("saveBtn").addEventListener("click",()=>{
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
   link.href=url;
-  link.download="マイテキスト.txt";
+  link.download="マイキャプ.txt";
   document.body.appendChild(link);
   link.click();
   link.remove();
