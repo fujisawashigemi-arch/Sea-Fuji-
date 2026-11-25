@@ -1,0 +1,594 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f6f3ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>マイテキスト｜オトリス</title>
+
+<style>
+:root{
+  --bg:#f6f3ee;
+  --paper:#fff;
+  --ink:#292722;
+  --muted:#89847b;
+  --line:#e8e3da;
+  --green:#66866b;
+  --green-dark:#4e7054;
+  --green-light:#edf3ec;
+  --danger:#b96b60;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,
+  "Helvetica Neue","Yu Gothic",sans-serif;
+  font-size:15px;
+}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{
+  width:100%;
+  max-width:760px;
+  margin:auto;
+  min-height:100vh;
+  padding:20px 17px 40px;
+}
+header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:7px 2px 22px;
+}
+.logo{
+  width:46px;height:46px;
+  border-radius:14px;
+  background:var(--green);
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+}
+.brand{font-size:20px;font-weight:700;letter-spacing:.04em}
+.subbrand{font-size:10px;color:var(--muted);letter-spacing:.17em;margin-top:3px}
+.section{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:17px;
+  margin-bottom:14px;
+}
+.section-title{
+  font-size:14px;
+  font-weight:700;
+  margin-bottom:13px;
+}
+.tabs{
+  display:flex;
+  background:#ece8e0;
+  border-radius:12px;
+  padding:4px;
+  margin-bottom:16px;
+}
+.tab{
+  flex:1;
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  padding:11px 5px;
+  border-radius:9px;
+  font-size:13px;
+}
+.tab.active{
+  background:white;
+  color:var(--green-dark);
+  font-weight:700;
+  box-shadow:0 1px 4px #0000000c;
+}
+.input-row{
+  display:flex;
+  gap:8px;
+}
+input{
+  min-width:0;
+  width:100%;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:10px;
+  padding:13px;
+  outline:none;
+  color:var(--ink);
+}
+input:focus,textarea:focus{
+  border-color:var(--green);
+}
+.primary{
+  border:0;
+  background:var(--green);
+  color:white;
+  border-radius:11px;
+  padding:13px 17px;
+  font-weight:600;
+  white-space:nowrap;
+}
+.primary:active{background:var(--green-dark)}
+.secondary{
+  border:1px solid var(--line);
+  background:white;
+  color:var(--ink);
+  border-radius:10px;
+  padding:11px 14px;
+}
+.small{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.7;
+  margin-top:10px;
+}
+.status{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:10px;
+  min-height:18px;
+}
+.status.error{color:var(--danger)}
+.reader{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:13px;
+  overflow:hidden;
+}
+.reader-head{
+  padding:11px 13px;
+  background:#faf9f6;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  font-size:12px;
+  color:var(--muted);
+}
+.reader-content{
+  padding:17px;
+  min-height:180px;
+  max-height:48vh;
+  overflow-y:auto;
+  line-height:1.9;
+  font-size:14px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  user-select:text;
+  -webkit-user-select:text;
+  -webkit-touch-callout:default;
+}
+.reader-content.empty{
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  white-space:normal;
+}
+.reader-content::selection,
+textarea::selection{
+  background:#c9dfc9;
+}
+.action-row{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.action-row button{flex:1}
+.extract-btn{
+  background:var(--green-light);
+  border:1px solid #dce8da;
+  color:var(--green-dark);
+  border-radius:10px;
+  padding:13px 10px;
+  font-weight:600;
+}
+.count{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:400;
+}
+textarea{
+  width:100%;
+  min-height:210px;
+  resize:vertical;
+  border:1px solid var(--line);
+  border-radius:11px;
+  padding:14px;
+  line-height:1.8;
+  outline:none;
+  color:var(--ink);
+  background:white;
+}
+.bottom-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-top:12px;
+}
+.bottom-actions button{
+  padding:13px 8px;
+  border-radius:11px;
+  font-weight:600;
+}
+.copy{
+  background:var(--green);
+  color:white;
+  border:0;
+}
+.save{
+  background:white;
+  border:1px solid var(--line);
+  color:var(--ink);
+}
+.clear{
+  display:block;
+  margin:13px 0 0 auto;
+  border:0;
+  background:transparent;
+  color:var(--danger);
+  font-size:12px;
+  padding:7px;
+}
+.hidden{display:none!important}
+.footer{
+  text-align:center;
+  color:#aaa399;
+  font-size:10px;
+  letter-spacing:.12em;
+  padding:22px 0 8px;
+}
+@media(min-width:600px){
+  .app{padding-top:30px}
+  .reader-content{max-height:520px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <div class="logo">文</div>
+  <div>
+    <div class="brand">マイテキスト</div>
+    <div class="subbrand">OTOLIS SERIES</div>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-title">サイトを読み込む</div>
+
+  <div class="tabs">
+    <button class="tab active" id="urlTab">URL入力</button>
+    <button class="tab" id="browserTab">ブラウザ</button>
+  </div>
+
+  <div id="urlPanel">
+    <div class="input-row">
+      <input id="urlInput" type="url"
+        placeholder="https://example.com/article"
+        autocomplete="url">
+      <button class="primary" id="loadBtn">読み込む</button>
+    </div>
+    <div class="small">
+      読み込みたいサイトのURLを入力してね。
+    </div>
+  </div>
+
+  <div id="browserPanel" class="hidden">
+    <div class="input-row">
+      <input id="browserInput" type="url"
+        placeholder="サイトのURLを入力">
+      <button class="primary" id="browserLoadBtn">開く</button>
+    </div>
+    <div class="small">
+      このアプリ内で文章を閲覧し、必要な部分を選択できるよ。
+    </div>
+  </div>
+
+  <div class="status" id="loadStatus"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">
+    読み込み内容
+  </div>
+
+  <div class="reader">
+    <div class="reader-head">
+      <span id="readerTitle">まだサイトを読み込んでいません</span>
+      <span>文章を選択</span>
+    </div>
+    <div class="reader-content empty" id="readerContent">
+      サイトを読み込むと、ここに文章が表示されるよ。<br>
+      必要な部分を選択して追加してね。
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="extract-btn" id="addSelection">
+      ＋ 選択部分を追加
+    </button>
+    <button class="secondary" id="addAll">
+      全文を追加
+    </button>
+  </div>
+
+  <div class="small">
+    iPhone・iPadでは文章を長押しして範囲を選択してね。
+    選択後に「選択部分を追加」を押すと取り込めるよ。
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">
+    抽出したテキスト
+    <span class="count" id="charCount">0文字</span>
+  </div>
+
+  <textarea id="resultText"
+    placeholder="選択した文章がここに追加されるよ。&#10;&#10;ここで自由に編集することもできるよ。"></textarea>
+
+  <div class="bottom-actions">
+    <button class="copy" id="copyBtn">文章をコピー</button>
+    <button class="save" id="saveBtn">TXTで保存</button>
+  </div>
+
+  <button class="clear" id="clearBtn">内容をすべて消去</button>
+  <div class="status" id="resultStatus"></div>
+</div>
+
+<div class="footer">OTOLIS · MY TEXT</div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let currentText = "";
+let currentUrl = "";
+
+function setStatus(message,error=false){
+  $("loadStatus").textContent=message;
+  $("loadStatus").classList.toggle("error",error);
+}
+
+function normalizeUrl(value){
+  let url=value.trim();
+  if(!url) throw new Error("URLを入力してね。");
+  if(!/^https?:\/\//i.test(url)) url="https://"+url;
+  const parsed=new URL(url);
+  if(!["http:","https:"].includes(parsed.protocol)){
+    throw new Error("HTTPまたはHTTPSのURLを入力してね。");
+  }
+  return parsed.href;
+}
+
+function switchTab(mode){
+  const browser=mode==="browser";
+  $("urlTab").classList.toggle("active",!browser);
+  $("browserTab").classList.toggle("active",browser);
+  $("urlPanel").classList.toggle("hidden",browser);
+  $("browserPanel").classList.toggle("hidden",!browser);
+}
+
+$("urlTab").addEventListener("click",()=>switchTab("url"));
+$("browserTab").addEventListener("click",()=>switchTab("browser"));
+
+async function loadSite(rawUrl){
+  let url;
+  try{
+    url=normalizeUrl(rawUrl);
+  }catch(e){
+    setStatus(e.message,true);
+    return;
+  }
+
+  currentUrl=url;
+  $("readerTitle").textContent="読み込み中…";
+  $("readerContent").classList.add("empty");
+  $("readerContent").textContent="サイトから文章を取得しています…";
+  setStatus("サイトを読み込んでいます…");
+
+  try{
+    /*
+      Jina Readerを利用して公開サイトを
+      読みやすいテキストに変換する。
+      元サイトの埋め込み制限を回避できる場合がある。
+    */
+    const readerUrl="https://r.jina.ai/"+url;
+
+    const response=await fetch(readerUrl,{
+      method:"GET",
+      headers:{
+        "Accept":"text/plain"
+      }
+    });
+
+    if(!response.ok){
+      throw new Error("サイトの取得に失敗しました。");
+    }
+
+    const text=await response.text();
+
+    if(!text.trim()){
+      throw new Error("文章が見つかりませんでした。");
+    }
+
+    currentText=text;
+
+    $("readerTitle").textContent=
+      new URL(url).hostname;
+
+    $("readerContent").classList.remove("empty");
+    $("readerContent").textContent=text;
+
+    setStatus("読み込み完了。必要な文章を選択してね。");
+
+  }catch(error){
+    $("readerTitle").textContent="読み込みできませんでした";
+    $("readerContent").classList.add("empty");
+    $("readerContent").textContent=
+      "このサイトから文章を取得できませんでした。\n\n"+
+      "サイト側の制限や通信環境が原因の可能性があります。\n"+
+      "別の公開サイトで試してみてね。";
+    setStatus(error.message+" 別のサイトでも試してみてね。",true);
+  }
+}
+
+$("loadBtn").addEventListener("click",()=>{
+  loadSite($("urlInput").value);
+});
+
+$("browserLoadBtn").addEventListener("click",()=>{
+  loadSite($("browserInput").value);
+});
+
+$("urlInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter") loadSite($("urlInput").value);
+});
+
+$("browserInput").addEventListener("keydown",e=>{
+  if(e.key==="Enter") loadSite($("browserInput").value);
+});
+
+function appendText(text){
+  const value=text.trim();
+  if(!value){
+    $("resultStatus").textContent="追加する文章がありません。";
+    return;
+  }
+
+  const area=$("resultText");
+  const separator=area.value.trim()?"\n\n":"";
+  area.value+=separator+value;
+  updateCount();
+
+  $("resultStatus").textContent="文章を追加したよ。";
+}
+
+$("addSelection").addEventListener("click",()=>{
+  const selection=window.getSelection();
+  const selected=selection ? selection.toString() : "";
+
+  if(!selected.trim()){
+    $("resultStatus").textContent=
+      "先に読み込み内容から文章を選択してね。";
+    return;
+  }
+
+  const reader=$("readerContent");
+  const anchor=selection.anchorNode;
+  const focus=selection.focusNode;
+
+  if(!reader.contains(anchor)||!reader.contains(focus)){
+    $("resultStatus").textContent=
+      "読み込み内容の文章を選択してね。";
+    return;
+  }
+
+  appendText(selected);
+  selection.removeAllRanges();
+});
+
+$("addAll").addEventListener("click",()=>{
+  if(!currentText){
+    $("resultStatus").textContent=
+      "先にサイトを読み込んでね。";
+    return;
+  }
+  appendText(currentText);
+});
+
+function updateCount(){
+  const length=$("resultText").value.length;
+  $("charCount").textContent=
+    length.toLocaleString()+"文字";
+}
+
+$("resultText").addEventListener("input",updateCount);
+
+async function copyText(){
+  const text=$("resultText").value;
+
+  if(!text.trim()){
+    $("resultStatus").textContent=
+      "コピーする文章がありません。";
+    return;
+  }
+
+  try{
+    await navigator.clipboard.writeText(text);
+    $("resultStatus").textContent=
+      "コピーしました！";
+  }catch(e){
+    const area=$("resultText");
+    area.focus();
+    area.select();
+    try{
+      const success=document.execCommand("copy");
+      $("resultStatus").textContent=success
+        ?"コピーしました！"
+        :"文章を選択したよ。コピーしてね。";
+    }catch(err){
+      $("resultStatus").textContent=
+        "文章を選択したのでコピーしてね。";
+    }
+  }
+}
+
+$("copyBtn").addEventListener("click",copyText);
+
+$("saveBtn").addEventListener("click",()=>{
+  const text=$("resultText").value;
+
+  if(!text.trim()){
+    $("resultStatus").textContent=
+      "保存する文章がありません。";
+    return;
+  }
+
+  const blob=new Blob(
+    ["\uFEFF"+text],
+    {type:"text/plain;charset=utf-8"}
+  );
+
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="マイテキスト.txt";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+
+  $("resultStatus").textContent=
+    "TXTファイルを作成しました。";
+});
+
+$("clearBtn").addEventListener("click",()=>{
+  if(!$("resultText").value)return;
+
+  if(!confirm("抽出した文章をすべて消去する？"))return;
+
+  $("resultText").value="";
+  updateCount();
+  $("resultStatus").textContent="消去しました。";
+});
+
+updateCount();
+</script>
+</body>
+</html>
