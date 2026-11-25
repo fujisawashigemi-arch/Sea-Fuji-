@@ -1,0 +1,9 @@
+
+{
+  "name": "マイピア",
+  "short_name": "マイピア",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f6f3ee",
+  "theme_color": "#f6f3ee"
+}
