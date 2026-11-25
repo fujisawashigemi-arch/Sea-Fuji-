@@ -1,1 +1,1089 @@
 
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f6f3ee">
+<title>マイピア｜おとりす</title>
+
+<style>
+:root{
+  --bg:#f6f3ee;
+  --paper:#fff;
+  --ink:#302d29;
+  --muted:#969087;
+  --line:#e9e3da;
+  --pink:#e9b8bd;
+  --pink-dark:#bd7884;
+  --blue:#a9c7dc;
+  --blue-dark:#628ba9;
+  --shadow:0 3px 14px rgba(65,52,40,.07);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",
+  "Yu Gothic",Meiryo,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+}
+
+button{
+  font:inherit;
+  cursor:pointer;
+  border:0;
+}
+
+.app{
+  max-width:900px;
+  margin:auto;
+  padding:18px 16px 40px;
+}
+
+header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+
+.logo{
+  font-size:27px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.logo small{
+  display:block;
+  font-size:10px;
+  letter-spacing:.22em;
+  color:var(--muted);
+  font-weight:500;
+  margin-top:2px;
+}
+
+.version{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.card{
+  background:var(--paper);
+  border-radius:17px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:var(--shadow);
+}
+
+.section-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:13px;
+}
+
+.section-title{
+  font-size:14px;
+  font-weight:750;
+}
+
+.section-sub{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.mode-area{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.mode-buttons{
+  display:flex;
+  background:#f2eee9;
+  padding:4px;
+  border-radius:10px;
+  gap:3px;
+}
+
+.mode-btn{
+  padding:9px 15px;
+  border-radius:8px;
+  background:transparent;
+  color:#777;
+  font-size:12px;
+}
+
+.mode-btn.active{
+  background:white;
+  color:var(--ink);
+  font-weight:700;
+  box-shadow:0 1px 4px #00000012;
+}
+
+.sound-note{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.chord-card{
+  text-align:center;
+  padding:20px 12px;
+}
+
+.chord-label{
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:.12em;
+}
+
+.chord-name{
+  font-size:38px;
+  font-weight:750;
+  margin:7px 0 5px;
+  min-height:48px;
+}
+
+.chord-notes{
+  font-size:13px;
+  color:#8d857b;
+  min-height:20px;
+}
+
+.staff-wrap{
+  overflow:hidden;
+  margin-top:12px;
+}
+
+#staff{
+  display:block;
+  width:100%;
+  height:auto;
+  min-height:135px;
+}
+
+.staff-lines{
+  stroke:#827d75;
+  stroke-width:1.2;
+}
+
+.staff-note{
+  fill:#302d29;
+}
+
+.staff-stem{
+  stroke:#302d29;
+  stroke-width:1.5;
+}
+
+.staff-accidental{
+  font-size:18px;
+  fill:#302d29;
+  font-family:serif;
+}
+
+.staff-clef{
+  font-family:serif;
+  font-size:75px;
+  fill:#665f56;
+}
+
+.staff-empty{
+  font-size:13px;
+  fill:#b1aaa1;
+}
+
+.keyboard-card{
+  padding:15px 12px 17px;
+}
+
+.keyboard-heading{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.keyboard-name{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-weight:750;
+  font-size:14px;
+}
+
+.color-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+}
+
+.main-dot{background:var(--pink)}
+.bass-dot{background:var(--blue)}
+
+.range-controls{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.range-btn{
+  background:#f3f0eb;
+  border-radius:8px;
+  width:31px;
+  height:29px;
+  font-size:17px;
+  color:#625c55;
+}
+
+.range-text{
+  font-size:10px;
+  color:var(--muted);
+  min-width:65px;
+  text-align:center;
+}
+
+.keyboard-scroll{
+  overflow-x:auto;
+  overflow-y:hidden;
+  scrollbar-width:thin;
+  padding-bottom:7px;
+  touch-action:pan-x;
+}
+
+.keys{
+  display:flex;
+  width:max-content;
+  gap:3px;
+  padding:2px 2px 4px;
+}
+
+.key{
+  width:43px;
+  height:128px;
+  flex-shrink:0;
+  position:relative;
+  border:1px solid #d9d3ca;
+  border-radius:0 0 7px 7px;
+  background:#fffefa;
+  box-shadow:0 3px 2px #0000000b;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding-bottom:9px;
+  color:#5e5851;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:manipulation;
+}
+
+.key.black{
+  background:#494641;
+  color:#fff;
+  border-color:#35322f;
+  height:92px;
+  border-radius:0 0 6px 6px;
+  justify-content:flex-end;
+  padding-bottom:7px;
+}
+
+.key.selected.main-selected{
+  background:#f1cbd0;
+  border-color:var(--pink-dark);
+  color:#70454b;
+}
+
+.key.selected.bass-selected{
+  background:#c5dceb;
+  border-color:var(--blue-dark);
+  color:#365b76;
+}
+
+.key.black.selected{
+  filter:brightness(1.35);
+}
+
+.key:active{
+  transform:translateY(1px);
+}
+
+.key-name{
+  font-size:12px;
+  font-weight:650;
+  pointer-events:none;
+}
+
+.key-octave{
+  font-size:9px;
+  opacity:.65;
+  margin-top:2px;
+  pointer-events:none;
+}
+
+.key-degree{
+  position:absolute;
+  top:8px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:10px;
+  font-weight:750;
+  pointer-events:none;
+}
+
+.key.black .key-degree{
+  top:7px;
+  font-size:9px;
+}
+
+.key.black .key-name{
+  font-size:10px;
+}
+
+.keyboard-hint{
+  font-size:10px;
+  color:#aaa197;
+  margin-top:7px;
+  text-align:center;
+}
+
+.bass-key{
+  height:100px;
+}
+
+.bass-key.black{
+  height:75px;
+}
+
+.info-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.info-box{
+  background:#faf8f5;
+  border-radius:11px;
+  padding:12px;
+  text-align:center;
+}
+
+.info-title{
+  font-size:10px;
+  color:var(--muted);
+  margin-bottom:6px;
+}
+
+.info-value{
+  font-size:17px;
+  font-weight:750;
+}
+
+.degree-info{
+  margin-top:13px;
+  font-size:12px;
+  color:#827b72;
+  line-height:1.7;
+}
+
+.clear-btn{
+  background:#f3f0eb;
+  color:#70685f;
+  border-radius:8px;
+  padding:8px 12px;
+  font-size:11px;
+}
+
+footer{
+  text-align:center;
+  color:#aaa197;
+  font-size:10px;
+  padding:10px;
+}
+
+@media(max-width:480px){
+  .app{padding:14px 11px 30px}
+  .card{padding:13px}
+  .key{width:39px;height:116px}
+  .key.black{height:84px}
+  .bass-key{height:94px}
+  .bass-key.black{height:69px}
+  .chord-name{font-size:34px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<header>
+  <div class="logo">
+    マイピア
+    <small>MY PIA  /  OTORIS</small>
+  </div>
+  <div class="version">Ver. 1.0</div>
+</header>
+
+<section class="card">
+  <div class="mode-area">
+    <div>
+      <div class="section-title">鍵盤モード</div>
+      <div class="section-sub">演奏とコード判定を切り替え</div>
+    </div>
+    <div class="mode-buttons">
+      <button class="mode-btn active" id="playMode">演奏</button>
+      <button class="mode-btn" id="selectMode">音を選択</button>
+    </div>
+  </div>
+</section>
+
+<section class="card chord-card">
+  <div class="chord-label">CHORD NAME</div>
+  <div class="chord-name" id="chordName">---</div>
+  <div class="chord-notes" id="chordNotes">ベース音とメインの音を選択</div>
+</section>
+
+<section class="card">
+  <div class="section-head">
+    <div class="section-title">五線譜</div>
+    <div class="section-sub">メイン鍵盤の選択音のみ</div>
+  </div>
+  <div class="staff-wrap">
+    <svg id="staff" viewBox="0 0 700 190" xmlns="http://www.w3.org/2000/svg">
+      <g class="staff-lines">
+        <line x1="65" y1="60" x2="675" y2="60"/>
+        <line x1="65" y1="80" x2="675" y2="80"/>
+        <line x1="65" y1="100" x2="675" y2="100"/>
+        <line x1="65" y1="120" x2="675" y2="120"/>
+        <line x1="65" y1="140" x2="675" y2="140"/>
+      </g>
+      <text x="72" y="130" class="staff-clef">𝄞</text>
+      <g id="staffNotes"></g>
+    </svg>
+  </div>
+</section>
+
+<section class="card keyboard-card">
+  <div class="keyboard-heading">
+    <div class="keyboard-name">
+      <span class="color-dot main-dot"></span>
+      メイン鍵盤
+    </div>
+    <div class="range-controls">
+      <button class="range-btn" id="mainLeft">‹</button>
+      <span class="range-text" id="mainRange"></span>
+      <button class="range-btn" id="mainRight">›</button>
+    </div>
+  </div>
+  <div class="keyboard-scroll" id="mainScroll">
+    <div class="keys" id="mainKeys"></div>
+  </div>
+  <div class="keyboard-hint">タップで音を選択 ／ 演奏モードでは押している間だけ発音</div>
+</section>
+
+<section class="card keyboard-card">
+  <div class="keyboard-heading">
+    <div class="keyboard-name">
+      <span class="color-dot bass-dot"></span>
+      ベース鍵盤
+    </div>
+    <div class="range-controls">
+      <button class="range-btn" id="bassLeft">‹</button>
+      <span class="range-text" id="bassRange"></span>
+      <button class="range-btn" id="bassRight">›</button>
+    </div>
+  </div>
+  <div class="keyboard-scroll" id="bassScroll">
+    <div class="keys" id="bassKeys"></div>
+  </div>
+  <div class="keyboard-hint">コードの基準音をひとつ選択</div>
+</section>
+
+<section class="card">
+  <div class="section-head">
+    <div class="section-title">音の情報</div>
+    <button class="clear-btn" id="clearAll">選択をクリア</button>
+  </div>
+  <div class="info-row">
+    <div class="info-box">
+      <div class="info-title">ベース音 / ROOT</div>
+      <div class="info-value" id="bassInfo">---</div>
+    </div>
+    <div class="info-box">
+      <div class="info-title">選択した音</div>
+      <div class="info-value" id="selectedCount">0音</div>
+    </div>
+  </div>
+  <div class="degree-info" id="degreeInfo">
+    ベース音を選ぶと、メイン鍵盤に度数が表示されるよ。
+  </div>
+</section>
+
+<footer>OTORIS · MY PIA</footer>
+</div>
+
+<script>
+/* =====================================
+   基本設定
+===================================== */
+
+const NOTE_NAMES=[
+  "C","C♯","D","D♯","E","F",
+  "F♯","G","G♯","A","A♯","B"
+];
+
+const NOTE_JP=[
+  "ド","ド♯","レ","レ♯","ミ","ファ",
+  "ファ♯","ソ","ソ♯","ラ","ラ♯","シ"
+];
+
+const BLACK=[1,3,6,8,10];
+
+let mainStart=60; // C4
+let bassStart=48; // C3
+
+let mainSelected=new Set();
+let bassSelected=null;
+
+let mode="play";
+
+let audioContext=null;
+let activeVoices=new Map();
+
+/* =====================================
+   音の基本処理
+===================================== */
+
+function getAudio(){
+  if(!audioContext){
+    audioContext=new (window.AudioContext||window.webkitAudioContext)();
+  }
+  if(audioContext.state==="suspended"){
+    audioContext.resume();
+  }
+  return audioContext;
+}
+
+function frequency(midi){
+  return 440*Math.pow(2,(midi-69)/12);
+}
+
+function startSound(midi){
+  const ctx=getAudio();
+  stopSound(midi);
+
+  const osc=ctx.createOscillator();
+  const gain=ctx.createGain();
+
+  const volume=ctx.createGain();
+
+  osc.type="triangle";
+  osc.frequency.value=frequency(midi);
+
+  gain.gain.value=.16;
+  volume.gain.value=.32;
+
+  osc.connect(gain);
+  gain.connect(volume);
+  volume.connect(ctx.destination);
+
+  const now=ctx.currentTime;
+  gain.gain.setValueAtTime(.0001,now);
+  gain.gain.exponentialRampToValueAtTime(.16,now+.025);
+
+  osc.start();
+
+  activeVoices.set(midi,{osc,gain});
+}
+
+function stopSound(midi){
+  const voice=activeVoices.get(midi);
+  if(!voice)return;
+
+  const ctx=getAudio();
+  const now=ctx.currentTime;
+
+  voice.gain.gain.cancelScheduledValues(now);
+  voice.gain.gain.setTargetAtTime(.0001,now,.04);
+
+  voice.osc.stop(now+.2);
+  activeVoices.delete(midi);
+}
+
+/* =====================================
+   音名処理
+===================================== */
+
+function pitchClass(midi){
+  return ((midi%12)+12)%12;
+}
+
+function octave(midi){
+  return Math.floor(midi/12)-1;
+}
+
+function noteName(midi){
+  return NOTE_NAMES[pitchClass(midi)]+octave(midi);
+}
+
+function shortNote(midi){
+  return NOTE_NAMES[pitchClass(midi)];
+}
+
+function japaneseNote(midi){
+  return NOTE_JP[pitchClass(midi)];
+}
+
+function isBlack(midi){
+  return BLACK.includes(pitchClass(midi));
+}
+
+/* =====================================
+   度数表示
+===================================== */
+
+function degreeName(semitones){
+  const degrees={
+    0:"1",
+    1:"♭2",
+    2:"2",
+    3:"♭3",
+    4:"3",
+    5:"4",
+    6:"♭5",
+    7:"5",
+    8:"♯5",
+    9:"6",
+    10:"♭7",
+    11:"7"
+  };
+  return degrees[((semitones%12)+12)%12];
+}
+
+function degreeFor(midi){
+  if(bassSelected===null)return "";
+  return degreeName(pitchClass(midi)-pitchClass(bassSelected));
+}
+
+/* =====================================
+   コード判定データ
+===================================== */
+
+const CHORDS=[
+  ["m7(♭5)",[0,3,6,10]],
+  ["dim7",[0,3,6,9]],
+  ["mM7",[0,3,7,11]],
+  ["M7(♯5)",[0,4,8,11]],
+  ["7(♯5)",[0,4,8,10]],
+  ["7(♭5)",[0,4,6,10]],
+  ["7sus4",[0,5,7,10]],
+  ["m7(♭9)",[0,3,7,10,1]],
+  ["7(♭9)",[0,4,7,10,1]],
+  ["7(♯9)",[0,4,7,10,3]],
+  ["7(♯11)",[0,4,7,10,6]],
+  ["7(♭13)",[0,4,7,10,8]],
+  ["m13",[0,3,7,10,2,9]],
+  ["13",[0,4,7,10,2,9]],
+  ["M13",[0,4,7,11,2,9]],
+  ["m11",[0,3,7,10,2,5]],
+  ["11",[0,4,7,10,2,5]],
+  ["M11",[0,4,7,11,2,5]],
+  ["m9",[0,3,7,10,2]],
+  ["M9",[0,4,7,11,2]],
+  ["9",[0,4,7,10,2]],
+  ["m7",[0,3,7,10]],
+  ["M7",[0,4,7,11]],
+  ["7",[0,4,7,10]],
+  ["m6",[0,3,7,9]],
+  ["6",[0,4,7,9]],
+  ["sus2",[0,2,7]],
+  ["sus4",[0,5,7]],
+  ["aug",[0,4,8]],
+  ["dim",[0,3,6]],
+  ["m",[0,3,7]],
+  ["",[0,4,7]],
+  ["(♭5)",[0,4,6]],
+  ["(♯5)",[0,4,8]]
+];
+
+function detectChord(){
+  if(bassSelected===null||mainSelected.size===0){
+    return "---";
+  }
+
+  const root=pitchClass(bassSelected);
+
+  const intervals=new Set([0]);
+
+  for(const midi of mainSelected){
+    intervals.add((pitchClass(midi)-root+12)%12);
+  }
+
+  let best=null;
+  let bestScore=Infinity;
+
+  for(const chord of CHORDS){
+    const name=chord[0];
+    const required=chord[1];
+
+    let missing=0;
+    let extra=0;
+
+    for(const interval of required){
+      if(!intervals.has(interval))missing++;
+    }
+
+    for(const interval of intervals){
+      if(!required.includes(interval))extra++;
+    }
+
+    const score=missing*2.2+extra*10-required.length*.025;
+
+    if(score<bestScore){
+      bestScore=score;
+      best=name;
+    }
+  }
+
+  if(best===null)return "---";
+
+  return shortNote(bassSelected)+best;
+}
+
+/* =====================================
+   メイン鍵盤の作成
+===================================== */
+
+function createKey(midi,type){
+  const key=document.createElement("button");
+  const black=isBlack(midi);
+
+  key.className="key"+(black?" black":"");
+
+  if(type==="bass"){
+    key.classList.add("bass-key");
+  }
+
+  const selected=type==="main"
+    ?mainSelected.has(midi)
+    :bassSelected===midi;
+
+  if(selected){
+    key.classList.add("selected");
+    key.classList.add(type==="main"?"main-selected":"bass-selected");
+  }
+
+  const name=document.createElement("span");
+  name.className="key-name";
+  name.textContent=shortNote(midi);
+
+  const oct=document.createElement("span");
+  oct.className="key-octave";
+  oct.textContent=octave(midi);
+
+  key.appendChild(name);
+  key.appendChild(oct);
+
+  if(type==="main"&&bassSelected!==null){
+    const degree=document.createElement("span");
+    degree.className="key-degree";
+    degree.textContent=degreeFor(midi);
+    key.appendChild(degree);
+  }
+
+  let pointerDown=false;
+
+  key.addEventListener("pointerdown",e=>{
+    e.preventDefault();
+
+    if(mode==="select"){
+      if(type==="main"){
+        if(mainSelected.has(midi)){
+          mainSelected.delete(midi);
+        }else{
+          mainSelected.add(midi);
+        }
+      }else{
+        bassSelected=bassSelected===midi?null:midi;
+      }
+      renderAll();
+    }else{
+      pointerDown=true;
+      startSound(midi);
+    }
+  });
+
+  const release=()=>{
+    if(pointerDown){
+      pointerDown=false;
+      stopSound(midi);
+    }
+  };
+
+  key.addEventListener("pointerup",release);
+  key.addEventListener("pointerleave",release);
+  key.addEventListener("pointercancel",release);
+
+  return key;
+}
+
+function renderKeyboard(){
+  const main=document.getElementById("mainKeys");
+  const bass=document.getElementById("bassKeys");
+
+  main.innerHTML="";
+  bass.innerHTML="";
+
+  for(let i=0;i<=18;i++){
+    main.appendChild(createKey(mainStart+i,"main"));
+  }
+
+  for(let i=0;i<=12;i++){
+    bass.appendChild(createKey(bassStart+i,"bass"));
+  }
+
+  document.getElementById("mainRange").textContent=
+    noteName(mainStart)+" ～ "+noteName(mainStart+18);
+
+  document.getElementById("bassRange").textContent=
+    noteName(bassStart)+" ～ "+noteName(bassStart+12);
+}
+
+/* =====================================
+   五線譜表示
+===================================== */
+
+const STAFF_LETTERS=["C","D","E","F","G","A","B"];
+
+function staffPosition(letter,oct){
+  const index=STAFF_LETTERS.indexOf(letter);
+  const absolute=oct*7+index;
+  const base=4*7+2; // E4
+  return 140-(absolute-base)*10;
+}
+
+function staffSpelling(pc){
+  const spellings={
+    0:["C",""],
+    1:["C","♯"],
+    2:["D",""],
+    3:["D","♯"],
+    4:["E",""],
+    5:["F",""],
+    6:["F","♯"],
+    7:["G",""],
+    8:["G","♯"],
+    9:["A",""],
+    10:["A","♯"],
+    11:["B",""]
+  };
+  return spellings[pc];
+}
+
+function renderStaff(){
+  const group=document.getElementById("staffNotes");
+  group.innerHTML="";
+
+  if(mainSelected.size===0){
+    const empty=document.createElementNS(
+      "http://www.w3.org/2000/svg","text"
+    );
+    empty.setAttribute("x","360");
+    empty.setAttribute("y","108");
+    empty.setAttribute("text-anchor","middle");
+    empty.setAttribute("class","staff-empty");
+    empty.textContent="メイン鍵盤で和音を選択すると表示されます";
+    group.appendChild(empty);
+    return;
+  }
+
+  // 音の高さではなく音名を基準に並べる
+  // C4から上の音域に揃えて表示
+  const pcs=[...new Set(
+    [...mainSelected].map(m=>pitchClass(m))
+  )];
+
+  pcs.sort((a,b)=>a-b);
+
+  const startX=330;
+  const gap=Math.min(65,300/Math.max(1,pcs.length-1));
+
+  pcs.forEach((pc,index)=>{
+    const [letter,accidental]=staffSpelling(pc);
+    const midi=60+pc;
+    const oct=4+Math.floor(pc/12);
+    const y=staffPosition(letter,oct);
+    const x=startX+(index-(pcs.length-1)/2)*gap;
+
+    // 五線譜の音符
+    const note=document.createElementNS(
+      "http://www.w3.org/2000/svg","ellipse"
+    );
+    note.setAttribute("cx",x);
+    note.setAttribute("cy",y);
+    note.setAttribute("rx","8");
+    note.setAttribute("ry","5.5");
+    note.setAttribute("transform",`rotate(-20 ${x} ${y})`);
+    note.setAttribute("class","staff-note");
+    group.appendChild(note);
+
+    // 音符の棒
+    if(y>65){
+      const stem=document.createElementNS(
+        "http://www.w3.org/2000/svg","line"
+      );
+      stem.setAttribute("x1",x+7);
+      stem.setAttribute("x2",x+7);
+      stem.setAttribute("y1",y);
+      stem.setAttribute("y2",y-38);
+      stem.setAttribute("class","staff-stem");
+      group.appendChild(stem);
+    }
+
+    // 臨時記号
+    if(accidental){
+      const acc=document.createElementNS(
+        "http://www.w3.org/2000/svg","text"
+      );
+      acc.setAttribute("x",x-21);
+      acc.setAttribute("y",y+6);
+      acc.setAttribute("class","staff-accidental");
+      acc.textContent=accidental;
+      group.appendChild(acc);
+    }
+
+    // 加線
+    if(y>=150){
+      for(let lineY=160;lineY<=y;lineY+=20){
+        const line=document.createElementNS(
+          "http://www.w3.org/2000/svg","line"
+        );
+        line.setAttribute("x1",x-12);
+        line.setAttribute("x2",x+12);
+        line.setAttribute("y1",lineY);
+        line.setAttribute("y2",lineY);
+        line.setAttribute("class","staff-lines");
+        group.appendChild(line);
+      }
+    }
+  });
+}
+
+/* =====================================
+   画面更新
+===================================== */
+
+function renderInfo(){
+  const chord=detectChord();
+
+  document.getElementById("chordName").textContent=chord;
+
+  const selectedNotes=[...mainSelected]
+    .sort((a,b)=>a-b)
+    .map(m=>shortNote(m));
+
+  document.getElementById("chordNotes").textContent=
+    selectedNotes.length
+    ? "選択音： "+selectedNotes.join(" ・ ")
+    : "メイン鍵盤の音を選択してね";
+
+  document.getElementById("bassInfo").textContent=
+    bassSelected===null?"---":shortNote(bassSelected);
+
+  document.getElementById("selectedCount").textContent=
+    mainSelected.size+"音";
+
+  if(bassSelected===null){
+    document.getElementById("degreeInfo").textContent=
+      "ベース音を選ぶと、メイン鍵盤に度数が表示されるよ。";
+  }else{
+    const degrees=[...mainSelected]
+      .sort((a,b)=>a-b)
+      .map(m=>shortNote(m)+" = "+degreeFor(m));
+
+    document.getElementById("degreeInfo").textContent=
+      "ベース音 "+shortNote(bassSelected)+" を 1 とした度数："+
+      (degrees.length?degrees.join(" ／ "):"メイン鍵盤の音を選択してね");
+  }
+}
+
+function renderAll(){
+  renderKeyboard();
+  renderInfo();
+  renderStaff();
+}
+
+/* =====================================
+   音域移動
+===================================== */
+
+document.getElementById("mainLeft").onclick=()=>{
+  mainStart-=12;
+  renderAll();
+};
+
+document.getElementById("mainRight").onclick=()=>{
+  mainStart+=12;
+  renderAll();
+};
+
+document.getElementById("bassLeft").onclick=()=>{
+  bassStart-=12;
+  renderAll();
+};
+
+document.getElementById("bassRight").onclick=()=>{
+  bassStart+=12;
+  renderAll();
+};
+
+/* =====================================
+   モード切り替え
+===================================== */
+
+function setMode(newMode){
+  mode=newMode;
+
+  document.getElementById("playMode")
+    .classList.toggle("active",mode==="play");
+
+  document.getElementById("selectMode")
+    .classList.toggle("active",mode==="select");
+}
+
+document.getElementById("playMode").onclick=()=>{
+  setMode("play");
+};
+
+document.getElementById("selectMode").onclick=()=>{
+  setMode("select");
+};
+
+/* =====================================
+   クリア
+===================================== */
+
+document.getElementById("clearAll").onclick=()=>{
+  mainSelected.clear();
+  bassSelected=null;
+  renderAll();
+};
+
+/* =====================================
+   初期表示
+===================================== */
+
+renderAll();
+setMode("play");
+
+</script>
+</body>
+</html>
+
