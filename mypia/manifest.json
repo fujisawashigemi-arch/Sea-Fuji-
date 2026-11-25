@@ -2,8 +2,24 @@
 {
   "name": "マイピア",
   "short_name": "マイピア",
+  "description": "おとりすシリーズ 仮想ピアノ鍵盤",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f6f3ee",
-  "theme_color": "#f6f3ee"
+  "theme_color": "#f6f3ee",
+  "icons": [
+    {
+      "src": "./mypiaicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./mypiaicon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
 }
