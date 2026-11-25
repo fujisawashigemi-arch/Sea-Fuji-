@@ -63,8 +63,6 @@ display:flex;justify-content:space-between;align-items:center;
 gap:8px;margin:18px 2px 8px
 }
 .count{color:var(--muted);font-size:12px}
-
-/* 曲リスト：縦スクロールと見出し固定 */
 .tablewrap{
 overflow:auto;background:white;border:1px solid var(--line);
 border-radius:11px;position:relative;
@@ -198,7 +196,7 @@ header{padding-top:14px}
 </div>
 <div class="field full">
 <label>② 曲名の読み仮名</label>
-<input id="reading" placeholder="並べ替えに使う読み仮名">
+<input id="reading" placeholder="ひらがなで入力">
 </div>
 <div class="field"><label>③ キー1</label><select id="key1"></select></div>
 <div class="field"><label>④ キー2</label><select id="key2"></select></div>
@@ -228,7 +226,7 @@ header{padding-top:14px}
 </div>
 <div class="formgrid" style="margin-top:11px">
 <div class="field"><label>⑩ アーティスト</label><input id="artist" placeholder="アーティスト名"></div>
-<div class="field"><label>⑪ アーティストのよみ</label><input id="artistReading" placeholder="並べ替え用の読み仮名"></div>
+<div class="field"><label>⑪ アーティストのよみ</label><input id="artistReading" placeholder="ひらがなで入力"></div>
 <div class="field"><label>⑫ リリース年</label><input id="year" inputmode="numeric" maxlength="4" placeholder="例：1985"></div>
 <div class="field full"><label>⑬ フリーメモ・備考</label><textarea id="memo" rows="3" placeholder="自由にメモ"></textarea></div>
 </div>
@@ -236,7 +234,7 @@ header{padding-top:14px}
 <button class="primary" type="submit">保存する</button>
 <button type="button" id="cancelBtn">キャンセル</button>
 </div>
-<div class="note">読み仮名は必要に応じて編集できます。ひらがな・カタカナの曲名は自動で読み欄に反映します。</div>
+<div class="note">読み仮名は入力中に自動でひらがなに変換されます。既存の曲の読み仮名は変更しません。</div>
 </form>
 </section>
 
@@ -422,6 +420,13 @@ document.querySelectorAll(`input[name="${name}"]`).forEach(x=>x.checked=values.i
 }
 
 function norm(s){return (s||'').trim().toLocaleLowerCase();}
+
+/* カタカナをひらがなに変換する */
+function toHiragana(value){
+return value.replace(/[\u30A1-\u30F6]/g,char=>
+String.fromCharCode(char.charCodeAt(0)-0x60)
+);
+}
 
 function renderTags(){
 const previouslyChecked=checked('songTags');
@@ -680,21 +685,39 @@ $('filterToggle').onclick=()=>toggleSection('filterContent','filterArrow');
 $('newBtn').onclick=()=>openForm(null);
 $('cancelBtn').onclick=closeForm;
 
+/* 読み仮名欄は入力のたびにカタカナをひらがなへ変換 */
+function bindHiraganaInput(id){
+$(id).addEventListener('input',e=>{
+const input=e.target;
+const start=input.selectionStart;
+const end=input.selectionEnd;
+const before=input.value;
+const after=toHiragana(before);
+if(before!==after){
+input.value=after;
+const diff=before.length-after.length;
+input.setSelectionRange(
+Math.max(0,start-diff),
+Math.max(0,end-diff)
+);
+}
+input.dataset.touched='1';
+});
+}
+
+bindHiraganaInput('reading');
+bindHiraganaInput('artistReading');
+
 $('songForm').addEventListener('input',e=>{
 if(e.target.id==='title'){
 const v=$('title').value.trim();
-if(!$('reading').dataset.touched&&/^[ぁ-ゖァ-ヺー\s]+$/.test(v))$('reading').value=v;
+if(!$('reading').dataset.touched&&/^[ぁ-ゖァ-ヺー\s]+$/.test(v)){
+$('reading').value=toHiragana(v);
+}
 }
 markDirty();
 });
 $('songForm').addEventListener('change',markDirty);
-
-$('reading').addEventListener('input',()=>{
-$('reading').dataset.touched='1';
-});
-$('artistReading').addEventListener('input',()=>{
-$('artistReading').dataset.touched='1';
-});
 
 $('statuses').addEventListener('change',e=>{
 if(e.target.name==='status'&&e.target.checked){
@@ -727,7 +750,7 @@ let old=songs.find(s=>s.id===id);
 let s={
 id:id||String(Date.now())+Math.random().toString(16).slice(2),
 title,
-reading:$('reading').value.trim(),
+reading:toHiragana($('reading').value.trim()),
 key1:$('key1').value,
 key2:$('key2').value,
 originalKey:$('originalKey').value,
@@ -736,7 +759,7 @@ instruments:checked('instrument'),
 status:checked('status')[0]||'',
 tags:checked('songTags'),
 artist:$('artist').value.trim(),
-artistReading:$('artistReading').value.trim(),
+artistReading:toHiragana($('artistReading').value.trim()),
 year:$('year').value.trim(),
 memo:$('memo').value.trim(),
 created:old?.created||Date.now()
@@ -1001,7 +1024,6 @@ $('search').oninput=render;
 $('sort').onchange=render;
 $('direction').onchange=render;
 
-// JSONバックアップ保存
 $('exportBtn').onclick=()=>{
 const now=new Date();
 const y=now.getFullYear();
@@ -1036,7 +1058,6 @@ URL.revokeObjectURL(url);
 },3000);
 };
 
-// JSONバックアップ読み込み
 $('importBtn').onclick=()=>$('fileInput').click();
 
 $('fileInput').onchange=async e=>{
@@ -1074,7 +1095,6 @@ alert('このファイルは読み込めませんでした');
 e.target.value='';
 };
 
-// オフライン起動機能の登録
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('./sw.js')
