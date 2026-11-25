@@ -82,6 +82,15 @@ position:sticky;top:0;z-index:3
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover td{background:#fbfcfa}
 .song{font-weight:650;font-size:13px}
+.song-title-touch{
+display:inline-block;
+cursor:pointer;
+-webkit-touch-callout:none;
+user-select:none;
+-webkit-user-select:none;
+touch-action:pan-y;
+}
+.song-title-touch:active{color:var(--accent)}
 .subline{color:var(--muted);font-size:11px;margin-top:3px}
 .pill{
 display:inline-block;background:var(--soft);border-radius:20px;
@@ -159,6 +168,38 @@ z-index:6;background:#faf9f7
 .playlistsongs th:nth-child(2),.playlistsongs td:nth-child(2){
 position:static;box-shadow:none
 }
+
+/* 曲名の操作メニュー */
+.song-context-menu{
+position:fixed;
+z-index:9999;
+min-width:145px;
+padding:5px;
+background:white;
+border:1px solid var(--line);
+border-radius:11px;
+box-shadow:0 5px 22px rgba(0,0,0,.16);
+}
+.song-context-menu button{
+display:block;
+width:100%;
+text-align:left;
+padding:10px 12px;
+border:0;
+border-radius:7px;
+background:white;
+font-size:13px;
+}
+.song-context-menu button:hover{
+background:var(--soft);
+}
+.song-context-menu button.menu-delete{
+color:var(--danger);
+}
+.song-context-menu button+button{
+margin-top:2px;
+}
+
 @media(max-width:560px){
 header{padding-top:14px}
 .formgrid{grid-template-columns:1fr}
@@ -335,7 +376,6 @@ header{padding-top:14px}
 <th>タグ</th>
 <th>アーティスト</th>
 <th>年</th>
-<th>操作</th>
 </tr></thead>
 <tbody id="songRows"></tbody>
 </table>
@@ -344,6 +384,12 @@ header{padding-top:14px}
 
 <div class="note">データはこのブラウザ内に自動保存されます。機種変更・別端末への移行時は「バックアップ保存」でJSONファイルを作り、移行先で「読み込み」をしてください。ブラウザのデータ消去前にもバックアップを保存してください。</div>
 </main>
+
+<!-- 曲名の操作メニュー -->
+<div id="songContextMenu" class="song-context-menu hidden">
+<button type="button" data-song-action="edit">✏️ 編集</button>
+<button type="button" data-song-action="delete" class="menu-delete">🗑 削除</button>
+</div>
 
 <script>
 (()=>{
@@ -363,6 +409,14 @@ let tagFilterMode='or';
 let selectedSongIds=new Set();
 let activePlaylistId='';
 let editingDirty=false;
+
+/* 曲名操作メニュー用 */
+let contextSongId='';
+let longPressTimer=null;
+let longPressTarget=null;
+let touchStartX=0;
+let touchStartY=0;
+let longPressTriggered=false;
 
 function load(){
 try{
@@ -482,6 +536,7 @@ return `<div class="tagrow">
 }
 
 function openForm(song){
+closeSongMenu();
 $('editor').classList.remove('hidden');
 $('formTitle').textContent=song?'曲を編集':'曲を追加';
 $('editId').value=song?.id||'';
@@ -535,6 +590,7 @@ return !!(statusMatch||instrumentMatch||tagMatch);
 }
 
 function render(){
+closeSongMenu();
 renderTags();
 renderPlaylists();
 renderPlaylistTargetOptions();
@@ -554,7 +610,7 @@ $('empty').style.display=data.length?'none':'block';
 
 $('songRows').innerHTML=data.map(s=>`<tr>
 <td class="selectcell"><input type="checkbox" class="songSelect" data-selectsong="${esc(s.id)}" ${selectedSongIds.has(s.id)?'checked':''}></td>
-<td><div class="song">${esc(s.title)}</div></td>
+<td><div class="song"><span class="song-title-touch" data-song-title="${esc(s.id)}">${esc(s.title)}</span></div></td>
 <td>${[s.key1,s.key2].filter(Boolean).map(esc).join(' / ')||'－'}</td>
 <td>${esc(s.originalKey||'－')}</td>
 <td>${esc(s.karaoke||'－')}</td>
@@ -563,11 +619,154 @@ $('songRows').innerHTML=data.map(s=>`<tr>
 <td>${(s.tags||[]).map(x=>`<span class="pill">${esc(x)}</span>`).join('')||'－'}</td>
 <td>${esc(s.artist||'－')}<div class="subline">${esc(s.artistReading||'')}</div></td>
 <td>${esc(s.year||'－')}</td>
-<td><button class="rowbtn" data-edit="${esc(s.id)}">編集</button> <button class="rowbtn danger" data-delete="${esc(s.id)}">削除</button></td>
 </tr>`).join('');
 
 renderSelectionInfo(data);
 }
+
+/* 曲名メニューを閉じる */
+function closeSongMenu(){
+clearTimeout(longPressTimer);
+longPressTimer=null;
+longPressTarget=null;
+contextSongId='';
+$('songContextMenu').classList.add('hidden');
+}
+
+/* 曲名メニューを表示 */
+function showSongMenu(id,x,y){
+const song=songs.find(s=>s.id===id);
+if(!song)return;
+
+clearTimeout(longPressTimer);
+longPressTimer=null;
+longPressTarget=null;
+
+contextSongId=id;
+const menu=$('songContextMenu');
+menu.classList.remove('hidden');
+
+const rect=menu.getBoundingClientRect();
+const margin=8;
+let left=x;
+let top=y;
+
+if(left+rect.width>window.innerWidth-margin){
+left=window.innerWidth-rect.width-margin;
+}
+if(top+rect.height>window.innerHeight-margin){
+top=window.innerHeight-rect.height-margin;
+}
+left=Math.max(margin,left);
+top=Math.max(margin,top);
+
+menu.style.left=left+'px';
+menu.style.top=top+'px';
+}
+
+/* 長押し開始 */
+$('songRows').addEventListener('touchstart',e=>{
+const target=e.target.closest('[data-song-title]');
+if(!target)return;
+
+const touch=e.touches[0];
+touchStartX=touch.clientX;
+touchStartY=touch.clientY;
+longPressTarget=target;
+longPressTriggered=false;
+
+clearTimeout(longPressTimer);
+
+longPressTimer=setTimeout(()=>{
+if(!longPressTarget)return;
+longPressTriggered=true;
+showSongMenu(
+longPressTarget.dataset.songTitle,
+touchStartX,
+touchStartY
+);
+},550);
+},{passive:true});
+
+/* 指が動いたら長押しをキャンセル */
+$('songRows').addEventListener('touchmove',e=>{
+if(!longPressTimer)return;
+const touch=e.touches[0];
+const dx=touch.clientX-touchStartX;
+const dy=touch.clientY-touchStartY;
+
+if(Math.abs(dx)>10||Math.abs(dy)>10){
+clearTimeout(longPressTimer);
+longPressTimer=null;
+longPressTarget=null;
+}
+},{passive:true});
+
+$('songRows').addEventListener('touchend',()=>{
+clearTimeout(longPressTimer);
+longPressTimer=null;
+longPressTarget=null;
+},{passive:true});
+
+$('songRows').addEventListener('touchcancel',()=>{
+clearTimeout(longPressTimer);
+longPressTimer=null;
+longPressTarget=null;
+},{passive:true});
+
+/* パソコンの右クリック */
+$('songRows').addEventListener('contextmenu',e=>{
+const target=e.target.closest('[data-song-title]');
+if(!target)return;
+e.preventDefault();
+showSongMenu(
+target.dataset.songTitle,
+e.clientX,
+e.clientY
+);
+});
+
+/* メニューの編集・削除 */
+$('songContextMenu').addEventListener('click',e=>{
+const button=e.target.closest('[data-song-action]');
+if(!button)return;
+
+const id=contextSongId;
+const action=button.dataset.songAction;
+const song=songs.find(s=>s.id===id);
+
+closeSongMenu();
+if(!song)return;
+
+if(action==='edit'){
+openForm(song);
+}
+
+if(action==='delete'){
+if(!confirm(`「${song.title}」を削除する？`))return;
+songs=songs.filter(s=>s.id!==id);
+selectedSongIds.delete(id);
+playlists.forEach(p=>{
+p.songIds=p.songIds.filter(songId=>songId!==id);
+});
+persist();
+render();
+}
+});
+
+/* メニュー外をクリック・タップしたら閉じる */
+document.addEventListener('click',e=>{
+if(!e.target.closest('#songContextMenu')&&!e.target.closest('[data-song-title]')){
+closeSongMenu();
+}
+});
+
+document.addEventListener('keydown',e=>{
+if(e.key==='Escape')closeSongMenu();
+});
+
+window.addEventListener('scroll',closeSongMenu,true);
+window.addEventListener('resize',closeSongMenu);
 
 function renderSelectionInfo(visibleData){
 $('selectedCount').textContent=`${selectedSongIds.size}曲選択中`;
@@ -772,22 +971,6 @@ else songs.push(s);
 persist();
 closeForm();
 render();
-};
-
-$('songRows').onclick=e=>{
-let ed=e.target.dataset.edit;
-let del=e.target.dataset.delete;
-if(ed){
-let s=songs.find(x=>x.id===ed);
-if(s)openForm(s);
-}
-if(del&&confirm('この曲を削除する？')){
-songs=songs.filter(x=>x.id!==del);
-selectedSongIds.delete(del);
-playlists.forEach(p=>p.songIds=p.songIds.filter(id=>id!==del));
-persist();
-render();
-}
 };
 
 $('songRows').onchange=e=>{
