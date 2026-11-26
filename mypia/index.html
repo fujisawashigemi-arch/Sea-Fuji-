@@ -186,22 +186,17 @@ button{
   stroke-width:1;
 }
 
+/* 音符は黒丸 */
+
 .staff-note{
-  fill:#fff;
-  stroke:#302d29;
-  stroke-width:1.5;
+  fill:#302d29;
+  stroke:none;
 }
 
 .staff-accidental{
   font-size:12px;
   fill:#302d29;
   font-family:serif;
-}
-
-.staff-clef{
-  font-family:serif;
-  font-size:43px;
-  fill:#665f56;
 }
 
 .staff-empty{
@@ -723,7 +718,7 @@ button{
           <line x1="7" y1="68" x2="163" y2="68"/>
         </g>
 
-        <text x="5" y="67" class="staff-clef">𝄞</text>
+        <!-- ト音記号は削除 -->
 
         <g id="staffNotes"></g>
       </svg>
@@ -787,7 +782,7 @@ button{
 </section>
 
 <div class="version-info" id="versionInfo">
-  おとりす｜マイピア Ver.1.6
+  おとりす｜マイピア Ver.1.7
 </div>
 
 </div>
@@ -795,7 +790,7 @@ button{
 <script>
 /* バージョン情報 */
 
-const APP_VERSION="1.6";
+const APP_VERSION="1.7";
 
 document.getElementById("versionInfo").textContent=
   "おとりす｜マイピア Ver."+APP_VERSION;
