@@ -139,7 +139,6 @@ select {
   color: #333;
 }
 
-/* 段落間隔 */
 .editor p,
 .editor div:not(.editor) {
   margin-top: 0;
@@ -161,9 +160,9 @@ select {
 
 @media print {
   html, body {
-    background: white;
-    margin: 0;
-    padding: 0;
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   header, .toolbar, .footer {
@@ -171,16 +170,17 @@ select {
   }
 
   .workspace {
-    padding: 0;
-    margin: 0;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
   }
 
   .page {
-    width: 210mm;
-    height: 297mm;
-    padding: 12.7mm;
-    margin: 0;
-    box-shadow: none;
+    width: 210mm !important;
+    height: 297mm !important;
+    padding: 12.7mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
     page-break-after: always;
     break-after: page;
   }
@@ -227,7 +227,6 @@ select {
   </div>
 
   <div class="tool-row">
-
     <div class="adjustment">
       <button id="spaceDown">文字間 −</button>
       <span class="adjust-value" id="letterValue">0.0px</span>
@@ -239,11 +238,9 @@ select {
       <span class="adjust-value" id="lineValue">1.80</span>
       <button id="lineUp">＋</button>
     </div>
-
   </div>
 
   <div class="tool-row">
-
     <div class="adjustment">
       <button id="paraDown">段落間 −</button>
       <span class="adjust-value" id="paraValue">0px</span>
@@ -252,8 +249,7 @@ select {
 
     <button id="undoBtn">元に戻す</button>
     <button id="redoBtn">やり直し</button>
-    <button id="printBtn">PDF・印刷</button>
-
+    <button type="button" id="printBtn">PDF・印刷</button>
   </div>
 
 </div>
@@ -289,7 +285,7 @@ function command(name, value = null) {
   document.execCommand(name, false, value);
 }
 
-// 文字サイズ（Ver.1.1から変更なし）
+// 文字サイズ：Ver.1.1から変更なし
 document.getElementById("fontSize").addEventListener("change", e => {
   focusEditor();
   const size = e.target.value;
@@ -408,10 +404,19 @@ document.getElementById("undoBtn").onclick =
 document.getElementById("redoBtn").onclick =
   () => command("redo");
 
-// 印刷
-document.getElementById("printBtn").onclick = () => {
-  window.print();
-};
+// PDF・印刷
+document.getElementById("printBtn").addEventListener("click", function(e) {
+  e.preventDefault();
+
+  // 編集欄からフォーカスを外す
+  editor.blur();
+
+  // iPad Safariで印刷画面を呼び出す
+  setTimeout(function() {
+    window.print();
+  }, 300);
+});
+
 </script>
 
 </body>
