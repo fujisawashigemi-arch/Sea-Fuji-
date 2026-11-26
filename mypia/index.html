@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -25,7 +26,7 @@
   --blue:#a9c7dc;
   --blue-dark:#628ba9;
   --shadow:0 3px 14px rgba(65,52,40,.07);
-  --white-key-width:43px;
+  --white-key-width:55px;
 }
 
 *{
@@ -313,7 +314,7 @@ button{
 .keys{
   position:relative;
   display:block;
-  height:clamp(125px,24vh,220px);
+  height:clamp(165px,30vh,260px);
   width:max-content;
   padding:0;
   margin:0;
@@ -328,9 +329,9 @@ button{
   flex-direction:column;
   align-items:center;
   justify-content:flex-end;
-  padding-bottom:9px;
+  padding-bottom:12px;
   border:1px solid #d9d3ca;
-  border-radius:0 0 7px 7px;
+  border-radius:0 0 8px 8px;
   color:#5e5851;
   box-shadow:0 3px 2px #0000000b;
   touch-action:none;
@@ -355,8 +356,8 @@ button{
   background:#494641;
   color:#fff;
   border:1px solid #35322f;
-  border-radius:0 0 6px 6px;
-  padding-bottom:7px;
+  border-radius:0 0 7px 7px;
+  padding-bottom:9px;
   z-index:3;
   box-shadow:0 3px 4px #00000030;
 }
@@ -371,22 +372,22 @@ button{
 .key:active{transform:translateY(1px);}
 .key.black:active{transform:translateX(-50%) translateY(1px);}
 
-.key-name{font-size:12px;font-weight:650;pointer-events:none;}
-.key-octave{font-size:9px;opacity:.65;margin-top:2px;pointer-events:none;}
+.key-name{font-size:15px;font-weight:650;pointer-events:none;}
+.key-octave{font-size:10px;opacity:.65;margin-top:3px;pointer-events:none;}
 
 .key-degree{
   position:absolute;
-  top:8px;
+  top:10px;
   left:0;
   right:0;
   text-align:center;
-  font-size:10px;
+  font-size:12px;
   font-weight:750;
   pointer-events:none;
 }
 
-.key.black .key-degree{top:7px;font-size:9px;}
-.key.black .key-name{font-size:10px;}
+.key.black .key-degree{top:8px;font-size:10px;}
+.key.black .key-name{font-size:12px;}
 
 .keyboard-hint{font-size:9px;color:#aaa197;margin-top:4px;text-align:center;}
 .mode-indicator{font-size:9px;color:#a69d93;text-align:right;}
@@ -404,7 +405,7 @@ button{
 /* スマートフォン */
 
 @media(max-width:480px){
-  :root{--white-key-width:39px;}
+  :root{--white-key-width:48px;}
   .app{padding:6px 8px 12px;}
   .menu-handle{height:27px;}
   .menu-content{padding:8px;}
@@ -415,7 +416,7 @@ button{
   .bass-buttons{gap:3px;}
   .bass-btn{height:28px;font-size:9px;}
   .keyboard-card{padding:9px 8px;}
-  .keys{height:clamp(116px,23vh,190px);}
+  .keys{height:clamp(150px,28vh,220px);}
 }
 </style>
 </head>
@@ -529,14 +530,14 @@ button{
 </section>
 
 <div class="version-info" id="versionInfo">
-  おとりす｜マイピア Ver.1.1
+  おとりす｜マイピア Ver.1.2
 </div>
 
 </div>
 
 <script>
 /* バージョン情報 */
-const APP_VERSION="1.1";
+const APP_VERSION="1.2";
 
 document.getElementById("versionInfo").textContent=
   "おとりす｜マイピア Ver."+APP_VERSION;
