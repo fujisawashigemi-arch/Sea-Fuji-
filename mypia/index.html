@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -337,7 +336,7 @@ button{
   text-align:center;
 }
 
-/* 鍵盤本体 */
+/* 鍵盤と五線譜のスクロール領域 */
 
 .keyboard-scroll{
   flex:1;
@@ -349,6 +348,40 @@ button{
   touch-action:pan-x;
   -webkit-overflow-scrolling:touch;
 }
+
+/* 鍵盤上の音符表示 */
+
+.keyboard-notation{
+  display:block;
+  height:64px;
+  margin:0 0 5px;
+  pointer-events:none;
+  overflow:visible;
+}
+
+.keyboard-notation .notation-lines{
+  stroke:#c7c0b7;
+  stroke-width:1;
+}
+
+.keyboard-notation .notation-note{
+  fill:#302d29;
+  stroke:none;
+}
+
+.keyboard-notation .notation-accidental{
+  fill:#302d29;
+  font-family:serif;
+  font-size:8px;
+  text-anchor:middle;
+}
+
+.keyboard-notation .notation-ledger{
+  stroke:#aaa196;
+  stroke-width:1;
+}
+
+/* 鍵盤本体 */
 
 .keys{
   position:relative;
@@ -563,6 +596,11 @@ button{
     margin-bottom:3px;
   }
 
+  .keyboard-notation{
+    height:64px;
+    margin-bottom:4px;
+  }
+
   .key{
     padding-bottom:10px;
   }
@@ -619,8 +657,6 @@ button{
 
   <div class="control-main">
 
-    <!-- ベース音選択 -->
-
     <div class="bass-area">
       <div class="bass-heading">
         <div class="bass-title">BASS / ベース音</div>
@@ -645,8 +681,6 @@ button{
       </div>
     </div>
 
-    <!-- 五線譜 -->
-
     <div class="staff-area">
       <div class="small-label">CHORD TONES</div>
 
@@ -666,8 +700,6 @@ button{
         <g id="staffNotes"></g>
       </svg>
     </div>
-
-    <!-- コード名 -->
 
     <div class="chord-area">
       <div class="chord-label">CHORD NAME</div>
@@ -704,7 +736,22 @@ button{
   </div>
 
   <div class="keyboard-scroll" id="mainScroll">
+
+    <!-- 鍵盤と連動する小さな五線譜 -->
+    <svg class="keyboard-notation" id="keyboardNotation"
+         xmlns="http://www.w3.org/2000/svg">
+      <g class="notation-lines">
+        <line x1="0" y1="28" x2="100%" y2="28"/>
+        <line x1="0" y1="34" x2="100%" y2="34"/>
+        <line x1="0" y1="40" x2="100%" y2="40"/>
+        <line x1="0" y1="46" x2="100%" y2="46"/>
+        <line x1="0" y1="52" x2="100%" y2="52"/>
+      </g>
+      <g id="keyboardStaffNotes"></g>
+    </svg>
+
     <div class="keys" id="mainKeys"></div>
+
   </div>
 
   <div class="keyboard-footer">
@@ -719,7 +766,7 @@ button{
 </section>
 
 <div class="version-info" id="versionInfo">
-  おとりす｜マイピア Ver.1.3
+  おとりす｜マイピア Ver.1.4
 </div>
 
 </div>
@@ -727,7 +774,7 @@ button{
 <script>
 /* バージョン情報 */
 
-const APP_VERSION="1.3";
+const APP_VERSION="1.4";
 
 document.getElementById("versionInfo").textContent=
   "おとりす｜マイピア Ver."+APP_VERSION;
@@ -739,8 +786,6 @@ const NOTE_NAMES=[
   "C","C♯","D","D♯","E","F",
   "F♯","G","G♯","A","A♯","B"
 ];
-
-/* ベース音・コード名用のフラット表記 */
 
 const FLAT_NAMES=[
   "C","D♭","D","E♭","E","F",
@@ -997,15 +1042,11 @@ document.querySelectorAll(".bass-btn").forEach(button=>{
 
     if(bassSelected===note){
 
-      /* 同じベース音を押すと解除して演奏モードへ */
-
       bassSelected=null;
       mainSelected.clear();
       stopAllSounds();
 
     }else{
-
-      /* ベース音を選ぶとコード判定モードへ */
 
       stopSound("bass");
       bassSelected=note;
@@ -1073,8 +1114,6 @@ function createKey(midi,whiteIndex){
 
     if(bassSelected!==null){
 
-      /* コード判定モード */
-
       const voiceId="main:"+midi;
 
       if(mainSelected.has(midi)){
@@ -1088,8 +1127,6 @@ function createKey(midi,whiteIndex){
       renderAll();
 
     }else{
-
-      /* 通常の演奏モード */
 
       pointerDown=true;
 
@@ -1115,6 +1152,172 @@ function createKey(midi,whiteIndex){
   key.addEventListener("lostpointercapture",release);
 
   return key;
+}
+
+
+/* SVG作成 */
+
+function createSvgElement(name,attributes){
+  const element=document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    name
+  );
+
+  Object.entries(attributes).forEach(([key,value])=>{
+    element.setAttribute(key,value);
+  });
+
+  return element;
+}
+
+
+/* 鍵盤上の五線譜 */
+
+const KEY_STAFF_SPELLINGS={
+  0:{letter:"C",acc:""},
+  1:{letter:"C",acc:"♯"},
+  2:{letter:"D",acc:""},
+  3:{letter:"D",acc:"♯"},
+  4:{letter:"E",acc:""},
+  5:{letter:"F",acc:""},
+  6:{letter:"F",acc:"♯"},
+  7:{letter:"G",acc:""},
+  8:{letter:"G",acc:"♯"},
+  9:{letter:"A",acc:""},
+  10:{letter:"A",acc:"♯"},
+  11:{letter:"B",acc:""}
+};
+
+const KEY_STAFF_LETTERS=["C","D","E","F","G","A","B"];
+
+function getStaffDiatonic(midi){
+  const spelling=KEY_STAFF_SPELLINGS[pitchClass(midi)];
+  const letterIndex=KEY_STAFF_LETTERS.indexOf(spelling.letter);
+
+  return {
+    spelling,
+    diatonic:octave(midi)*7+letterIndex
+  };
+}
+
+function renderKeyboardNotation(start,count,whiteCount){
+  const svg=document.getElementById("keyboardNotation");
+  const group=document.getElementById("keyboardStaffNotes");
+
+  group.innerHTML="";
+
+  const keyWidth=parseFloat(
+    getComputedStyle(document.documentElement)
+      .getPropertyValue("--white-key-width")
+  );
+
+  const totalWidth=whiteCount*keyWidth;
+
+  svg.setAttribute("width",totalWidth);
+  svg.setAttribute("height","64");
+  svg.setAttribute("viewBox",`0 0 ${totalWidth} 64`);
+
+  /*
+    五線譜の5本線。
+    下からE4・G4・B4・D5・F5。
+  */
+
+  const lines=createSvgElement("g",{
+    class:"notation-lines"
+  });
+
+  [28,34,40,46,52].forEach(y=>{
+    lines.appendChild(
+      createSvgElement("line",{
+        x1:"0",
+        y1:y,
+        x2:totalWidth,
+        y2:y
+      })
+    );
+  });
+
+  svg.insertBefore(lines,group);
+
+  let whiteIndex=0;
+
+  const baseDiatonic=4*7+2; // E4
+  const baseY=52;
+  const stepHeight=3;
+
+  for(let i=0;i<count;i++){
+    const midi=start+i;
+    const black=isBlack(midi);
+
+    let x;
+
+    if(black){
+      x=(whiteIndex+1)*keyWidth;
+    }else{
+      x=(whiteIndex+.5)*keyWidth;
+      whiteIndex++;
+    }
+
+    const {spelling,diatonic}=getStaffDiatonic(midi);
+
+    const y=baseY-
+      (diatonic-baseDiatonic)*stepHeight;
+
+    /*
+      五線譜の外に出る音には加線を表示。
+      音符の棒は付けず、黒い丸だけにする。
+    */
+
+    const difference=diatonic-baseDiatonic;
+
+    if(Math.abs(difference)>8){
+      const direction=difference>0?-1:1;
+
+      for(
+        let step=10;
+        step<=Math.abs(difference);
+        step+=2
+      ){
+        const ledgerY=baseY-
+          direction*step*stepHeight;
+
+        group.appendChild(
+          createSvgElement("line",{
+            x1:x-6,
+            x2:x+6,
+            y1:ledgerY,
+            y2:ledgerY,
+            class:"notation-ledger"
+          })
+        );
+      }
+    }
+
+    /* シャープなどの臨時記号 */
+
+    if(spelling.acc){
+      const accidental=createSvgElement("text",{
+        x:x-7,
+        y:y+2.5,
+        class:"notation-accidental"
+      });
+
+      accidental.textContent=spelling.acc;
+      group.appendChild(accidental);
+    }
+
+    /* 黒い音符の丸 */
+
+    group.appendChild(
+      createSvgElement("ellipse",{
+        cx:x,
+        cy:y,
+        rx:"4.2",
+        ry:"3.1",
+        class:"notation-note"
+      })
+    );
+  }
 }
 
 
@@ -1167,6 +1370,10 @@ function renderOneKeyboard(containerId,start,count){
       createKey(item.midi,item.whiteIndex)
     );
   });
+
+  /* 鍵盤と同じ音域の五線譜を描画 */
+
+  renderKeyboardNotation(start,count,whiteNotes.length);
 }
 
 function renderKeyboard(){
@@ -1177,12 +1384,7 @@ function renderKeyboard(){
 }
 
 
-/* 五線譜・全音符表示 */
-
-/*
-  音符の表記はフラット系に統一。
-  棒・旗は描画せず、全音符の白い楕円だけを表示する。
-*/
+/* 上部のコード用五線譜 */
 
 const STAFF_SPELLINGS={
   0:{letter:"C",acc:""},
@@ -1200,19 +1402,6 @@ const STAFF_SPELLINGS={
 };
 
 const STAFF_LETTERS=["C","D","E","F","G","A","B"];
-
-function createSvgElement(name,attributes){
-  const element=document.createElementNS(
-    "http://www.w3.org/2000/svg",
-    name
-  );
-
-  Object.entries(attributes).forEach(([key,value])=>{
-    element.setAttribute(key,value);
-  });
-
-  return element;
-}
 
 function renderStaff(){
   const group=document.getElementById("staffNotes");
@@ -1240,11 +1429,6 @@ function renderStaff(){
 
     return;
   }
-
-  /*
-    ベース音から半音順に並べ、
-    五線譜上では音階順に積み重ねる。
-  */
 
   const root=bassSelected!==null?bassSelected:0;
 
@@ -1298,8 +1482,6 @@ function renderStaff(){
     const y=centerY-
       (note.diatonic-centerStep)*stepHeight;
 
-    /* 臨時記号 */
-
     if(note.accidental){
       const accidental=createSvgElement("text",{
         x:noteX-19,
@@ -1312,8 +1494,6 @@ function renderStaff(){
       group.appendChild(accidental);
     }
 
-    /* 全音符：白い楕円のみ */
-
     const noteHead=createSvgElement("ellipse",{
       cx:noteX,
       cy:y,
@@ -1325,41 +1505,17 @@ function renderStaff(){
 
     group.appendChild(noteHead);
 
-    /* 五線の外に出た音の加線 */
-
-    if(y<20){
-      for(
-        let lineY=14;
-        lineY>=y-1;
-        lineY-=14
-      ){
-        const ledger=createSvgElement("line",{
-          x1:noteX-12,
-          x2:noteX+12,
-          y1:lineY,
-          y2:lineY,
-          class:"staff-lines"
-        });
-
-        group.appendChild(ledger);
-      }
-    }
-
-    if(y>68){
-      for(
-        let lineY=78;
-        lineY<=y+1;
-        lineY+=14
-      ){
-        const ledger=createSvgElement("line",{
-          x1:noteX-12,
-          x2:noteX+12,
-          y1:lineY,
-          y2:lineY,
-          class:"staff-lines"
-        });
-
-        group.appendChild(ledger);
+    if(y>=150){
+      for(let lineY=160;lineY<=y;lineY+=20){
+        group.appendChild(
+          createSvgElement("line",{
+            x1:noteX-12,
+            x2:noteX+12,
+            y1:lineY,
+            y2:lineY,
+            class:"staff-lines"
+          })
+        );
       }
     }
   });
