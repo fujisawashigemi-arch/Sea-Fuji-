@@ -388,6 +388,29 @@ button{
   stroke-width:.9;
 }
 
+/* 黒鍵側の五線譜だけ白黒反転 */
+
+.notation-cell.black-key-cell{
+  fill:#494641;
+  stroke:#35322f;
+}
+
+.notation-staff-line.black-key-staff-line{
+  stroke:#d8d3cb;
+}
+
+.notation-note.black-key-note{
+  fill:#fff;
+}
+
+.notation-accidental.black-key-accidental{
+  fill:#fff;
+}
+
+.notation-ledger.black-key-ledger{
+  stroke:#d8d3cb;
+}
+
 /* 鍵盤本体 */
 
 .keys{
@@ -764,7 +787,7 @@ button{
 </section>
 
 <div class="version-info" id="versionInfo">
-  おとりす｜マイピア Ver.1.5
+  おとりす｜マイピア Ver.1.6
 </div>
 
 </div>
@@ -772,7 +795,7 @@ button{
 <script>
 /* バージョン情報 */
 
-const APP_VERSION="1.5";
+const APP_VERSION="1.6";
 
 document.getElementById("versionInfo").textContent=
   "おとりす｜マイピア Ver."+APP_VERSION;
@@ -1229,6 +1252,8 @@ function getKeyStaffPosition(midi){
 
   枠の中心は実際の鍵盤の中心と一致。
   白鍵・黒鍵ともに対応する位置に表示する。
+
+  黒鍵側の枠は白黒反転する。
 */
 
 function renderKeyboardNotation(notes,whiteCount){
@@ -1262,6 +1287,7 @@ function renderKeyboardNotation(notes,whiteCount){
   notes.forEach((note,index)=>{
 
     const centerX=centers[index];
+    const blackCell=note.black;
 
     const left=index===0
       ?0
@@ -1291,7 +1317,9 @@ function renderKeyboardNotation(notes,whiteCount){
         width:Math.max(1,cellRight-cellLeft),
         height:"57",
         rx:"2",
-        class:"notation-cell"
+        class:blackCell
+          ?"notation-cell black-key-cell"
+          :"notation-cell"
       })
     );
 
@@ -1307,7 +1335,9 @@ function renderKeyboardNotation(notes,whiteCount){
           x2:staffRight,
           y1:y,
           y2:y,
-          class:"notation-staff-line"
+          class:blackCell
+            ?"notation-staff-line black-key-staff-line"
+            :"notation-staff-line"
         })
       );
     });
@@ -1328,7 +1358,9 @@ function renderKeyboardNotation(notes,whiteCount){
             x2:centerX+5,
             y1:ledgerY,
             y2:ledgerY,
-            class:"notation-ledger"
+            class:blackCell
+              ?"notation-ledger black-key-ledger"
+              :"notation-ledger"
           })
         );
       }
@@ -1344,7 +1376,9 @@ function renderKeyboardNotation(notes,whiteCount){
             x2:centerX+5,
             y1:ledgerY,
             y2:ledgerY,
-            class:"notation-ledger"
+            class:blackCell
+              ?"notation-ledger black-key-ledger"
+              :"notation-ledger"
           })
         );
       }
@@ -1356,14 +1390,16 @@ function renderKeyboardNotation(notes,whiteCount){
       const accidental=createSvgElement("text",{
         x:centerX-5,
         y:noteY+2,
-        class:"notation-accidental"
+        class:blackCell
+          ?"notation-accidental black-key-accidental"
+          :"notation-accidental"
       });
 
       accidental.textContent=position.spelling.acc;
       cellGroup.appendChild(accidental);
     }
 
-    /* 黒い音符 */
+    /* 音符 */
 
     cellGroup.appendChild(
       createSvgElement("ellipse",{
@@ -1371,7 +1407,9 @@ function renderKeyboardNotation(notes,whiteCount){
         cy:noteY,
         rx:"3.1",
         ry:"2.5",
-        class:"notation-note"
+        class:blackCell
+          ?"notation-note black-key-note"
+          :"notation-note"
       })
     );
 
