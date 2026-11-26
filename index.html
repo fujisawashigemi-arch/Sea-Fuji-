@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
@@ -19,7 +20,14 @@ font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN",Meiryo,
 font-size:14px
 }
 header{padding:18px 16px 12px;max-width:1100px;margin:auto}
+.header-title{
+display:flex;align-items:baseline;gap:8px;
+}
 h1{font-size:21px;margin:0 0 5px;font-weight:700}
+.version{
+font-size:10px;color:var(--muted);font-weight:400;
+letter-spacing:.2px;
+}
 .sub{color:var(--muted);font-size:12px}
 main{max-width:1100px;margin:auto;padding:0 12px 36px}
 .toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:10px 0}
@@ -124,7 +132,7 @@ padding:8px 0;border-bottom:1px solid var(--line)
 .playlistname{flex:1;min-width:100px;font-weight:600}
 .playlistrow button{padding:5px 8px;font-size:11px}
 .playlistsongs{margin-top:10px}
-.playlistsongs table{min-width:400px}
+.playlistsongs table{min-width:650px}
 .playlistsongs td{white-space:normal}
 .playlist-song-title{font-weight:600}
 .playlist-actions{white-space:nowrap}
@@ -211,7 +219,10 @@ header{padding-top:14px}
 </head>
 <body>
 <header>
+<div class="header-title">
 <h1>マイレパ</h1>
+<span class="version">ver.1</span>
+</div>
 <div class="sub">曲・キー・演奏方法・練習状況をまとめて管理</div>
 </header>
 
@@ -840,12 +851,23 @@ box.innerHTML=`
 ${playlistSongs.length?`
 <div class="tablewrap">
 <table>
-<thead><tr><th>順番</th><th>曲名</th><th>アーティスト</th><th>操作</th></tr></thead>
+<thead><tr>
+<th>順番</th>
+<th>曲名</th>
+<th>キー1</th>
+<th>キー2</th>
+<th>原曲キー</th>
+<th>アーティスト</th>
+<th>操作</th>
+</tr></thead>
 <tbody>
 ${playlistSongs.map((s,i)=>`
 <tr>
 <td>${i+1}</td>
 <td><div class="playlist-song-title">${esc(s.title)}</div></td>
+<td>${esc(s.key1||'－')}</td>
+<td>${esc(s.key2||'－')}</td>
+<td>${esc(s.originalKey||'－')}</td>
 <td>${esc(s.artist||'－')}</td>
 <td class="playlist-actions">
 <button type="button" data-plsongup="${esc(s.id)}" ${i===0?'disabled':''}>↑</button>
