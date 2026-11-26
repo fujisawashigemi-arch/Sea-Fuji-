@@ -102,9 +102,8 @@ select {
 .page {
   width: min(100%, 650px);
   aspect-ratio: 210 / 297;
-  min-height: 0;
   margin: 0 auto;
-  padding: 10%;
+  padding: 12.7mm;
   background: white;
   box-shadow: 0 3px 15px rgba(70,55,40,.12);
   position: relative;
@@ -113,7 +112,7 @@ select {
 .editor {
   width: 100%;
   height: 100%;
-  min-height: 650px;
+  min-height: 0;
   outline: none;
   border: none;
   font-family: "Hiragino Maru Gothic ProN",
@@ -140,8 +139,10 @@ select {
 }
 
 @media print {
-  body {
+  html, body {
     background: white;
+    margin: 0;
+    padding: 0;
   }
 
   header, .toolbar, .footer {
@@ -150,15 +151,17 @@ select {
 
   .workspace {
     padding: 0;
+    margin: 0;
   }
 
   .page {
     width: 210mm;
     height: 297mm;
-    padding: 21mm;
+    padding: 12.7mm;
     margin: 0;
     box-shadow: none;
     page-break-after: always;
+    break-after: page;
   }
 
   .editor {
@@ -177,7 +180,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす  /  Ver. 1.0</div>
+  <div class="version">おとりす / Ver. 1.1</div>
 </header>
 
 <div class="toolbar">
@@ -211,7 +214,7 @@ select {
 
   <div class="tool-row">
     <button id="undoBtn">元に戻す</button>
-    <button id="redoBtn">やり直す</button>
+    <button id="redoBtn">やり直し</button>
     <button id="printBtn">PDF・印刷</button>
   </div>
 
@@ -250,6 +253,7 @@ function command(name, value = null) {
 document.getElementById("fontSize").addEventListener("change", e => {
   focusEditor();
   const size = e.target.value;
+
   document.execCommand("fontSize", false, "7");
 
   editor.querySelectorAll('font[size="7"]').forEach(el => {
@@ -317,7 +321,6 @@ document.getElementById("redoBtn").onclick =
 document.getElementById("printBtn").onclick = () => {
   window.print();
 };
-
 </script>
 
 </body>
