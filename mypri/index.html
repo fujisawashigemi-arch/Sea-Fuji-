@@ -31,21 +31,21 @@ body {
 }
 
 header {
-  padding: 15px 16px 10px;
+  padding: 7px 12px 5px;
   text-align: center;
 }
 
 header h1 {
   margin: 0;
-  font-size: 21px;
+  font-size: 18px;
   font-weight: 600;
   letter-spacing: 2px;
 }
 
 .version {
-  font-size: 10px;
+  font-size: 9px;
   color: #a69b8e;
-  margin-top: 3px;
+  margin-top: 1px;
 }
 
 .toolbar {
@@ -55,30 +55,34 @@ header h1 {
   background: rgba(246,243,238,.97);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
-  padding: 9px 10px;
+  padding: 6px 5px;
 }
 
 .tool-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 7px;
-  flex-wrap: wrap;
-  margin-bottom: 8px;
+  gap: 5px;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
-.tool-row:last-child {
-  margin-bottom: 0;
+.tool-row::-webkit-scrollbar {
+  display: none;
 }
 
 button, select {
+  flex: 0 0 auto;
   border: 1px solid #ddd3c8;
   background: #fffdfa;
   color: var(--ink);
-  border-radius: 8px;
-  min-height: 36px;
-  padding: 6px 11px;
-  font-size: 13px;
+  border-radius: 7px;
+  min-height: 34px;
+  padding: 5px 9px;
+  font-size: 12px;
 }
 
 button:active {
@@ -91,11 +95,20 @@ button.active {
 }
 
 select {
-  padding-right: 22px;
+  padding-right: 18px;
+  min-width: 75px;
+}
+
+.tool-separator {
+  width: 1px;
+  height: 23px;
+  background: #ded5cb;
+  flex: 0 0 1px;
+  margin: 0 2px;
 }
 
 .workspace {
-  padding: 18px 10px 40px;
+  padding: 12px 10px 40px;
   overflow-x: hidden;
 }
 
@@ -129,6 +142,10 @@ select {
   content: "ここをタップして文章を入力";
   color: #c5bdb4;
   pointer-events: none;
+}
+
+.editor span {
+  display: inline;
 }
 
 .footer {
@@ -180,12 +197,12 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.1</div>
+  <div class="version">おとりす / Ver. 1.2</div>
 </header>
 
 <div class="toolbar">
-
   <div class="tool-row">
+
     <select id="fontSize" aria-label="文字サイズ">
       <option value="10">10 pt</option>
       <option value="12">12 pt</option>
@@ -200,24 +217,33 @@ select {
     </select>
 
     <button id="boldBtn"><b>B</b></button>
+
+    <span class="tool-separator"></span>
+
     <button id="leftBtn" class="active">左</button>
     <button id="centerBtn">中央</button>
     <button id="rightBtn">右</button>
-  </div>
 
-  <div class="tool-row">
+    <span class="tool-separator"></span>
+
     <button id="spaceDown">文字間 −</button>
     <button id="spaceUp">文字間 ＋</button>
+
+    <span class="tool-separator"></span>
+
     <button id="lineDown">行間 −</button>
     <button id="lineUp">行間 ＋</button>
-  </div>
 
-  <div class="tool-row">
-    <button id="undoBtn">元に戻す</button>
-    <button id="redoBtn">やり直し</button>
+    <button id="paraDown">段落間 −</button>
+    <button id="paraUp">段落間 ＋</button>
+
+    <span class="tool-separator"></span>
+
+    <button id="undoBtn">↶</button>
+    <button id="redoBtn">↷</button>
     <button id="printBtn">PDF・印刷</button>
-  </div>
 
+  </div>
 </div>
 
 <main class="workspace">
@@ -238,37 +264,104 @@ select {
 <script>
 const editor = document.getElementById("editor");
 
-let letterSpacing = 0;
-let lineHeight = 1.8;
+let savedRange = null;
 
-function focusEditor() {
+const fontSize = document.getElementById("fontSize");
+
+function selectionInsideEditor() {
+  const selection = window.getSelection();
+
+  return selection &&
+    selection.rangeCount > 0 &&
+    editor.contains(selection.anchorNode) &&
+    editor.contains(selection.focusNode);
+}
+
+function saveSelection() {
+  const selection = window.getSelection();
+
+  if (selectionInsideEditor()) {
+    savedRange = selection.getRangeAt(0).cloneRange();
+  }
+}
+
+function restoreSelection() {
+  if (!savedRange) return false;
+
+  if (!editor.contains(savedRange.commonAncestorContainer)) {
+    savedRange = null;
+    return false;
+  }
+
+  const selection = window.getSelection();
+
+  selection.removeAllRanges();
+  selection.addRange(savedRange);
+
+  return true;
+}
+
+document.addEventListener("selectionchange", () => {
+  saveSelection();
+});
+
+editor.addEventListener("keyup", saveSelection);
+editor.addEventListener("mouseup", saveSelection);
+editor.addEventListener("touchend", () => {
+  setTimeout(saveSelection, 50);
+});
+
+function withSelection(callback) {
   editor.focus();
+
+  if (!restoreSelection()) {
+    return;
+  }
+
+  callback();
+
+  saveSelection();
 }
 
 function command(name, value = null) {
-  focusEditor();
-  document.execCommand(name, false, value);
+  withSelection(() => {
+    document.execCommand(name, false, value);
+  });
 }
 
-document.getElementById("fontSize").addEventListener("change", e => {
-  focusEditor();
-  const size = e.target.value;
+// ボタン操作時に選択範囲を失わない
+document.querySelectorAll(".toolbar button, .toolbar select")
+  .forEach(control => {
+    control.addEventListener("mousedown", e => {
+      e.preventDefault();
+      saveSelection();
+    });
+  });
 
-  document.execCommand("fontSize", false, "7");
+// 文字サイズ
+fontSize.addEventListener("change", () => {
+  const size = fontSize.value;
 
-  editor.querySelectorAll('font[size="7"]').forEach(el => {
-    el.removeAttribute("size");
-    el.style.fontSize = size + "pt";
+  withSelection(() => {
+    document.execCommand("fontSize", false, "7");
+
+    editor.querySelectorAll('font[size="7"]').forEach(el => {
+      el.removeAttribute("size");
+      el.style.fontSize = size + "pt";
+    });
   });
 });
 
+// 太字
 document.getElementById("boldBtn").addEventListener("click", () => {
   command("bold");
-  document.getElementById("boldBtn").classList.toggle("active");
 });
 
+// 文字揃え
 function setAlign(value) {
-  command("justify" + value);
+  withSelection(() => {
+    document.execCommand("justify" + value, false, null);
+  });
 
   ["leftBtn", "centerBtn", "rightBtn"].forEach(id => {
     document.getElementById(id).classList.remove("active");
@@ -292,35 +385,167 @@ document.getElementById("centerBtn").onclick =
 document.getElementById("rightBtn").onclick =
   () => setAlign("Right");
 
+// 選択した文字に文字間隔を適用
+function changeLetterSpacing(amount) {
+  withSelection(() => {
+    const selection = window.getSelection();
+
+    if (!selection || selection.isCollapsed) {
+      alert("文字間隔を変更する文字を選択してね。");
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+
+    if (!editor.contains(range.commonAncestorContainer)) return;
+
+    const span = document.createElement("span");
+    span.style.letterSpacing = amount + "px";
+
+    try {
+      const contents = range.extractContents();
+      span.appendChild(contents);
+      range.insertNode(span);
+
+      selection.removeAllRanges();
+
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      selection.addRange(newRange);
+
+      saveSelection();
+    } catch (e) {
+      alert("この選択範囲には文字間隔を設定できませんでした。");
+    }
+  });
+}
+
 document.getElementById("spaceUp").onclick = () => {
-  letterSpacing = Math.min(letterSpacing + 0.5, 10);
-  editor.style.letterSpacing = letterSpacing + "px";
+  changeLetterSpacing(1);
 };
 
 document.getElementById("spaceDown").onclick = () => {
-  letterSpacing = Math.max(letterSpacing - 0.5, -2);
-  editor.style.letterSpacing = letterSpacing + "px";
+  changeLetterSpacing(-1);
 };
 
+// 選択した段落を取得
+function getSelectedParagraphs() {
+  const selection = window.getSelection();
+
+  if (!selection || !editor.contains(selection.anchorNode)) {
+    return [];
+  }
+
+  const range = selection.getRangeAt(0);
+
+  if (range.collapsed) return [];
+
+  const blocks = [];
+  const walker = document.createTreeWalker(
+    editor,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode(node) {
+        if (
+          ["P", "DIV"].includes(node.tagName) &&
+          !node.classList.contains("editor")
+        ) {
+          return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_SKIP;
+      }
+    }
+  );
+
+  while (walker.nextNode()) {
+    const block = walker.currentNode;
+
+    if (range.intersectsNode(block)) {
+      blocks.push(block);
+    }
+  }
+
+  if (blocks.length === 0) {
+    let node = range.startContainer;
+
+    if (node.nodeType === Node.TEXT_NODE) {
+      node = node.parentElement;
+    }
+
+    while (node && node !== editor) {
+      if (["P", "DIV"].includes(node.tagName)) {
+        blocks.push(node);
+        break;
+      }
+      node = node.parentElement;
+    }
+  }
+
+  return blocks;
+}
+
+// 選択した段落のスタイル変更
+function changeParagraphStyle(property, amount, minimum, maximum) {
+  withSelection(() => {
+    const blocks = getSelectedParagraphs();
+
+    if (blocks.length === 0) {
+      alert("変更したい段落を選択してね。");
+      return;
+    }
+
+    blocks.forEach(block => {
+      const current = parseFloat(
+        getComputedStyle(block)[property]
+      ) || (property === "lineHeight" ? 1.8 : 0);
+
+      let next = current + amount;
+
+      next = Math.max(minimum, Math.min(maximum, next));
+
+      if (property === "lineHeight") {
+        block.style.lineHeight = next.toFixed(2);
+      } else {
+        block.style[property] = next.toFixed(1) + "px";
+      }
+    });
+
+    saveSelection();
+  });
+}
+
+// 行間
 document.getElementById("lineUp").onclick = () => {
-  lineHeight = Math.min(lineHeight + 0.1, 3);
-  editor.style.lineHeight = lineHeight;
+  changeParagraphStyle("lineHeight", 0.1, 1, 3);
 };
 
 document.getElementById("lineDown").onclick = () => {
-  lineHeight = Math.max(lineHeight - 0.1, 1);
-  editor.style.lineHeight = lineHeight;
+  changeParagraphStyle("lineHeight", -0.1, 1, 3);
 };
 
-document.getElementById("undoBtn").onclick =
-  () => command("undo");
+// 段落間隔（段落の下側）
+document.getElementById("paraUp").onclick = () => {
+  changeParagraphStyle("marginBottom", 2, 0, 60);
+};
 
-document.getElementById("redoBtn").onclick =
-  () => command("redo");
+document.getElementById("paraDown").onclick = () => {
+  changeParagraphStyle("marginBottom", -2, 0, 60);
+};
 
+// 元に戻す・やり直す
+document.getElementById("undoBtn").onclick = () => {
+  command("undo");
+};
+
+document.getElementById("redoBtn").onclick = () => {
+  command("redo");
+};
+
+// 印刷
 document.getElementById("printBtn").onclick = () => {
   window.print();
 };
+
 </script>
 
 </body>
