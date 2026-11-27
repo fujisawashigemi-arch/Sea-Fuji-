@@ -218,103 +218,6 @@ select {
   font-size: 10px;
   pointer-events: none;
 }
-
-/* 印刷専用エリア */
-#printArea {
-  display: block;
-  position: absolute;
-  left: -10000px;
-  top: 0;
-  width: 210mm;
-  margin: 0;
-  padding: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-/* 印刷設定 */
-@media print {
-
-  @page {
-    size: A4 portrait;
-    margin: 0;
-  }
-
-  html,
-  body {
-    width: 210mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
-  }
-
-  body > * {
-    display: none !important;
-  }
-
-  body > #printArea {
-    display: block !important;
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    visibility: visible !important;
-    pointer-events: auto !important;
-    width: 210mm !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-
-  .print-sheet {
-    display: block !important;
-    position: relative !important;
-    box-sizing: border-box !important;
-
-    width: 210mm !important;
-    height: 294mm !important;
-    min-height: 294mm !important;
-    max-height: 294mm !important;
-
-    margin: 0 !important;
-    padding: 12.7mm !important;
-
-    overflow: hidden !important;
-    background: white !important;
-    box-shadow: none !important;
-
-    break-inside: avoid !important;
-    page-break-inside: avoid !important;
-    break-after: auto !important;
-    page-break-after: auto !important;
-  }
-
-  .print-sheet + .print-sheet {
-    break-before: page !important;
-    page-break-before: always !important;
-  }
-
-  .print-editor {
-    display: block !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
-    height: 100% !important;
-    min-height: 0 !important;
-    max-height: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
-    outline: none !important;
-    border: none !important;
-    white-space: pre-wrap !important;
-    overflow-wrap: break-word !important;
-    color: #333 !important;
-  }
-
-  .print-editor:empty::before {
-    display: none !important;
-    content: none !important;
-  }
-}
 </style>
 </head>
 
@@ -322,7 +225,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.7</div>
+  <div class="version">おとりす / Ver. 1.4.8</div>
 </header>
 
 <!-- 編集ツール -->
@@ -412,8 +315,6 @@ select {
     ></div>
   </section>
 </main>
-
-<!-- 印刷専用エリアはPDF保存時に作成 -->
 
 <script>
 
@@ -718,26 +619,114 @@ function getPdfFileName() {
   return name;
 }
 
-/* 印刷専用ページを作成 */
-function createPrintArea() {
+/* 印刷専用ドキュメントを作成 */
+function createPrintDocument(printWindow, fileName) {
 
-  const oldArea = document.getElementById("printArea");
+  const printDoc = printWindow.document;
 
-  if (oldArea) {
-    oldArea.remove();
+  printDoc.open();
+
+  printDoc.write(`<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${fileName.replace(/\.pdf$/i, "")}</title>
+<style>
+@page {
+  size: A4 portrait;
+  margin: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  background: white;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont,
+    "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  color: #333;
+}
+
+.print-sheet {
+  display: block;
+  position: relative;
+  box-sizing: border-box;
+  width: 210mm;
+  height: 294mm;
+  min-height: 294mm;
+  max-height: 294mm;
+  margin: 0;
+  padding: 12.7mm;
+  overflow: hidden;
+  background: white;
+  box-shadow: none;
+  break-inside: avoid;
+  page-break-inside: avoid;
+  break-after: page;
+  page-break-after: always;
+}
+
+.print-sheet:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+
+.print-editor {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  max-height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  outline: none;
+  border: none;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  color: #333;
+}
+
+.print-editor p,
+.print-editor div {
+  margin-top: 0;
+  margin-bottom: var(--paragraph-spacing, 0px);
+}
+
+@media print {
+  html,
+  body {
+    width: 210mm;
+    margin: 0;
+    padding: 0;
   }
+}
+</style>
+</head>
+<body></body>
+</html>`);
 
-  const printArea = document.createElement("div");
-  printArea.id = "printArea";
+  printDoc.close();
 
+  const printBody = printDoc.body;
   const editors = getEditors();
 
   editors.forEach(sourceEditor => {
 
-    const sheet = document.createElement("section");
+    const sheet = printDoc.createElement("section");
     sheet.className = "print-sheet";
 
-    const printEditor = document.createElement("div");
+    const printEditor = printDoc.createElement("div");
     printEditor.className = "print-editor";
 
     printEditor.innerHTML = sourceEditor.innerHTML;
@@ -751,39 +740,47 @@ function createPrintArea() {
     printEditor.style.letterSpacing = computed.letterSpacing;
     printEditor.style.color = computed.color;
     printEditor.style.textAlign = computed.textAlign;
+
     printEditor.style.setProperty(
       "--paragraph-spacing",
       computed.getPropertyValue("--paragraph-spacing") || "0px"
     );
 
     sheet.appendChild(printEditor);
-    printArea.appendChild(sheet);
+    printBody.appendChild(sheet);
   });
 
-  document.body.appendChild(printArea);
-
-  return printArea;
+  return printDoc;
 }
 
-/* 印刷前にレイアウトを確定させる */
-function preparePrintLayout(printArea) {
+/* 印刷用ドキュメントの準備完了を待つ */
+function waitForPrintReady(printWindow, printDoc) {
 
   return new Promise(resolve => {
 
-    requestAnimationFrame(() => {
+    const waitForFonts = printDoc.fonts &&
+      printDoc.fonts.ready
+      ? printDoc.fonts.ready
+      : Promise.resolve();
 
-      requestAnimationFrame(() => {
+    waitForFonts.then(() => {
 
-        const sheets = printArea.querySelectorAll(".print-sheet");
+      printWindow.requestAnimationFrame(() => {
 
-        sheets.forEach(sheet => {
-          sheet.getBoundingClientRect();
+        printWindow.requestAnimationFrame(() => {
+
+          const sheets =
+            printDoc.querySelectorAll(".print-sheet");
+
+          sheets.forEach(sheet => {
+            sheet.getBoundingClientRect();
+          });
+
+          printDoc.documentElement.offsetHeight;
+
+          resolve();
         });
 
-        printArea.getBoundingClientRect();
-        document.documentElement.offsetHeight;
-
-        resolve();
       });
 
     });
@@ -820,38 +817,68 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
     fileName += ".pdf";
   }
 
-  const originalTitle = document.title;
-
   if (activeEditor) {
     activeEditor.blur();
   }
 
-  const printArea = createPrintArea();
+  /*
+    印刷専用の別画面を開く。
+    window.openはクリックイベント内で同期的に実行する。
+  */
+  const printWindow = window.open("", "_blank");
 
-  document.title = fileName.replace(/\.pdf$/i, "");
-
-  function restoreAfterPrint() {
-
-    const currentPrintArea = document.getElementById("printArea");
-
-    if (currentPrintArea) {
-      currentPrintArea.remove();
-    }
-
-    document.title = originalTitle;
-
-    window.removeEventListener("afterprint", restoreAfterPrint);
+  if (!printWindow) {
+    alert(
+      "印刷画面を開けなかったよ。\n\n" +
+      "Safariのポップアップ設定を確認してね。"
+    );
+    return;
   }
 
-  window.addEventListener("afterprint", restoreAfterPrint);
+  try {
 
-  preparePrintLayout(printArea).then(() => {
+    const printDoc = createPrintDocument(
+      printWindow,
+      fileName
+    );
 
-    setTimeout(() => {
-      window.print();
-    }, 200);
+    waitForPrintReady(printWindow, printDoc).then(() => {
 
-  });
+      printWindow.focus();
+
+      setTimeout(() => {
+
+        try {
+          printWindow.print();
+        } catch (error) {
+          alert(
+            "印刷画面を開けなかったよ。\n\n" +
+            "Safariからもう一度試してみてね。"
+          );
+        }
+
+      }, 300);
+
+    }).catch(() => {
+
+      printWindow.focus();
+
+      setTimeout(() => {
+        printWindow.print();
+      }, 500);
+
+    });
+
+  } catch (error) {
+
+    printWindow.close();
+
+    alert(
+      "印刷用ページの作成に失敗したよ。\n\n" +
+      "もう一度試してみてね。"
+    );
+
+  }
 
 });
 
