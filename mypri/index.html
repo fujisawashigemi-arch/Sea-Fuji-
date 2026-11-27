@@ -220,10 +220,6 @@ select {
 }
 
 /* 印刷専用エリア */
-/*
-  画面上でも画面外に配置しておき、
-  印刷前にレイアウト計算できるようにする
-*/
 #printArea {
   display: block;
   position: absolute;
@@ -252,10 +248,6 @@ select {
     background: white !important;
   }
 
-  /*
-    印刷時は印刷専用エリア以外を
-    すべて強制的に非表示にする
-  */
   body > * {
     display: none !important;
   }
@@ -279,9 +271,9 @@ select {
     box-sizing: border-box !important;
 
     width: 210mm !important;
-    height: 297mm !important;
-    min-height: 297mm !important;
-    max-height: 297mm !important;
+    height: 294mm !important;
+    min-height: 294mm !important;
+    max-height: 294mm !important;
 
     margin: 0 !important;
     padding: 12.7mm !important;
@@ -330,7 +322,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.6</div>
+  <div class="version">おとりす / Ver. 1.4.7</div>
 </header>
 
 <!-- 編集ツール -->
@@ -773,11 +765,7 @@ function createPrintArea() {
   return printArea;
 }
 
-/*
-  印刷前にレイアウトを確定させる
-  画面外に配置した印刷専用ページのサイズを読み取り、
-  2回の再描画を待ってから印刷を開始する
-*/
+/* 印刷前にレイアウトを確定させる */
 function preparePrintLayout(printArea) {
 
   return new Promise(resolve => {
