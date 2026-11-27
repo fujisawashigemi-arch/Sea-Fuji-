@@ -322,7 +322,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.7</div>
+  <div class="version">おとりす / Ver. 1.4.9</div>
 </header>
 
 <!-- 編集ツール -->
@@ -751,6 +751,7 @@ function createPrintArea() {
     printEditor.style.letterSpacing = computed.letterSpacing;
     printEditor.style.color = computed.color;
     printEditor.style.textAlign = computed.textAlign;
+
     printEditor.style.setProperty(
       "--paragraph-spacing",
       computed.getPropertyValue("--paragraph-spacing") || "0px"
@@ -765,23 +766,43 @@ function createPrintArea() {
   return printArea;
 }
 
-/* 印刷前にレイアウトを確定させる */
+/*
+  印刷前のレイアウト再計算
+  印刷エリアを一度非表示にしてから表示し直し、
+  Safariにレイアウトの再計算を促す
+*/
 function preparePrintLayout(printArea) {
 
   return new Promise(resolve => {
 
     requestAnimationFrame(() => {
 
+      /* 一度非表示にする */
+      printArea.style.display = "none";
+
+      /* 非表示状態を強制的に反映 */
+      void printArea.offsetHeight;
+
+      /* 表示状態に戻す */
+      printArea.style.display = "block";
+
       requestAnimationFrame(() => {
 
-        const sheets = printArea.querySelectorAll(".print-sheet");
+        /* 各ページのレイアウトを再取得 */
+        const sheets =
+          printArea.querySelectorAll(".print-sheet");
 
         sheets.forEach(sheet => {
+          void sheet.offsetHeight;
           sheet.getBoundingClientRect();
         });
 
+        /* 印刷領域全体も再計算 */
+        void printArea.offsetHeight;
         printArea.getBoundingClientRect();
-        document.documentElement.offsetHeight;
+
+        /* ドキュメント全体の再計算 */
+        void document.documentElement.offsetHeight;
 
         resolve();
       });
@@ -832,7 +853,8 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
 
   function restoreAfterPrint() {
 
-    const currentPrintArea = document.getElementById("printArea");
+    const currentPrintArea =
+      document.getElementById("printArea");
 
     if (currentPrintArea) {
       currentPrintArea.remove();
@@ -840,10 +862,16 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
 
     document.title = originalTitle;
 
-    window.removeEventListener("afterprint", restoreAfterPrint);
+    window.removeEventListener(
+      "afterprint",
+      restoreAfterPrint
+    );
   }
 
-  window.addEventListener("afterprint", restoreAfterPrint);
+  window.addEventListener(
+    "afterprint",
+    restoreAfterPrint
+  );
 
   preparePrintLayout(printArea).then(() => {
 
