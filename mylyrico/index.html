@@ -55,8 +55,6 @@ h2{font-size:14px;margin:0 0 10px;color:var(--green-dark)}
 hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 .small-note{color:var(--muted);font-size:11px;line-height:1.6;margin-top:8px}
 .button-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
-
-/* 曲情報 */
 .info-panel{padding:0;overflow:hidden}
 .info-toggle{
   width:100%;border-radius:12px;background:transparent;
@@ -70,8 +68,6 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 .info-panel.open .info-content{display:block}
 .meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
 .meta-grid .wide{grid-column:1/-1}
-
-/* 編集メニュー */
 .edit-menu{
   display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
   gap:5px;margin:12px 0 9px;
@@ -100,8 +96,6 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 .setting-row button{min-width:38px;padding:8px}
 .transpose-row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
 .current-key{font-weight:bold;color:var(--green-dark);min-width:55px;text-align:center}
-
-/* 配置エリア */
 .editor-area{
   overflow-x:auto;padding:9px 5px 13px;background:#fff;
   border:1px solid var(--line);border-radius:9px;
@@ -147,8 +141,6 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 }
 .lyric-cell.space{background:#faf9f6}
 .empty-editor{color:#a2a49e;text-align:center;padding:25px 10px;font-size:12px}
-
-/* 保存リスト */
 .song-list{display:flex;flex-direction:column;gap:6px}
 .song-item{
   display:flex;align-items:center;justify-content:space-between;
@@ -162,7 +154,6 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 #fileInput{display:none}
 #printArea{display:none}
 
-/* バックアップ画面 */
 .backup-overlay{
   display:none;position:fixed;inset:0;z-index:1000;
   background:rgba(35,40,35,.42);
@@ -229,7 +220,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 
 <body>
 <header>
-  <div class="brand">マイリリコ <span class="version">Ver.1.4</span></div>
+  <div class="brand">マイリリコ <span class="version">Ver.1.5</span></div>
   <div class="subtitle">LYRICS & CHORDS · OTOLIS</div>
 </header>
 
@@ -387,14 +378,15 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 <section id="printArea"></section>
 </main>
 
-<!-- バックアップ保存画面 -->
 <div class="backup-overlay" id="backupOverlay">
   <div class="backup-dialog">
     <h2>バックアップを保存</h2>
     <label for="backupFilename">ファイル名</label>
-    <input id="backupFilename" type="text" value="mylyrico-backup.json" autocomplete="off">
+    <input id="backupFilename" type="text" autocomplete="off">
     <div class="backup-help">
-      保存ボタンを押すと共有画面が開くよ。「ファイルに保存」を選ぶと、保存先のフォルダを指定できるよ。
+      保存ボタンを押すとiPadの共有画面が開くよ。「ファイルに保存」を選ぶと保存先のフォルダを指定できるよ。
+      <br><br>
+      バックアップの内容を確認してから共有するので、空のファイルを保存することは防ぐ仕組みにしているよ。
     </div>
     <div class="button-row">
       <button class="light" id="cancelBackup">キャンセル</button>
@@ -533,7 +525,6 @@ function normalizeSong(data){
   return data;
 }
 
-/* 歌詞編集時の文字ID引き継ぎ */
 function reconcileText(newText){
   const oldFlat=[];
   song.lines.forEach((line,li)=>{
@@ -985,30 +976,53 @@ function renderSongList(){
   });
 }
 
-/* バックアップデータ作成 */
-function createBackupBlob(){
+/* バックアップ用の日付 YYYYMMDD */
+function getBackupDate(){
+  const now=new Date();
+  const y=now.getFullYear();
+  const m=String(now.getMonth()+1).padStart(2,"0");
+  const d=String(now.getDate()).padStart(2,"0");
+  return `${y}${m}${d}`;
+}
+
+/* バックアップ内容を作成 */
+function createBackupText(){
   syncMeta();
-  const data=JSON.stringify({
+
+  const data={
     format:"otolis-mylyrico",
     version:2,
+    createdAt:new Date().toISOString(),
     songs:getSongs(),
-    current:song
-  },null,2);
-  return new Blob([data],{type:"application/json"});
+    current:cloneData(song)
+  };
+
+  const json=JSON.stringify(data,null,2);
+
+  /* 生成したJSONをその場で検査 */
+  if(!json||json.length<10){
+    throw new Error("バックアップデータが空です。");
+  }
+
+  const check=JSON.parse(json);
+  if(check.format!=="otolis-mylyrico"||!check.current){
+    throw new Error("バックアップデータの確認に失敗しました。");
+  }
+
+  return json;
 }
 
-/* ファイル名を整える */
 function cleanFilename(name){
   name=(name||"").trim();
-  if(!name)name="mylyrico-backup";
+  if(!name)name="マイリリコ_"+getBackupDate();
   name=name.replace(/[\\/:*?"<>|]/g,"_");
-  if(!name.toLowerCase().endsWith(".json"))name+=".json";
-  return name;
+  name=name.replace(/\.json$/i,"");
+  return name+".json";
 }
 
-/* バックアップ画面を開く */
+/* バックアップ画面 */
 function openBackupDialog(){
-  $("backupFilename").value="mylyrico-backup.json";
+  $("backupFilename").value="マイリリコ_"+getBackupDate()+".json";
   $("backupOverlay").classList.add("open");
   setTimeout(()=>{
     $("backupFilename").focus();
@@ -1020,41 +1034,103 @@ function closeBackupDialog(){
   $("backupOverlay").classList.remove("open");
 }
 
-/* iOS共有シートで保存先を選ぶ */
+/*
+  iOSの共有シートへファイルを直接渡す。
+  共有APIが使えない場合にダウンロードへ逃がさない。
+*/
 async function confirmBackup(){
+  const button=$("confirmBackup");
   const filename=cleanFilename($("backupFilename").value);
-  const blob=createBackupBlob();
-  const file=new File([blob],filename,{type:"application/json"});
 
-  closeBackupDialog();
-
+  let json;
   try{
-    if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
-      await navigator.share({
-        files:[file],
-        title:"マイリリコ バックアップ"
-      });
-      setStatus("共有画面を開いたよ。ファイルに保存を選んでね。");
-      return;
+    json=createBackupText();
+  }catch(error){
+    alert("バックアップデータを作れなかったよ。\n"+error.message);
+    return;
+  }
+
+  let file;
+  try{
+    const blob=new Blob([json],{type:"application/json;charset=utf-8"});
+
+    if(blob.size===0){
+      throw new Error("ファイルの中身が空です。");
     }
 
-    /* 共有機能が使えない場合のダウンロード */
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement("a");
-    a.href=url;
-    a.download=filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(url),1500);
-    setStatus("バックアップをダウンロードしたよ。");
+    file=new File([blob],filename,{
+      type:"application/json",
+      lastModified:Date.now()
+    });
+
+    if(file.size===0){
+      throw new Error("作成したファイルの中身が空です。");
+    }
+
+    /* ファイル内容を読み戻して再検査 */
+    const readBack=await file.text();
+    const parsed=JSON.parse(readBack);
+
+    if(!parsed||parsed.format!=="otolis-mylyrico"||!parsed.current){
+      throw new Error("ファイルの内容を確認できませんでした。");
+    }
+  }catch(error){
+    alert("バックアップファイルの作成に失敗したよ。\n"+error.message);
+    return;
+  }
+
+  /* Web Share APIが利用可能か確認 */
+  if(!navigator.share){
+    alert(
+      "この画面ではファイル共有機能が使えないみたい。\n\n"+
+      "空のファイルを作らないよう、保存処理を中止したよ。\n"+
+      "Safariでマイリリコを開いて、もう一度試してみてね。"
+    );
+    return;
+  }
+
+  if(navigator.canShare){
+    let supported=false;
+    try{
+      supported=navigator.canShare({files:[file]});
+    }catch(e){
+      supported=false;
+    }
+
+    if(!supported){
+      alert(
+        "この環境ではJSONファイルの共有に対応していないみたい。\n\n"+
+        "空のファイルを作らないよう、保存処理を中止したよ。\n"+
+        "Safariで開いて試してみてね。"
+      );
+      return;
+    }
+  }
+
+  button.disabled=true;
+  button.textContent="共有画面を開いています…";
+
+  try{
+    await navigator.share({
+      files:[file],
+      title:filename
+    });
+
+    closeBackupDialog();
+    setStatus("共有画面を開いたよ。「ファイルに保存」を選んでね。");
   }catch(error){
     if(error&&error.name==="AbortError"){
       setStatus("バックアップ保存をキャンセルしたよ。");
-      return;
+    }else{
+      alert(
+        "共有画面を開けなかったよ。\n\n"+
+        "データは消えていないので、もう一度試してね。"
+      );
+      setStatus("バックアップを保存できませんでした。");
     }
-    alert("バックアップを保存できなかったよ。もう一度試してね。");
-    setStatus("保存できませんでした。");
+  }finally{
+    button.disabled=false;
+    button.textContent="保存先を選ぶ";
   }
 }
 
@@ -1126,40 +1202,33 @@ function toggleEditPanel(panelId){
   }
 }
 
-/* 曲情報開閉 */
 $("infoToggle").addEventListener("click",()=>{
   const panel=$("infoPanel");
   const open=panel.classList.toggle("open");
   $("infoToggle").setAttribute("aria-expanded",String(open));
 });
 
-/* 編集メニュー */
 document.querySelectorAll(".menu-btn[data-panel]").forEach(btn=>{
   btn.addEventListener("click",()=>toggleEditPanel(btn.dataset.panel));
 });
 $("closeEdit").addEventListener("click",closeEditPanels);
 
-/* 歌詞 */
 $("lyricsInput").addEventListener("input",()=>{
   recordHistory();
   reconcileText($("lyricsInput").value);
 });
 
-/* 履歴 */
 $("undoButton").addEventListener("click",undo);
 $("redoButton").addEventListener("click",redo);
 
-/* コード */
 $("addChord").addEventListener("click",addChord);
 $("addBar").addEventListener("click",addBar);
 $("removeAt").addEventListener("click",removeAt);
 
-/* 移調 */
 $("up").addEventListener("click",()=>transposeAll(1));
 $("down").addEventListener("click",()=>transposeAll(-1));
 $("resetTranspose").addEventListener("click",resetTranspose);
 
-/* 保存・印刷 */
 $("saveSong").addEventListener("click",saveSong);
 $("newSong").addEventListener("click",newSong);
 $("printSong").addEventListener("click",()=>{
