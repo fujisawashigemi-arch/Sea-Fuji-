@@ -1,0 +1,797 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#f6f3ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>マイリリコ｜おとりす</title>
+<style>
+:root{
+  --bg:#f6f3ee;
+  --paper:#fffefa;
+  --green:#718b78;
+  --green-dark:#526c5a;
+  --green-light:#e7eee7;
+  --text:#343a35;
+  --muted:#858b84;
+  --line:#e5e3dc;
+  --danger:#b96b61;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:14px;
+}
+button,input,textarea,select{font:inherit}
+button{
+  border:0;
+  border-radius:9px;
+  background:var(--green);
+  color:white;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:600;
+}
+button:active{opacity:.75}
+button.secondary{background:#e7ebe5;color:#526653}
+button.light{background:#f0eee8;color:#555}
+button.danger{background:#f4e7e4;color:#a85d53}
+button.small{padding:7px 10px;font-size:12px}
+button:disabled{opacity:.35;cursor:default}
+input,textarea,select{
+  border:1px solid #deded6;
+  border-radius:8px;
+  background:#fffefa;
+  color:var(--text);
+  padding:9px 10px;
+  min-width:0;
+}
+input:focus,textarea:focus,select:focus{outline:2px solid #b7c9b9;border-color:transparent}
+header{
+  padding:16px 16px 12px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  max-width:1100px;
+  margin:auto;
+}
+.logo{font-size:22px;font-weight:800;letter-spacing:.04em;color:var(--green-dark)}
+.logo small{display:block;font-size:10px;letter-spacing:.18em;color:#92988f;font-weight:500;margin-top:2px}
+.version{font-size:10px;color:#92988f;white-space:nowrap}
+main{max-width:1100px;margin:auto;padding:0 14px 40px}
+.panel{
+  background:rgba(255,255,255,.72);
+  border:1px solid #e9e6de;
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+}
+.panel-title{font-weight:700;color:var(--green-dark);margin-bottom:10px}
+.field-grid{display:grid;grid-template-columns:2fr 1.3fr 1fr;gap:9px}
+.field label,.setting label{display:block;font-size:11px;color:var(--muted);margin-bottom:5px}
+.field input{width:100%}
+.toolbar{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.editor-layout{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,.8fr);gap:12px}
+.lyrics-input{width:100%;min-height:130px;resize:vertical;line-height:1.9}
+.hint{font-size:11px;color:var(--muted);line-height:1.7;margin-top:7px}
+.chord-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.chord-tools .wide{grid-column:1/-1}
+.chord-tools select{width:100%}
+.anchor-status{font-size:12px;color:var(--green-dark);background:var(--green-light);padding:8px 10px;border-radius:8px;margin:8px 0}
+.chord-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chord-chip{font-size:12px;padding:6px 9px;border-radius:7px;background:#f0eee8;color:#555}
+.chord-chip.active{background:var(--green);color:white}
+.preview-wrap{overflow-x:auto;padding:4px 0}
+.sheet{
+  background:var(--paper);
+  width:100%;
+  min-height:400px;
+  padding:30px 34px;
+  border:1px solid #e9e6de;
+  box-shadow:0 3px 14px rgba(50,50,40,.05);
+  color:#252a26;
+}
+.sheet-title{text-align:center;font-size:21px;font-weight:700;margin:0 0 5px;white-space:pre-wrap;overflow-wrap:anywhere}
+.sheet-artist{text-align:center;color:#777;font-size:12px;margin-bottom:25px}
+.sheet-body{font-size:16px}
+.lyric-line{
+  position:relative;
+  min-height:54px;
+  padding-top:23px;
+  white-space:pre;
+  line-height:1.9;
+  border-bottom:1px dashed transparent;
+  cursor:text;
+}
+.lyric-line:empty:after{content:" ";white-space:pre}
+.lyric-line:hover{border-bottom-color:#e6e9e3}
+.lyric-char{display:inline-block;position:relative;white-space:pre}
+.chord-label{
+  position:absolute;
+  top:-23px;
+  left:0;
+  white-space:nowrap;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:700;
+  color:#526c5a;
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+  padding:1px 2px;
+  border-radius:3px;
+}
+.chord-label.selected{background:#dfe9df;outline:1px solid #8ca18f}
+.empty-note{color:#aaa;font-size:12px;padding:20px 0}
+.sheet-meta{font-size:11px;color:#888;margin-top:22px;white-space:pre-wrap}
+.settings-row{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.setting{min-width:110px}
+.setting input{width:100%}
+.song-list{display:flex;gap:7px;flex-wrap:wrap}
+.song-item{display:flex;align-items:center;gap:4px;background:#f0eee8;border-radius:9px;padding:5px 6px 5px 10px;font-size:12px}
+.song-item button{padding:5px 8px;font-size:11px}
+.hidden{display:none!important}
+#message{font-size:12px;color:var(--green-dark);min-height:18px;margin-top:7px}
+footer{text-align:center;color:#a0a39c;font-size:10px;padding:20px}
+@media(max-width:700px){
+  .editor-layout{grid-template-columns:1fr}
+  .field-grid{grid-template-columns:1fr 1fr}
+  .field:first-child{grid-column:1/-1}
+  .sheet{padding:24px 18px}
+  .sheet-body{font-size:15px}
+  header{padding:13px 14px}
+}
+@media print{
+  @page{size:A4 portrait;margin:8mm}
+  body{background:white!important;color:#111}
+  header,.no-print,footer{display:none!important}
+  main{max-width:none;padding:0;margin:0}
+  .panel{display:none!important}
+  #previewPanel{display:block!important;border:0;padding:0;margin:0;background:white}
+  .preview-wrap{overflow:visible}
+  .sheet{
+    width:100%;
+    min-height:0;
+    border:0;
+    box-shadow:none;
+    padding:0;
+    background:white;
+  }
+  .sheet-title{font-size:19px}
+  .sheet-artist{margin-bottom:18px}
+  .lyric-line{break-inside:avoid;page-break-inside:avoid;border:0}
+  .chord-label{color:#111}
+  .sheet-meta{color:#555}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">マイリリコ<small>OTOLIS · MY LYRICO</small></div>
+  <div class="version">Ver.1.0</div>
+</header>
+
+<main>
+  <section class="panel no-print">
+    <div class="panel-title">曲の情報</div>
+    <div class="field-grid">
+      <div class="field">
+        <label for="songTitle">曲名 *</label>
+        <input id="songTitle" placeholder="曲名を入力">
+      </div>
+      <div class="field">
+        <label for="artist">アーティスト</label>
+        <input id="artist" placeholder="任意">
+      </div>
+      <div class="field">
+        <label for="originalKey">原曲キー</label>
+        <select id="originalKey"></select>
+      </div>
+    </div>
+    <div class="field" style="margin-top:9px">
+      <label for="memo">メモ</label>
+      <input id="memo" placeholder="任意">
+    </div>
+  </section>
+
+  <section class="panel no-print">
+    <div class="panel-title">歌詞を入力</div>
+    <textarea id="lyricsInput" class="lyrics-input" placeholder="ここに歌詞をまとめて貼り付けてね。&#10;改行した位置が歌詞の行になるよ。"></textarea>
+    <div class="hint">歌詞を入力・編集すると、下の配置画面に反映されるよ。コードを配置したい文字をタップしてね。</div>
+  </section>
+
+  <div class="editor-layout no-print">
+    <section class="panel">
+      <div class="panel-title">コードを配置</div>
+      <div class="anchor-status" id="anchorStatus">歌詞の文字をタップして、コードの配置位置を選んでね。</div>
+
+      <div class="chord-tools">
+        <div>
+          <label for="chordRoot">ルート音</label>
+          <select id="chordRoot"></select>
+        </div>
+        <div>
+          <label for="chordQuality">コード種類</label>
+          <select id="chordQuality">
+            <option value="">メジャー</option>
+            <option value="m">m</option>
+            <option value="7">7</option>
+            <option value="M7">M7</option>
+            <option value="m7">m7</option>
+            <option value="sus4">sus4</option>
+            <option value="dim">dim</option>
+            <option value="aug">aug</option>
+            <option value="m7b5">m7♭5</option>
+            <option value="add9">add9</option>
+            <option value="6">6</option>
+            <option value="m6">m6</option>
+            <option value="9">9</option>
+            <option value="m9">m9</option>
+            <option value="M9">M9</option>
+            <option value="11">11</option>
+            <option value="m11">m11</option>
+            <option value="13">13</option>
+            <option value="m13">m13</option>
+            <option value="7sus4">7sus4</option>
+            <option value="7♭5">7♭5</option>
+            <option value="7♯5">7♯5</option>
+            <option value="7♭9">7♭9</option>
+            <option value="7♯9">7♯9</option>
+          </select>
+        </div>
+        <div>
+          <label for="chordBass">分数コードのベース音</label>
+          <select id="chordBass"></select>
+        </div>
+        <div style="display:flex;align-items:end">
+          <button id="addChord" style="width:100%">コードを追加</button>
+        </div>
+        <div class="wide toolbar">
+          <button class="secondary small" id="moveLeft">← 左へ</button>
+          <button class="secondary small" id="moveRight">右へ →</button>
+          <button class="secondary small" id="deleteChord">選択コードを削除</button>
+        </div>
+      </div>
+      <div class="hint">コードを追加したあと、コード名をドラッグして位置を調整できるよ。矢印ボタンで1文字ずつ移動もできるよ。</div>
+      <div class="panel-title" style="margin-top:18px">配置済みコード</div>
+      <div id="chordList" class="chord-list"><span class="hint">まだコードはありません。</span></div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-title">移調</div>
+      <div class="toolbar">
+        <button id="transposeDown" class="secondary">− 半音</button>
+        <button id="transposeUp" class="secondary">＋ 半音</button>
+      </div>
+      <div style="margin-top:12px">
+        <label for="targetKey" style="display:block;font-size:11px;color:var(--muted);margin-bottom:5px">移調先のキーを指定</label>
+        <div class="toolbar">
+          <select id="targetKey" style="flex:1"></select>
+          <button id="transposeTarget">このキーに移調</button>
+        </div>
+      </div>
+      <div id="keyStatus" class="anchor-status" style="margin-top:12px">現在のキー：未設定</div>
+      <div class="hint">配置したコードはそのまま、コードのルート音と分数コードのベース音を一緒に移調するよ。</div>
+
+      <div class="panel-title" style="margin-top:22px">表示設定</div>
+      <div class="settings-row">
+        <div class="setting">
+          <label for="fontSize">歌詞の文字サイズ</label>
+          <input id="fontSize" type="number" min="10" max="30" value="16">
+        </div>
+        <div class="setting">
+          <label for="lineHeight">行間（px）</label>
+          <input id="lineHeight" type="number" min="28" max="100" value="54">
+        </div>
+      </div>
+      <div class="hint">印刷プレビューにも反映されるよ。</div>
+    </section>
+  </div>
+
+  <section class="panel no-print">
+    <div class="panel-title">曲の保存・管理</div>
+    <div class="toolbar">
+      <button id="saveSong">この曲を保存</button>
+      <button id="newSong" class="secondary">新しい曲</button>
+      <button id="exportJson" class="secondary">バックアップ保存</button>
+      <button id="importButton" class="secondary">バックアップ読込</button>
+      <input type="file" id="importFile" accept=".json,application/json" class="hidden">
+    </div>
+    <div id="message"></div>
+    <div class="panel-title" style="margin-top:17px">保存した曲</div>
+    <div id="songList" class="song-list"></div>
+  </section>
+
+  <section class="panel" id="previewPanel">
+    <div class="toolbar no-print" style="justify-content:space-between;margin-bottom:12px">
+      <div class="panel-title" style="margin:0">A4プレビュー</div>
+      <div class="toolbar">
+        <button id="printButton">PDF保存・印刷</button>
+      </div>
+    </div>
+    <div class="preview-wrap">
+      <div class="sheet" id="sheet">
+        <h1 class="sheet-title" id="previewTitle">曲名</h1>
+        <div class="sheet-artist" id="previewArtist"></div>
+        <div class="sheet-body" id="sheetBody">
+          <div class="empty-note">歌詞を入力すると、ここに表示されるよ。</div>
+        </div>
+        <div class="sheet-meta" id="previewMemo"></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>OTOLIS · MY LYRICO</footer>
+
+<script>
+(()=>{
+"use strict";
+
+const $=id=>document.getElementById(id);
+const NOTES=["C","Db","D","Eb","E","F","Gb","G","Ab","A","Bb","B"];
+const STORAGE_KEY="otolis_mylyrico_songs_v1";
+const CURRENT_KEY="otolis_mylyrico_current_v1";
+
+let songId=null;
+let chords=[];
+let selectedChordId=null;
+let anchor={line:0,index:0};
+let currentKey="";
+let dragChordId=null;
+let dragMoved=false;
+
+function makeId(){
+  return "c"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+}
+function noteIndex(note){return NOTES.indexOf(note)}
+function normalizeIndex(n){return ((n%12)+12)%12}
+function transposeNote(note,steps){
+  const i=noteIndex(note);
+  return i<0?note:NOTES[normalizeIndex(i+steps)];
+}
+function chordName(c){
+  return c.root+(c.quality||"")+(c.bass?"/"+c.bass:"");
+}
+function populateNoteSelect(select,includeBlank){
+  select.innerHTML="";
+  if(includeBlank){
+    const opt=document.createElement("option");
+    opt.value="";opt.textContent="なし";
+    select.appendChild(opt);
+  }
+  NOTES.forEach(n=>{
+    const opt=document.createElement("option");
+    opt.value=n;opt.textContent=n;
+    select.appendChild(opt);
+  });
+}
+populateNoteSelect($("originalKey"),true);
+populateNoteSelect($("targetKey"),false);
+populateNoteSelect($("chordRoot"),false);
+populateNoteSelect($("chordBass"),true);
+
+function getLyrics(){return $("lyricsInput").value.replace(/\r\n?/g,"\n").split("\n")}
+function getSongData(){
+  return {
+    id:songId||makeId(),
+    title:$("songTitle").value.trim(),
+    artist:$("artist").value.trim(),
+    originalKey:$("originalKey").value,
+    currentKey:currentKey,
+    memo:$("memo").value,
+    lyrics:$("lyricsInput").value,
+    chords:chords.map(c=>({...c})),
+    fontSize:clamp(Number($("fontSize").value)||16,10,30),
+    lineHeight:clamp(Number($("lineHeight").value)||54,28,100),
+    updatedAt:new Date().toISOString()
+  };
+}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function getSavedSongs(){
+  try{
+    const data=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    return Array.isArray(data)?data:[];
+  }catch(e){return []}
+}
+function setMessage(msg){
+  $("message").textContent=msg;
+  clearTimeout(setMessage.timer);
+  setMessage.timer=setTimeout(()=>$("message").textContent="",3500);
+}
+function updateKeyStatus(){
+  $("keyStatus").textContent="現在のキー："+(currentKey||"未設定");
+}
+function updateAnchorStatus(){
+  $("anchorStatus").textContent=
+    "選択位置：歌詞 "+(anchor.line+1)+"行目・"+(anchor.index+1)+"文字目";
+}
+function getCharLeft(lineEl,index){
+  const chars=lineEl.querySelectorAll(".lyric-char");
+  if(!chars.length)return 0;
+  if(index>=chars.length){
+    const last=chars[chars.length-1];
+    return last.offsetLeft+last.offsetWidth;
+  }
+  return chars[Math.max(0,index)].offsetLeft;
+}
+function renderPreview(){
+  const lines=getLyrics();
+  $("previewTitle").textContent=$("songTitle").value||"曲名";
+  $("previewArtist").textContent=$("artist").value||"";
+  $("previewMemo").textContent=$("memo").value||"";
+  $("sheetBody").style.fontSize=clamp(Number($("fontSize").value)||16,10,30)+"px";
+  $("sheetBody").innerHTML="";
+
+  if(!lines.some(line=>line.length)){
+    const empty=document.createElement("div");
+    empty.className="empty-note";
+    empty.textContent="歌詞を入力すると、ここに表示されるよ。";
+    $("sheetBody").appendChild(empty);
+  }
+
+  lines.forEach((line,lineIndex)=>{
+    const row=document.createElement("div");
+    row.className="lyric-line";
+    row.dataset.line=lineIndex;
+    row.style.minHeight=clamp(Number($("lineHeight").value)||54,28,100)+"px";
+
+    for(let i=0;i<line.length;i++){
+      const ch=document.createElement("span");
+      ch.className="lyric-char";
+      ch.dataset.char=i;
+      ch.textContent=line[i]===" "?"\u00a0":line[i];
+      row.appendChild(ch);
+    }
+
+    const lineChords=chords
+      .filter(c=>c.line===lineIndex)
+      .sort((a,b)=>a.index-b.index);
+
+    lineChords.forEach((c,position)=>{
+      const label=document.createElement("span");
+      label.className="chord-label"+(c.id===selectedChordId?" selected":"");
+      label.textContent=chordName(c);
+      label.dataset.chordId=c.id;
+      label.style.left=getCharLeft(row,c.index)+"px";
+      const samePosition=lineChords.filter(x=>x.index===c.index);
+      const stack=samePosition.findIndex(x=>x.id===c.id);
+      label.style.top=(-23-stack*17)+"px";
+      label.addEventListener("click",e=>{
+        e.stopPropagation();
+        selectedChordId=c.id;
+        renderPreview();
+        renderChordList();
+      });
+      label.addEventListener("pointerdown",e=>startChordDrag(e,c.id));
+      row.appendChild(label);
+    });
+
+    row.addEventListener("click",e=>{
+      if(e.target.closest(".chord-label"))return;
+      const charEl=e.target.closest(".lyric-char");
+      anchor={
+        line:lineIndex,
+        index:charEl?Number(charEl.dataset.char):line.length
+      };
+      selectedChordId=null;
+      updateAnchorStatus();
+      renderChordList();
+      renderPreview();
+    });
+    $("sheetBody").appendChild(row);
+  });
+}
+function renderChordList(){
+  const box=$("chordList");
+  box.innerHTML="";
+  if(!chords.length){
+    box.innerHTML='<span class="hint">まだコードはありません。</span>';
+    return;
+  }
+  chords.forEach(c=>{
+    const b=document.createElement("button");
+    b.className="chord-chip"+(c.id===selectedChordId?" active":"");
+    b.textContent=chordName(c)+" · "+(c.line+1)+"行";
+    b.addEventListener("click",()=>{
+      selectedChordId=c.id;
+      anchor={line:c.line,index:c.index};
+      updateAnchorStatus();
+      renderChordList();
+      renderPreview();
+    });
+    box.appendChild(b);
+  });
+}
+function renderAll(){
+  updateKeyStatus();
+  updateAnchorStatus();
+  renderChordList();
+  renderPreview();
+}
+function addChord(){
+  const lines=getLyrics();
+  if(!lines.length)return;
+  const root=$("chordRoot").value;
+  const quality=$("chordQuality").value;
+  const bass=$("chordBass").value;
+  const c={
+    id:makeId(),
+    line:clamp(anchor.line,0,lines.length-1),
+    index:clamp(anchor.index,0,lines[clamp(anchor.line,0,lines.length-1)].length),
+    root,quality,bass
+  };
+  chords.push(c);
+  selectedChordId=c.id;
+  renderAll();
+}
+function moveSelected(amount){
+  const c=chords.find(x=>x.id===selectedChordId);
+  if(!c)return;
+  const lines=getLyrics();
+  c.index=clamp(c.index+amount,0,(lines[c.line]||"").length);
+  anchor={line:c.line,index:c.index};
+  renderAll();
+}
+function deleteSelected(){
+  if(!selectedChordId)return;
+  chords=chords.filter(c=>c.id!==selectedChordId);
+  selectedChordId=null;
+  renderAll();
+}
+function transpose(steps){
+  chords=chords.map(c=>({
+    ...c,
+    root:transposeNote(c.root,steps),
+    bass:c.bass?transposeNote(c.bass,steps):""
+  }));
+  if(currentKey)currentKey=transposeNote(currentKey,steps);
+  $("targetKey").value=currentKey||"C";
+  renderAll();
+}
+function transposeToTarget(){
+  const target=$("targetKey").value;
+  if(!currentKey){
+    setMessage("現在のキーが未設定だよ。曲のキーを選んでね。");
+    return;
+  }
+  const diff=normalizeIndex(noteIndex(target)-noteIndex(currentKey));
+  transpose(diff);
+  currentKey=target;
+  renderAll();
+}
+function saveSong(){
+  const data=getSongData();
+  if(!data.title){
+    setMessage("曲名を入力してね。");
+    $("songTitle").focus();
+    return;
+  }
+  songId=data.id;
+  const list=getSavedSongs();
+  const index=list.findIndex(x=>x.id===songId);
+  if(index>=0)list[index]=data;
+  else list.unshift(data);
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(list));
+    localStorage.setItem(CURRENT_KEY,JSON.stringify(data));
+    renderSongList();
+    setMessage("「"+data.title+"」を保存したよ。");
+  }catch(e){
+    setMessage("保存できなかったよ。端末の空き容量を確認してね。");
+  }
+}
+function renderSongList(){
+  const box=$("songList");
+  box.innerHTML="";
+  const list=getSavedSongs();
+  if(!list.length){
+    box.innerHTML='<span class="hint">保存した曲はまだありません。</span>';
+    return;
+  }
+  list.forEach(song=>{
+    const item=document.createElement("div");
+    item.className="song-item";
+    const name=document.createElement("span");
+    name.textContent=song.title||"曲名なし";
+    const open=document.createElement("button");
+    open.className="secondary";
+    open.textContent="開く";
+    open.addEventListener("click",()=>loadSong(song.id));
+    const del=document.createElement("button");
+    del.className="danger";
+    del.textContent="削除";
+    del.addEventListener("click",()=>{
+      if(!confirm("「"+(song.title||"曲名なし")+"」を削除する？"))return;
+      const next=getSavedSongs().filter(x=>x.id!==song.id);
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(next));
+      renderSongList();
+      setMessage("曲を削除したよ。");
+    });
+    item.append(name,open,del);
+    box.appendChild(item);
+  });
+}
+function loadSong(id){
+  const song=getSavedSongs().find(x=>x.id===id);
+  if(!song)return;
+  applySong(song);
+  setMessage("「"+song.title+"」を開いたよ。");
+}
+function applySong(song){
+  songId=song.id||makeId();
+  $("songTitle").value=song.title||"";
+  $("artist").value=song.artist||"";
+  $("originalKey").value=song.originalKey||"";
+  $("memo").value=song.memo||"";
+  $("lyricsInput").value=song.lyrics||"";
+  chords=Array.isArray(song.chords)?song.chords.map(c=>({...c,id:c.id||makeId()})):[];
+  currentKey=song.currentKey||song.originalKey||"";
+  $("fontSize").value=song.fontSize||16;
+  $("lineHeight").value=song.lineHeight||54;
+  $("targetKey").value=currentKey||"C";
+  selectedChordId=null;
+  anchor={line:0,index:0};
+  renderAll();
+  localStorage.setItem(CURRENT_KEY,JSON.stringify(getSongData()));
+}
+function newSong(){
+  if(!confirm("新しい曲を作る？保存していない変更は失われるよ。"))return;
+  songId=null;chords=[];selectedChordId=null;currentKey="";
+  $("songTitle").value="";
+  $("artist").value="";
+  $("originalKey").value="";
+  $("memo").value="";
+  $("lyricsInput").value="";
+  $("fontSize").value=16;
+  $("lineHeight").value=54;
+  $("targetKey").value="C";
+  anchor={line:0,index:0};
+  renderAll();
+}
+function exportBackup(){
+  const data={
+    app:"マイリリコ",
+    version:1,
+    exportedAt:new Date().toISOString(),
+    songs:getSavedSongs()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="mylyrico_backup_"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+  setMessage("バックアップファイルを作成したよ。");
+}
+function importBackup(file){
+  if(!file)return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const parsed=JSON.parse(reader.result);
+      const incoming=Array.isArray(parsed)?parsed:parsed.songs;
+      if(!Array.isArray(incoming))throw new Error("invalid");
+      if(!confirm(incoming.length+"曲のデータを読み込むよ。既存の曲と同じIDは上書きする？"))return;
+      const existing=getSavedSongs();
+      incoming.forEach(song=>{
+        if(!song||typeof song!=="object")return;
+        const safe={...song,id:song.id||makeId()};
+        const i=existing.findIndex(x=>x.id===safe.id);
+        if(i>=0)existing[i]=safe;
+        else existing.push(safe);
+      });
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(existing));
+      renderSongList();
+      setMessage("バックアップを読み込んだよ。");
+    }catch(e){
+      alert("バックアップファイルを読み込めなかったよ。ファイルを確認してね。");
+    }
+    $("importFile").value="";
+  };
+  reader.readAsText(file);
+}
+function startChordDrag(e,id){
+  e.preventDefault();
+  e.stopPropagation();
+  dragChordId=id;
+  dragMoved=false;
+  selectedChordId=id;
+  try{e.currentTarget.setPointerCapture(e.pointerId)}catch(err){}
+  const move=e2=>{
+    if(!dragChordId)return;
+    const target=document.elementFromPoint(e2.clientX,e2.clientY);
+    const row=target&&target.closest(".lyric-line");
+    if(!row)return;
+    const line=Number(row.dataset.line);
+    const chars=[...row.querySelectorAll(".lyric-char")];
+    let index=chars.length;
+    if(chars.length){
+      let best=Infinity;
+      chars.forEach((el,i)=>{
+        const r=el.getBoundingClientRect();
+        const center=r.left+r.width/2;
+        const d=Math.abs(e2.clientX-center);
+        if(d<best){best=d;index=i}
+      });
+      const last=chars[chars.length-1].getBoundingClientRect();
+      if(e2.clientX>last.right)index=chars.length;
+    }
+    const c=chords.find(x=>x.id===dragChordId);
+    if(c){
+      c.line=line;
+      c.index=index;
+      dragMoved=true;
+      anchor={line,index};
+      updateAnchorStatus();
+      renderPreview();
+    }
+  };
+  const end=()=>{
+    dragChordId=null;
+    window.removeEventListener("pointermove",move);
+    window.removeEventListener("pointerup",end);
+    window.removeEventListener("pointercancel",end);
+    renderAll();
+  };
+  window.addEventListener("pointermove",move);
+  window.addEventListener("pointerup",end);
+  window.addEventListener("pointercancel",end);
+}
+$("addChord").addEventListener("click",addChord);
+$("moveLeft").addEventListener("click",()=>moveSelected(-1));
+$("moveRight").addEventListener("click",()=>moveSelected(1));
+$("deleteChord").addEventListener("click",deleteSelected);
+$("transposeDown").addEventListener("click",()=>transpose(-1));
+$("transposeUp").addEventListener("click",()=>transpose(1));
+$("transposeTarget").addEventListener("click",transposeToTarget);
+$("saveSong").addEventListener("click",saveSong);
+$("newSong").addEventListener("click",newSong);
+$("exportJson").addEventListener("click",exportBackup);
+$("importButton").addEventListener("click",()=>$("importFile").click());
+$("importFile").addEventListener("change",e=>importBackup(e.target.files[0]));
+$("printButton").addEventListener("click",()=>window.print());
+
+["lyricsInput","songTitle","artist","memo","fontSize","lineHeight"].forEach(id=>{
+  $(id).addEventListener("input",()=>{
+    if(id==="lyricsInput"){
+      const max=getLyrics().length-1;
+      chords=chords.map(c=>({...c,line:clamp(c.line,0,max),index:clamp(c.index,0,(getLyrics()[clamp(c.line,0,max)]||"").length)}));
+      anchor.line=clamp(anchor.line,0,max);
+      anchor.index=clamp(anchor.index,0,(getLyrics()[anchor.line]||"").length);
+    }
+    renderPreview();
+    renderChordList();
+  });
+});
+$("originalKey").addEventListener("change",()=>{
+  if(!currentKey)currentKey=$("originalKey").value;
+  $("targetKey").value=currentKey||"C";
+  updateKeyStatus();
+});
+$("songTitle").addEventListener("input",()=>{ $("previewTitle").textContent=$("songTitle").value||"曲名" });
+$("artist").addEventListener("input",()=>{ $("previewArtist").textContent=$("artist").value });
+$("memo").addEventListener("input",()=>{ $("previewMemo").textContent=$("memo").value });
+
+renderSongList();
+try{
+  const current=JSON.parse(localStorage.getItem(CURRENT_KEY)||"null");
+  if(current)applySong(current);
+  else renderAll();
+}catch(e){renderAll()}
+
+})();
+</script>
+</body>
+</html>
