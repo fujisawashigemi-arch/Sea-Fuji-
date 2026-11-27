@@ -218,10 +218,17 @@ select {
   pointer-events: none;
 }
 
-/* 印刷専用エリア
-   通常画面ではレイアウト自体を作らない */
+/* 印刷専用エリア */
 #printArea {
-  display: none;
+  display: block;
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* 印刷設定 */
@@ -247,6 +254,8 @@ select {
   body > #printArea {
     display: block !important;
     position: static !important;
+    left: auto !important;
+    top: auto !important;
     visibility: visible !important;
     pointer-events: auto !important;
     width: 210mm !important;
@@ -261,9 +270,9 @@ select {
     box-sizing: border-box !important;
 
     width: 210mm !important;
-    height: 294mm !important;
-    min-height: 294mm !important;
-    max-height: 294mm !important;
+    height: 290mm !important;
+    min-height: 290mm !important;
+    max-height: 290mm !important;
 
     margin: 0 !important;
     padding: 12.7mm !important;
@@ -312,7 +321,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.11</div>
+  <div class="version">おとりす / Ver. 1.4.12</div>
 </header>
 
 <!-- 編集ツール -->
@@ -756,6 +765,52 @@ function createPrintArea() {
   return printArea;
 }
 
+/*
+  印刷前のレイアウト再計算
+  印刷エリアを一度非表示にしてから表示し直し、
+  Safariにレイアウトの再計算を促す
+*/
+function preparePrintLayout(printArea) {
+
+  return new Promise(resolve => {
+
+    requestAnimationFrame(() => {
+
+      /* 一度非表示にする */
+      printArea.style.display = "none";
+
+      /* 非表示状態を強制的に反映 */
+      void printArea.offsetHeight;
+
+      /* 表示状態に戻す */
+      printArea.style.display = "block";
+
+      requestAnimationFrame(() => {
+
+        /* 各ページのレイアウトを再取得 */
+        const sheets =
+          printArea.querySelectorAll(".print-sheet");
+
+        sheets.forEach(sheet => {
+          void sheet.offsetHeight;
+          sheet.getBoundingClientRect();
+        });
+
+        /* 印刷領域全体も再計算 */
+        void printArea.offsetHeight;
+        printArea.getBoundingClientRect();
+
+        /* ドキュメント全体の再計算 */
+        void document.documentElement.offsetHeight;
+
+        resolve();
+      });
+
+    });
+
+  });
+}
+
 /* PDF保存 */
 document.getElementById("printBtn").addEventListener("click", function(e) {
 
@@ -817,20 +872,11 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
     restoreAfterPrint
   );
 
-  /*
-    印刷エリアは通常画面では display:none。
-    画面外での事前レイアウト計算は行わず、
-    印刷メディアに切り替わった時点でSafariに描画させる。
-  */
-  requestAnimationFrame(() => {
+  preparePrintLayout(printArea).then(() => {
 
-    requestAnimationFrame(() => {
-
-      setTimeout(() => {
-        window.print();
-      }, 100);
-
-    });
+    setTimeout(() => {
+      window.print();
+    }, 200);
 
   });
 
