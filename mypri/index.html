@@ -220,8 +220,20 @@ select {
 }
 
 /* 印刷専用エリア */
+/*
+  画面上でも画面外に配置しておき、
+  印刷前にレイアウト計算できるようにする
+*/
 #printArea {
-  display: none;
+  display: block;
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* 印刷設定 */
@@ -251,6 +263,10 @@ select {
   body > #printArea {
     display: block !important;
     position: static !important;
+    left: auto !important;
+    top: auto !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
     width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -314,7 +330,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.5</div>
+  <div class="version">おとりす / Ver. 1.4.6</div>
 </header>
 
 <!-- 編集ツール -->
@@ -757,6 +773,36 @@ function createPrintArea() {
   return printArea;
 }
 
+/*
+  印刷前にレイアウトを確定させる
+  画面外に配置した印刷専用ページのサイズを読み取り、
+  2回の再描画を待ってから印刷を開始する
+*/
+function preparePrintLayout(printArea) {
+
+  return new Promise(resolve => {
+
+    requestAnimationFrame(() => {
+
+      requestAnimationFrame(() => {
+
+        const sheets = printArea.querySelectorAll(".print-sheet");
+
+        sheets.forEach(sheet => {
+          sheet.getBoundingClientRect();
+        });
+
+        printArea.getBoundingClientRect();
+        document.documentElement.offsetHeight;
+
+        resolve();
+      });
+
+    });
+
+  });
+}
+
 /* PDF保存 */
 document.getElementById("printBtn").addEventListener("click", function(e) {
 
@@ -792,18 +838,16 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
     activeEditor.blur();
   }
 
-  createPrintArea();
+  const printArea = createPrintArea();
 
   document.title = fileName.replace(/\.pdf$/i, "");
 
   function restoreAfterPrint() {
 
-    document.body.classList.remove("printing");
+    const currentPrintArea = document.getElementById("printArea");
 
-    const printArea = document.getElementById("printArea");
-
-    if (printArea) {
-      printArea.remove();
+    if (currentPrintArea) {
+      currentPrintArea.remove();
     }
 
     document.title = originalTitle;
@@ -813,9 +857,13 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
 
   window.addEventListener("afterprint", restoreAfterPrint);
 
-  setTimeout(() => {
-    window.print();
-  }, 500);
+  preparePrintLayout(printArea).then(() => {
+
+    setTimeout(() => {
+      window.print();
+    }, 200);
+
+  });
 
 });
 
