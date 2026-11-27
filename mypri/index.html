@@ -212,15 +212,11 @@ select {
 
 /* 印刷専用エリア */
 #printArea {
-  display: block;
-  position: absolute;
-  left: -10000px;
-  top: 0;
+  display: none;
   width: 210mm;
   margin: 0;
   padding: 0;
-  visibility: hidden;
-  pointer-events: none;
+  background: white;
 }
 
 /* 印刷設定 */
@@ -239,7 +235,9 @@ select {
     background: white !important;
   }
 
-  body > * {
+  header,
+  .toolbar,
+  .workspace {
     display: none !important;
   }
 
@@ -248,12 +246,14 @@ select {
     position: static !important;
     left: auto !important;
     top: auto !important;
+    z-index: auto !important;
     visibility: visible !important;
-    pointer-events: auto !important;
+    opacity: 1 !important;
     width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
     overflow: visible !important;
+    background: white !important;
   }
 
   .print-sheet {
@@ -277,6 +277,9 @@ select {
     page-break-inside: avoid !important;
     break-after: auto !important;
     page-break-after: auto !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .print-sheet + .print-sheet {
@@ -301,6 +304,12 @@ select {
     color: #333 !important;
   }
 
+  .print-editor p,
+  .print-editor div:not(.print-editor) {
+    margin-top: 0 !important;
+    margin-bottom: var(--paragraph-spacing, 0px) !important;
+  }
+
   .print-editor:empty::before {
     display: none !important;
     content: none !important;
@@ -313,7 +322,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.14</div>
+  <div class="version">おとりす / Ver. 1.4.15</div>
 </header>
 
 <!-- 編集ツール -->
@@ -404,8 +413,6 @@ select {
   </section>
 </main>
 
-<!-- 印刷専用エリアはPDF保存時に作成 -->
-
 <script>
 
 /* 基本設定 */
@@ -465,7 +472,6 @@ function createPage(number) {
   );
 
   page.appendChild(editor);
-
   workspace.appendChild(page);
 
   return editor;
@@ -710,6 +716,7 @@ function createPrintArea() {
     const printEditor = document.createElement("div");
     printEditor.className = "print-editor";
 
+    /* 編集欄の本文を複製 */
     printEditor.innerHTML = sourceEditor.innerHTML;
 
     const computed = window.getComputedStyle(sourceEditor);
@@ -733,53 +740,73 @@ function createPrintArea() {
 
   document.body.appendChild(printArea);
 
+  /*
+    印刷前から画面内に配置する。
+    画面外への移動やvisibility:hiddenにはしない。
+  */
+  printArea.style.display = "block";
+  printArea.style.position = "fixed";
+  printArea.style.left = "0";
+  printArea.style.top = "0";
+  printArea.style.zIndex = "9999";
+  printArea.style.visibility = "visible";
+  printArea.style.opacity = "1";
+
   return printArea;
 }
 
-/*
-  印刷前のレイアウト再計算
-  印刷エリアを一度非表示にしてから表示し直し、
-  Safariにレイアウトの再計算を促す
-*/
+/* 印刷前のレイアウト再計算 */
 function preparePrintLayout(printArea) {
 
   return new Promise(resolve => {
 
     requestAnimationFrame(() => {
 
-      /* 一度非表示にする */
-      printArea.style.display = "none";
+      const sheets =
+        printArea.querySelectorAll(".print-sheet");
 
-      /* 非表示状態を強制的に反映 */
+      sheets.forEach(sheet => {
+        void sheet.offsetHeight;
+        sheet.getBoundingClientRect();
+      });
+
+      const editors =
+        printArea.querySelectorAll(".print-editor");
+
+      editors.forEach(editor => {
+        void editor.offsetHeight;
+        editor.getBoundingClientRect();
+      });
+
       void printArea.offsetHeight;
-
-      /* 表示状態に戻す */
-      printArea.style.display = "block";
+      printArea.getBoundingClientRect();
 
       requestAnimationFrame(() => {
-
-        /* 各ページのレイアウトを再取得 */
-        const sheets =
-          printArea.querySelectorAll(".print-sheet");
-
-        sheets.forEach(sheet => {
-          void sheet.offsetHeight;
-          sheet.getBoundingClientRect();
-        });
-
-        /* 印刷領域全体も再計算 */
-        void printArea.offsetHeight;
-        printArea.getBoundingClientRect();
-
-        /* ドキュメント全体の再計算 */
         void document.documentElement.offsetHeight;
-
         resolve();
       });
 
     });
 
   });
+}
+
+/* 印刷後の後片付け */
+function restoreAfterPrint() {
+
+  const currentPrintArea =
+    document.getElementById("printArea");
+
+  if (currentPrintArea) {
+    currentPrintArea.remove();
+  }
+
+  document.title = "マイプリ";
+
+  window.removeEventListener(
+    "afterprint",
+    restoreAfterPrint
+  );
 }
 
 /* PDF保存 */
@@ -811,43 +838,32 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
     fileName += ".pdf";
   }
 
-  const originalTitle = document.title;
-
+  /* 編集中の入力を確定 */
   if (activeEditor) {
     activeEditor.blur();
   }
 
+  /* 印刷用エリアを作成 */
   const printArea = createPrintArea();
 
   document.title = fileName.replace(/\.pdf$/i, "");
 
-  function restoreAfterPrint() {
-
-    const currentPrintArea =
-      document.getElementById("printArea");
-
-    if (currentPrintArea) {
-      currentPrintArea.remove();
-    }
-
-    document.title = originalTitle;
-
-    window.removeEventListener(
-      "afterprint",
-      restoreAfterPrint
-    );
-  }
+  window.removeEventListener(
+    "afterprint",
+    restoreAfterPrint
+  );
 
   window.addEventListener(
     "afterprint",
     restoreAfterPrint
   );
 
+  /* レイアウト確定後に印刷 */
   preparePrintLayout(printArea).then(() => {
 
     setTimeout(() => {
       window.print();
-    }, 200);
+    }, 300);
 
   });
 
