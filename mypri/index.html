@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -37,3 +38,827 @@ header {
 header h1 {
   margin: 0;
   font-size: 21px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+.version {
+  font-size: 10px;
+  color: #a69b8e;
+  margin-top: 3px;
+}
+
+/* 上部ツールバー */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(246,243,238,.97);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 7px;
+}
+
+.tool-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tool-row::-webkit-scrollbar {
+  display: none;
+}
+
+button, select {
+  flex: 0 0 auto;
+  border: 1px solid #ddd3c8;
+  background: #fffdfa;
+  color: var(--ink);
+  border-radius: 7px;
+  min-height: 34px;
+  padding: 5px 8px;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+button:active {
+  background: #e9dfd4;
+}
+
+button.active {
+  background: #e9ded2;
+  border-color: var(--accent);
+}
+
+select {
+  padding-right: 18px;
+  min-width: 77px;
+}
+
+.tool-separator {
+  flex: 0 0 1px;
+  height: 23px;
+  background: var(--line);
+  margin: 0 2px;
+}
+
+.adjustment {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 3px;
+}
+
+.adjustment button {
+  min-width: 30px;
+  padding: 5px 6px;
+}
+
+.adjust-value {
+  min-width: 39px;
+  text-align: center;
+  font-size: 11px;
+  color: #8b7867;
+  font-variant-numeric: tabular-nums;
+}
+
+#boldBtn {
+  min-width: 35px;
+  font-size: 15px;
+}
+
+#undoBtn, #redoBtn {
+  padding-left: 9px;
+  padding-right: 9px;
+}
+
+#printBtn {
+  background: #a68d78;
+  color: white;
+  border-color: #a68d78;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* ページ数表示 */
+.page-setting {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: 0 0 auto;
+  font-size: 11px;
+  color: #8b7867;
+}
+
+#pageCount {
+  min-width: 65px;
+}
+
+/* 編集エリア */
+.workspace {
+  padding: 18px 10px 40px;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+.page {
+  width: min(100%, 650px);
+  aspect-ratio: 210 / 297;
+  flex: 0 0 auto;
+  margin: 0 auto;
+  padding: 12.7mm;
+  background: white;
+  box-shadow: 0 3px 15px rgba(70,55,40,.12);
+  position: relative;
+}
+
+.editor {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  outline: none;
+  border: none;
+  font-family: "Hiragino Maru Gothic ProN",
+    "Yu Gothic", sans-serif;
+  font-size: 16px;
+  line-height: 1.8;
+  letter-spacing: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  color: #333;
+}
+
+.editor p,
+.editor div:not(.editor) {
+  margin-top: 0;
+  margin-bottom: var(--paragraph-spacing, 0px);
+}
+
+.editor:empty::before {
+  content: "ここをタップして文章を入力";
+  color: #c5bdb4;
+  pointer-events: none;
+}
+
+.page-number {
+  position: absolute;
+  bottom: 4px;
+  right: 12.7mm;
+  color: #c5bdb4;
+  font-size: 10px;
+  pointer-events: none;
+}
+
+/* 印刷専用エリア */
+#printArea {
+  display: block;
+  position: absolute;
+  left: -10000px;
+  top: 0;
+  width: 210mm;
+  margin: 0;
+  padding: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* 印刷設定 */
+@media print {
+
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  body > #printArea {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-sheet {
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+
+    width: 210mm !important;
+    height: 294mm !important;
+    min-height: 294mm !important;
+    max-height: 294mm !important;
+
+    margin: 0 !important;
+    padding: 12.7mm !important;
+
+    overflow: hidden !important;
+    background: white !important;
+    box-shadow: none !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  .print-sheet + .print-sheet {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  .print-editor {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    outline: none !important;
+    border: none !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    color: #333 !important;
+  }
+
+  .print-editor:empty::before {
+    display: none !important;
+    content: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>マイプリ</h1>
+  <div class="version">おとりす / Ver. 1.4.7</div>
+</header>
+
+<!-- 編集ツール -->
+<div class="toolbar">
+  <div class="tool-row">
+
+    <select id="fontSize" aria-label="文字サイズ">
+      <option value="10">10 pt</option>
+      <option value="12">12 pt</option>
+      <option value="14">14 pt</option>
+      <option value="16" selected>16 pt</option>
+      <option value="18">18 pt</option>
+      <option value="20">20 pt</option>
+      <option value="24">24 pt</option>
+      <option value="28">28 pt</option>
+      <option value="32">32 pt</option>
+      <option value="36">36 pt</option>
+    </select>
+
+    <button id="boldBtn"><b>B</b></button>
+
+    <button id="leftBtn" class="active">左</button>
+    <button id="centerBtn">中央</button>
+    <button id="rightBtn">右</button>
+
+    <span class="tool-separator"></span>
+
+    <div class="adjustment">
+      <button id="spaceDown">字−</button>
+      <span class="adjust-value" id="letterValue">0.0</span>
+      <button id="spaceUp">＋</button>
+    </div>
+
+    <span class="tool-separator"></span>
+
+    <div class="adjustment">
+      <button id="lineDown">行−</button>
+      <span class="adjust-value" id="lineValue">1.80</span>
+      <button id="lineUp">＋</button>
+    </div>
+
+    <span class="tool-separator"></span>
+
+    <div class="adjustment">
+      <button id="paraDown">段−</button>
+      <span class="adjust-value" id="paraValue">0px</span>
+      <button id="paraUp">＋</button>
+    </div>
+
+    <span class="tool-separator"></span>
+
+    <button id="undoBtn">↶</button>
+    <button id="redoBtn">↷</button>
+
+    <span class="tool-separator"></span>
+
+    <div class="page-setting">
+      ページ
+      <select id="pageCount" aria-label="ページ数">
+        <option value="1" selected>1ページ</option>
+        <option value="2">2ページ</option>
+        <option value="3">3ページ</option>
+        <option value="4">4ページ</option>
+        <option value="5">5ページ</option>
+        <option value="6">6ページ</option>
+        <option value="7">7ページ</option>
+        <option value="8">8ページ</option>
+        <option value="9">9ページ</option>
+        <option value="10">10ページ</option>
+      </select>
+    </div>
+
+    <span class="tool-separator"></span>
+
+    <button type="button" id="printBtn">PDF保存</button>
+
+  </div>
+</div>
+
+<!-- ページ編集エリア -->
+<main class="workspace" id="workspace">
+  <section class="page">
+    <div
+      class="editor"
+      contenteditable="true"
+      spellcheck="false"
+    ></div>
+  </section>
+</main>
+
+<!-- 印刷専用エリアはPDF保存時に作成 -->
+
+<script>
+
+/* 基本設定 */
+const workspace = document.getElementById("workspace");
+const pageCountSelect = document.getElementById("pageCount");
+
+let letterSpacing = 0;
+let lineHeight = 1.8;
+let paragraphSpacing = 0;
+
+let activeEditor = workspace.querySelector(".editor");
+
+/* 編集欄一覧 */
+function getEditors() {
+  return [...workspace.querySelectorAll(".editor")];
+}
+
+/* 現在操作している編集欄 */
+workspace.addEventListener("focusin", e => {
+  if (e.target.classList.contains("editor")) {
+    activeEditor = e.target;
+  }
+});
+
+/* 編集コマンド */
+function focusEditor() {
+  if (activeEditor) {
+    activeEditor.focus();
+  }
+}
+
+function command(name, value = null) {
+  focusEditor();
+  document.execCommand(name, false, value);
+}
+
+/* 新しいページを作る */
+function createPage(number) {
+
+  const page = document.createElement("section");
+  page.className = "page";
+
+  const editor = document.createElement("div");
+  editor.className = "editor";
+  editor.contentEditable = "true";
+  editor.spellcheck = false;
+
+  editor.style.letterSpacing =
+    letterSpacing.toFixed(1) + "px";
+
+  editor.style.lineHeight =
+    lineHeight.toFixed(2);
+
+  editor.style.setProperty(
+    "--paragraph-spacing",
+    paragraphSpacing + "px"
+  );
+
+  const pageNumber = document.createElement("div");
+  pageNumber.className = "page-number";
+  pageNumber.textContent = number + " / " + pageCountSelect.value;
+
+  page.appendChild(editor);
+  page.appendChild(pageNumber);
+
+  workspace.appendChild(page);
+
+  return editor;
+}
+
+/* ページ番号を更新 */
+function updatePageNumbers() {
+  const pages = [...workspace.querySelectorAll(".page")];
+
+  pages.forEach((page, index) => {
+    const number = page.querySelector(".page-number");
+
+    if (number) {
+      number.textContent =
+        (index + 1) + " / " + pages.length;
+    }
+  });
+}
+
+/* ページ数変更 */
+pageCountSelect.addEventListener("change", e => {
+
+  const newCount = Number(e.target.value);
+  const editors = getEditors();
+  const oldCount = editors.length;
+
+  if (newCount < oldCount) {
+
+    const removedEditors = editors.slice(newCount);
+
+    const hasContent = removedEditors.some(editor => {
+      return editor.innerText.trim() !== "";
+    });
+
+    if (hasContent) {
+      const ok = confirm(
+        "削除するページに入力済みの文章があります。\n\n" +
+        "ページ数を減らすと、そのページの文章は削除されます。\n\n" +
+        "続けますか？"
+      );
+
+      if (!ok) {
+        pageCountSelect.value = String(oldCount);
+        return;
+      }
+    }
+
+    const pages = [...workspace.querySelectorAll(".page")];
+
+    pages.slice(newCount).forEach(page => {
+      page.remove();
+    });
+  }
+
+  if (newCount > oldCount) {
+
+    for (let i = oldCount; i < newCount; i++) {
+      createPage(i + 1);
+    }
+  }
+
+  activeEditor = getEditors()[0];
+
+  updatePageNumbers();
+});
+
+/* 文字サイズ */
+document.getElementById("fontSize").addEventListener("change", e => {
+
+  focusEditor();
+
+  const size = e.target.value;
+
+  document.execCommand("fontSize", false, "7");
+
+  activeEditor.querySelectorAll('font[size="7"]').forEach(el => {
+    el.removeAttribute("size");
+    el.style.fontSize = size + "pt";
+  });
+});
+
+/* 太字 */
+document.getElementById("boldBtn").addEventListener("click", () => {
+
+  command("bold");
+
+  document.getElementById("boldBtn").classList.toggle("active");
+});
+
+/* 文字揃え */
+function setAlign(value) {
+
+  command("justify" + value);
+
+  ["leftBtn", "centerBtn", "rightBtn"].forEach(id => {
+    document.getElementById(id).classList.remove("active");
+  });
+
+  const map = {
+    Left: "leftBtn",
+    Center: "centerBtn",
+    Right: "rightBtn"
+  };
+
+  document.getElementById(map[value]).classList.add("active");
+}
+
+document.getElementById("leftBtn").onclick =
+  () => setAlign("Left");
+
+document.getElementById("centerBtn").onclick =
+  () => setAlign("Center");
+
+document.getElementById("rightBtn").onclick =
+  () => setAlign("Right");
+
+/* 文字間隔 */
+function updateLetterSpacing() {
+
+  getEditors().forEach(editor => {
+    editor.style.letterSpacing =
+      letterSpacing.toFixed(1) + "px";
+  });
+
+  document.getElementById("letterValue").textContent =
+    letterSpacing.toFixed(1);
+}
+
+document.getElementById("spaceUp").onclick = () => {
+
+  letterSpacing = Math.min(
+    Math.round((letterSpacing + 0.1) * 10) / 10,
+    10
+  );
+
+  updateLetterSpacing();
+};
+
+document.getElementById("spaceDown").onclick = () => {
+
+  letterSpacing = Math.max(
+    Math.round((letterSpacing - 0.1) * 10) / 10,
+    -2
+  );
+
+  updateLetterSpacing();
+};
+
+/* 行間 */
+function updateLineHeight() {
+
+  getEditors().forEach(editor => {
+    editor.style.lineHeight = lineHeight.toFixed(2);
+  });
+
+  document.getElementById("lineValue").textContent =
+    lineHeight.toFixed(2);
+}
+
+document.getElementById("lineUp").onclick = () => {
+
+  lineHeight = Math.min(
+    Math.round((lineHeight + 0.05) * 100) / 100,
+    3
+  );
+
+  updateLineHeight();
+};
+
+document.getElementById("lineDown").onclick = () => {
+
+  lineHeight = Math.max(
+    Math.round((lineHeight - 0.05) * 100) / 100,
+    1
+  );
+
+  updateLineHeight();
+};
+
+/* 段落間隔 */
+function updateParagraphSpacing() {
+
+  getEditors().forEach(editor => {
+    editor.style.setProperty(
+      "--paragraph-spacing",
+      paragraphSpacing + "px"
+    );
+  });
+
+  document.getElementById("paraValue").textContent =
+    paragraphSpacing + "px";
+}
+
+document.getElementById("paraUp").onclick = () => {
+
+  paragraphSpacing = Math.min(paragraphSpacing + 1, 60);
+
+  updateParagraphSpacing();
+};
+
+document.getElementById("paraDown").onclick = () => {
+
+  paragraphSpacing = Math.max(paragraphSpacing - 1, 0);
+
+  updateParagraphSpacing();
+};
+
+/* 元に戻す・やり直し */
+document.getElementById("undoBtn").onclick =
+  () => command("undo");
+
+document.getElementById("redoBtn").onclick =
+  () => command("redo");
+
+/* PDFファイル名 */
+function getPdfFileName() {
+
+  const firstEditor = getEditors()[0];
+
+  const text = firstEditor.innerText ||
+    firstEditor.textContent || "";
+
+  const firstLine = text
+    .replace(/\r/g, "")
+    .split("\n")[0]
+    .trim();
+
+  let name = firstLine || "名称未設定";
+
+  name = name.replace(/[\\/:*?"<>|]/g, "_");
+
+  if (!name.toLowerCase().endsWith(".pdf")) {
+    name += ".pdf";
+  }
+
+  return name;
+}
+
+/* 印刷専用ページを作成 */
+function createPrintArea() {
+
+  const oldArea = document.getElementById("printArea");
+
+  if (oldArea) {
+    oldArea.remove();
+  }
+
+  const printArea = document.createElement("div");
+  printArea.id = "printArea";
+
+  const editors = getEditors();
+
+  editors.forEach(sourceEditor => {
+
+    const sheet = document.createElement("section");
+    sheet.className = "print-sheet";
+
+    const printEditor = document.createElement("div");
+    printEditor.className = "print-editor";
+
+    printEditor.innerHTML = sourceEditor.innerHTML;
+
+    const computed = window.getComputedStyle(sourceEditor);
+
+    printEditor.style.fontFamily = computed.fontFamily;
+    printEditor.style.fontSize = computed.fontSize;
+    printEditor.style.fontWeight = computed.fontWeight;
+    printEditor.style.lineHeight = computed.lineHeight;
+    printEditor.style.letterSpacing = computed.letterSpacing;
+    printEditor.style.color = computed.color;
+    printEditor.style.textAlign = computed.textAlign;
+    printEditor.style.setProperty(
+      "--paragraph-spacing",
+      computed.getPropertyValue("--paragraph-spacing") || "0px"
+    );
+
+    sheet.appendChild(printEditor);
+    printArea.appendChild(sheet);
+  });
+
+  document.body.appendChild(printArea);
+
+  return printArea;
+}
+
+/* 印刷前にレイアウトを確定させる */
+function preparePrintLayout(printArea) {
+
+  return new Promise(resolve => {
+
+    requestAnimationFrame(() => {
+
+      requestAnimationFrame(() => {
+
+        const sheets = printArea.querySelectorAll(".print-sheet");
+
+        sheets.forEach(sheet => {
+          sheet.getBoundingClientRect();
+        });
+
+        printArea.getBoundingClientRect();
+        document.documentElement.offsetHeight;
+
+        resolve();
+      });
+
+    });
+
+  });
+}
+
+/* PDF保存 */
+document.getElementById("printBtn").addEventListener("click", function(e) {
+
+  e.preventDefault();
+
+  const defaultName = getPdfFileName();
+
+  const inputName = window.prompt(
+    "PDFのファイル名を確認・変更してね。\n\n" +
+    "保存先は次の印刷画面から選択できるよ。",
+    defaultName
+  );
+
+  if (inputName === null) {
+    return;
+  }
+
+  let fileName = inputName.trim();
+
+  if (!fileName) {
+    fileName = "名称未設定.pdf";
+  }
+
+  fileName = fileName.replace(/[\\/:*?"<>|]/g, "_");
+
+  if (!fileName.toLowerCase().endsWith(".pdf")) {
+    fileName += ".pdf";
+  }
+
+  const originalTitle = document.title;
+
+  if (activeEditor) {
+    activeEditor.blur();
+  }
+
+  const printArea = createPrintArea();
+
+  document.title = fileName.replace(/\.pdf$/i, "");
+
+  function restoreAfterPrint() {
+
+    const currentPrintArea = document.getElementById("printArea");
+
+    if (currentPrintArea) {
+      currentPrintArea.remove();
+    }
+
+    document.title = originalTitle;
+
+    window.removeEventListener("afterprint", restoreAfterPrint);
+  }
+
+  window.addEventListener("afterprint", restoreAfterPrint);
+
+  preparePrintLayout(printArea).then(() => {
+
+    setTimeout(() => {
+      window.print();
+    }, 200);
+
+  });
+
+});
+
+/* 初期ページ番号 */
+updatePageNumbers();
+
+</script>
+
+</body>
+</html>
