@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -43,6 +42,7 @@ button{
   font-size:12px;cursor:pointer;white-space:nowrap;
 }
 button:active{opacity:.75}
+button:disabled{opacity:.35;cursor:default}
 button.secondary{background:#e9ece7;color:#526456}
 button.light{background:#f1eee7;color:#5d625b}
 button.danger{background:#a86d65}
@@ -135,10 +135,21 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   padding:1px 2px;border-radius:3px;
 }
 .chord-chip:active{background:#dce8da}
+
+/* 小節線：コード行のセル左端に配置 */
 .bar-mark{
-  color:#9a7862;font-size:18px;font-weight:bold;
-  line-height:1;cursor:pointer;padding:0 2px;
+  position:absolute;
+  left:-1px;
+  top:1px;
+  height:23px;
+  width:10px;
+  border-left:2px solid #9a7862;
+  cursor:pointer;
+  z-index:5;
 }
+.chord-cell.has-bar .chord-list{padding-left:3px}
+.chord-cell.before-bar .chord-list{padding-right:8px}
+
 .lyric-cell{
   width:var(--cell);height:32px;border:1px solid #e7e7e0;
   border-right:0;display:flex;align-items:center;justify-content:center;
@@ -199,26 +210,32 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
     font-weight:bold;color:#333;position:relative;
   }
   .print-chord-list{display:flex;gap:1.2mm;white-space:nowrap}
+  .print-chord-cell.has-bar .print-chord-list{padding-left:1mm}
+  .print-chord-cell.before-bar .print-chord-list{padding-right:2mm}
+  .print-bar{
+    position:absolute;left:0;top:0;
+    height:6mm;border-left:0.5mm solid #555;
+    width:2mm;z-index:5;
+  }
   .print-lyric-cell{
     height:var(--print-line-height);display:flex;
     align-items:center;justify-content:center;
     font-size:var(--print-lyric-size);white-space:pre;
   }
   .print-lyric-cell.space{color:transparent}
-  .print-bar{font-weight:bold;color:#555}
 }
 </style>
 </head>
 
 <body>
 <header>
-  <div class="brand">マイリリコ <span class="version">Ver.1.2</span></div>
+  <div class="brand">マイリリコ <span class="version">Ver.1.3</span></div>
   <div class="subtitle">LYRICS & CHORDS · OTOLIS</div>
 </header>
 
 <main>
 
-  <!-- 曲情報・歌詞入力：開閉式 -->
+  <!-- 曲情報・歌詞入力 -->
   <section class="panel info-panel open" id="infoPanel">
     <button class="info-toggle" id="infoToggle" aria-expanded="true">
       <span>曲の情報・歌詞入力</span>
@@ -292,12 +309,12 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
         <button id="addChord" style="width:100%">コード追加</button>
       </div>
       <div class="wide button-row">
-        <button class="secondary" id="addBar">縦線を追加</button>
-        <button class="light" id="removeAt">選択位置のコード・縦線を削除</button>
+        <button class="secondary" id="addBar">小節線を追加</button>
+        <button class="light" id="removeAt">選択位置のコード・小節線を削除</button>
       </div>
     </div>
     <div class="small-note">
-      歌詞の文字をタップして位置を選ぶよ。同じ文字に複数のコードを横並びで置けるよ。配置済みのコードや縦線をタップすると、その項目だけ削除できるよ。
+      歌詞の文字をタップして位置を選ぶよ。同じ文字に複数のコードを横並びで置けるよ。小節線は選択したセルの左端に置かれるよ。配置済みのコードや小節線をタップすると、その項目だけ削除できるよ。
     </div>
   </section>
 
@@ -342,7 +359,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
     </div>
 
     <div class="small-note">
-      セル幅を広げると、コードを置く間隔も広くなるよ。印刷にも設定を反映するよ。
+      歌詞とコードの文字サイズは別々に変更できるよ。セル幅を広げると、コードを置く間隔も広くなるよ。印刷にも設定を反映するよ。
     </div>
   </section>
 
@@ -356,7 +373,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
       <button class="light" id="resetTranspose">原曲キーに戻す</button>
     </div>
     <div class="small-note">
-      コードのルート音と分数コードのベース音をまとめて移調するよ。縦線は移調されないよ。
+      コードのルート音と分数コードのベース音をまとめて移調するよ。小節線は移調されないよ。
     </div>
   </section>
 
@@ -382,13 +399,20 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   <!-- 常に表示する配置エリア -->
   <section class="panel" id="editorPanel">
     <h2>歌詞・コード配置</h2>
+
+    <div class="button-row no-print" style="margin-bottom:10px">
+      <button class="secondary" id="undoButton" disabled>↶ 戻る</button>
+      <button class="secondary" id="redoButton" disabled>↷ やり直す</button>
+      <span class="small-note" id="historyInfo" style="margin:0">編集履歴なし</span>
+    </div>
+
     <div class="editor-area" id="editorArea">
       <div class="empty-editor">
         歌詞を入力すると、ここにコード配置エリアができるよ。
       </div>
     </div>
     <div class="small-note">
-      歌詞の文字をタップして選択してね。コードや縦線は、その文字の真上に表示されるよ。
+      歌詞の文字をタップして選択してね。コードは文字の真上に、小節線はセルの左端に表示されるよ。
     </div>
   </section>
 
@@ -428,6 +452,84 @@ let song = {
 let selected = null;
 let counter = 0;
 
+/* 戻る・やり直す履歴 */
+let undoStack = [];
+let redoStack = [];
+const HISTORY_LIMIT = 60;
+
+function cloneData(data){
+  return JSON.parse(JSON.stringify(data));
+}
+
+function updateHistoryButtons(){
+  $("undoButton").disabled=undoStack.length===0;
+  $("redoButton").disabled=redoStack.length===0;
+
+  $("historyInfo").textContent=
+    undoStack.length===0&&redoStack.length===0
+      ?"編集履歴なし"
+      :"履歴 "+undoStack.length+" / "+HISTORY_LIMIT;
+}
+
+function recordHistory(){
+  undoStack.push({
+    song:cloneData(song),
+    selected:selected?cloneData(selected):null
+  });
+
+  if(undoStack.length>HISTORY_LIMIT){
+    undoStack.shift();
+  }
+
+  redoStack=[];
+  updateHistoryButtons();
+}
+
+function restoreHistoryState(state){
+  song=cloneData(state.song);
+  selected=state.selected?cloneData(state.selected):null;
+
+  $("lyricsInput").value=song.lyrics||"";
+
+  loadMeta();
+  applySettings();
+  renderEditor();
+  updateHistoryButtons();
+}
+
+function undo(){
+  if(!undoStack.length)return;
+
+  redoStack.push({
+    song:cloneData(song),
+    selected:selected?cloneData(selected):null
+  });
+
+  const previous=undoStack.pop();
+  restoreHistoryState(previous);
+  setStatus("ひとつ前の状態に戻したよ。");
+}
+
+function redo(){
+  if(!redoStack.length)return;
+
+  undoStack.push({
+    song:cloneData(song),
+    selected:selected?cloneData(selected):null
+  });
+
+  const next=redoStack.pop();
+  restoreHistoryState(next);
+  updateHistoryButtons();
+  setStatus("編集をやり直したよ。");
+}
+
+function resetHistory(){
+  undoStack=[];
+  redoStack=[];
+  updateHistoryButtons();
+}
+
 function newId(){
   counter++;
   return "ch_"+Date.now().toString(36)+"_"+counter.toString(36);
@@ -458,8 +560,47 @@ function splitChars(text){
 function createInitialLines(text){
   return text.split("\n").map(line=>({
     chars:splitChars(line).map(ch=>({id:newId(),text:ch})),
-    chords:{}
+    chords:{},
+    bars:[]
   }));
+}
+
+/* 古い保存データの縦線を新形式へ移行 */
+function normalizeSong(data){
+  if(!data.lines)data.lines=createInitialLines(data.lyrics||"");
+
+  data.lines.forEach(line=>{
+    if(!line.chords)line.chords={};
+    if(!Array.isArray(line.bars))line.bars=[];
+
+    Object.entries(line.chords).forEach(([id,items])=>{
+      const keep=[];
+
+      (items||[]).forEach(item=>{
+        if(isBar(item)){
+          if(!line.bars.includes(id))line.bars.push(id);
+        }else{
+          keep.push(item);
+        }
+      });
+
+      if(keep.length)line.chords[id]=keep;
+      else delete line.chords[id];
+    });
+  });
+
+  if(!data.settings){
+    data.settings={cell:30,lyric:15,chord:12,gap:13};
+  }
+
+  data.settings={
+    cell:30,lyric:15,chord:12,gap:13,
+    ...data.settings
+  };
+
+  if(typeof data.transpose!=="number")data.transpose=0;
+
+  return data;
 }
 
 /* 歌詞編集時、できるだけ既存文字のコード位置を引き継ぐ */
@@ -523,18 +664,26 @@ function reconcileText(newText){
   }
 
   const oldChordById={};
+  const oldBarsById=new Set();
 
   song.lines.forEach(line=>{
     Object.entries(line.chords||{}).forEach(([id,items])=>{
-      oldChordById[id]=items;
+      oldChordById[id]=(items||[]).filter(item=>!isBar(item));
+    });
+
+    (line.bars||[]).forEach(id=>oldBarsById.add(id));
+
+    /* 念のため、旧形式の縦線も拾う */
+    Object.entries(line.chords||{}).forEach(([id,items])=>{
+      if((items||[]).some(isBar))oldBarsById.add(id);
     });
   });
 
-  const newLines=[{chars:[],chords:{}}];
+  const newLines=[{chars:[],chords:{},bars:[]}];
 
   newChars.forEach((ch,index)=>{
     if(ch==="\n"){
-      newLines.push({chars:[],chords:{}});
+      newLines.push({chars:[],chords:{},bars:[]});
       return;
     }
 
@@ -546,8 +695,14 @@ function reconcileText(newText){
 
     newLines[newLines.length-1].chars.push(item);
 
-    if(old&&!old.isBreak&&oldChordById[old.id]){
-      newLines[newLines.length-1].chords[item.id]=oldChordById[old.id];
+    if(old&&!old.isBreak){
+      if(oldChordById[old.id]&&oldChordById[old.id].length){
+        newLines[newLines.length-1].chords[item.id]=oldChordById[old.id];
+      }
+
+      if(oldBarsById.has(old.id)){
+        newLines[newLines.length-1].bars.push(item.id);
+      }
     }
   });
 
@@ -583,13 +738,13 @@ function loadMeta(){
       :"キー："+ROOTS[Number(song.currentKey)];
 }
 
-/* 縦線はコードと完全に別扱い */
+/* 縦線判定 */
 function isBar(item){
   return item && (item.type==="bar" || item.kind==="bar");
 }
 
 function chordText(item){
-  if(isBar(item))return "│";
+  if(isBar(item))return "";
 
   const root=ROOTS[Number(item.root)]||"C";
   const quality=item.quality||"";
@@ -622,23 +777,27 @@ function renderEditor(){
     const chordGrid=document.createElement("div");
     chordGrid.className="cell-grid";
 
-    line.chars.forEach(ch=>{
+    line.chars.forEach((ch,charIndex)=>{
       const cell=document.createElement("div");
+      const hasBar=(line.bars||[]).includes(ch.id);
+      const nextHasBar=line.chars[charIndex+1]&&
+        (line.bars||[]).includes(line.chars[charIndex+1].id);
 
       cell.className="chord-cell"+
-        (selected&&selected.id===ch.id?" selected":"");
+        (selected&&selected.id===ch.id?" selected":"")+
+        (hasBar?" has-bar":"")+
+        (nextHasBar?" before-bar":"");
 
       const list=document.createElement("div");
       list.className="chord-list";
 
       (line.chords[ch.id]||[]).forEach(item=>{
-        const chip=document.createElement("span");
+        if(isBar(item))return;
 
-        chip.className=isBar(item)?"bar-mark":"chord-chip";
+        const chip=document.createElement("span");
+        chip.className="chord-chip";
         chip.textContent=chordText(item);
-        chip.title=isBar(item)
-          ?"縦線をタップして削除"
-          :"コードをタップして削除";
+        chip.title="コードをタップして削除";
 
         chip.addEventListener("click",e=>{
           e.stopPropagation();
@@ -650,6 +809,7 @@ function renderEditor(){
 
           if(!confirm(chordText(item)+" を削除する？"))return;
 
+          recordHistory();
           current.splice(index,1);
 
           if(!current.length)delete line.chords[ch.id];
@@ -661,6 +821,25 @@ function renderEditor(){
       });
 
       cell.appendChild(list);
+
+      if(hasBar){
+        const bar=document.createElement("span");
+        bar.className="bar-mark";
+        bar.title="小節線をタップして削除";
+
+        bar.addEventListener("click",e=>{
+          e.stopPropagation();
+
+          if(!confirm("この小節線を削除する？"))return;
+
+          recordHistory();
+          line.bars=line.bars.filter(id=>id!==ch.id);
+          renderEditor();
+        });
+
+        cell.appendChild(bar);
+      }
+
       chordGrid.appendChild(cell);
     });
 
@@ -695,16 +874,22 @@ function renderEditor(){
   });
 }
 
+function findSelectedLine(){
+  if(!selected)return null;
+
+  return song.lines.find(line=>
+    line.chars.some(ch=>ch.id===selected.id))||null;
+}
+
 function addChord(){
-  if(!selected){
+  const line=findSelectedLine();
+
+  if(!selected||!line){
     alert("先に歌詞の文字をタップしてね。");
     return;
   }
 
-  const line=song.lines.find(l=>
-    l.chars.some(c=>c.id===selected.id));
-
-  if(!line)return;
+  recordHistory();
 
   const chord={
     type:"chord",
@@ -722,40 +907,53 @@ function addChord(){
 }
 
 function addBar(){
-  if(!selected){
+  const line=findSelectedLine();
+
+  if(!selected||!line){
     alert("先に歌詞の文字をタップしてね。");
     return;
   }
 
-  const line=song.lines.find(l=>
-    l.chars.some(c=>c.id===selected.id));
-
-  if(!line)return;
-
-  if(!line.chords[selected.id]){
-    line.chords[selected.id]=[];
+  if((line.bars||[]).includes(selected.id)){
+    alert("この位置にはすでに小節線があるよ。");
+    return;
   }
 
-  line.chords[selected.id].push({type:"bar",kind:"bar"});
+  recordHistory();
+
+  if(!line.bars)line.bars=[];
+  line.bars.push(selected.id);
+
   renderEditor();
 }
 
 function removeAt(){
-  if(!selected){
+  const line=findSelectedLine();
+
+  if(!selected||!line){
     alert("先に歌詞の文字をタップしてね。");
     return;
   }
 
-  const line=song.lines.find(l=>
-    l.chars.some(c=>c.id===selected.id));
+  const hasChords=!!(line.chords[selected.id]&&line.chords[selected.id].length);
+  const hasBar=(line.bars||[]).includes(selected.id);
 
-  if(!line||!line.chords[selected.id])return;
+  if(!hasChords&&!hasBar){
+    alert("選択位置にコードや小節線はないよ。");
+    return;
+  }
+
+  recordHistory();
 
   delete line.chords[selected.id];
+  line.bars=(line.bars||[]).filter(id=>id!==selected.id);
+
   renderEditor();
 }
 
 function transposeAll(amount){
+  recordHistory();
+
   song.lines.forEach(line=>{
     Object.values(line.chords||{}).forEach(items=>{
       items.forEach(item=>{
@@ -788,7 +986,9 @@ function transposeAll(amount){
 function resetTranspose(){
   const amount=-(song.transpose||0);
 
-  if(amount)transposeAll(amount);
+  if(amount){
+    transposeAll(amount);
+  }
 
   song.transpose=0;
 
@@ -818,10 +1018,15 @@ function applySettings(){
 }
 
 function changeSetting(key,amount,min,max){
-  song.settings[key]=Math.max(
+  const next=Math.max(
     min,
     Math.min(max,(song.settings[key]||0)+amount)
   );
+
+  if(next===song.settings[key])return;
+
+  recordHistory();
+  song.settings[key]=next;
   applySettings();
 }
 
@@ -864,27 +1069,35 @@ function makePrint(){
     const chordGrid=document.createElement("div");
     chordGrid.className="print-row";
 
-    line.chars.forEach(ch=>{
+    line.chars.forEach((ch,charIndex)=>{
       const cell=document.createElement("div");
-      cell.className="print-chord-cell";
+      const hasBar=(line.bars||[]).includes(ch.id);
+      const nextHasBar=line.chars[charIndex+1]&&
+        (line.bars||[]).includes(line.chars[charIndex+1].id);
+
+      cell.className="print-chord-cell"+
+        (hasBar?" has-bar":"")+
+        (nextHasBar?" before-bar":"");
 
       const list=document.createElement("div");
       list.className="print-chord-list";
 
       (line.chords[ch.id]||[]).forEach(item=>{
+        if(isBar(item))return;
+
         const span=document.createElement("span");
-
-        if(isBar(item)){
-          span.className="print-bar";
-          span.textContent="│";
-        }else{
-          span.textContent=chordText(item);
-        }
-
+        span.textContent=chordText(item);
         list.appendChild(span);
       });
 
       cell.appendChild(list);
+
+      if(hasBar){
+        const bar=document.createElement("span");
+        bar.className="print-bar";
+        cell.appendChild(bar);
+      }
+
       chordGrid.appendChild(cell);
     });
 
@@ -935,7 +1148,7 @@ function saveSong(){
 
   if(!song.id)song.id=newId();
 
-  const copy=JSON.parse(JSON.stringify(song));
+  const copy=cloneData(song);
   const index=songs.findIndex(s=>s.id===song.id);
 
   if(index>=0)songs[index]=copy;
@@ -951,17 +1164,10 @@ function loadSong(id){
   const found=getSongs().find(s=>s.id===id);
   if(!found)return;
 
-  song=JSON.parse(JSON.stringify(found));
-
-  if(!song.lines||!song.lines.length){
-    song.lines=createInitialLines(song.lyrics||"");
-  }
-
-  if(!song.settings){
-    song.settings={cell:30,lyric:15,chord:12,gap:13};
-  }
+  song=normalizeSong(cloneData(found));
 
   selected=null;
+  resetHistory();
 
   $("lyricsInput").value=song.lyrics||"";
 
@@ -1036,7 +1242,7 @@ function exportJson(){
 
   const data=JSON.stringify({
     format:"otolis-mylyrico",
-    version:1,
+    version:2,
     songs:getSongs(),
     current:song
   },null,2);
@@ -1074,7 +1280,9 @@ function importJsonFile(file){
 
       const map=new Map(getSongs().map(s=>[s.id,s]));
 
-      data.songs.forEach(s=>map.set(s.id,s));
+      data.songs.forEach(s=>{
+        map.set(s.id,normalizeSong(s));
+      });
 
       localStorage.setItem(
         STORE_KEY,
@@ -1084,14 +1292,12 @@ function importJsonFile(file){
       renderSongList();
 
       if(data.current){
-        song=data.current;
+        song=normalizeSong(cloneData(data.current));
+        selected=null;
+        resetHistory();
+
         $("lyricsInput").value=song.lyrics||"";
         loadMeta();
-
-        if(!song.settings){
-          song.settings={cell:30,lyric:15,chord:12,gap:13};
-        }
-
         applySettings();
         renderEditor();
       }
@@ -1121,6 +1327,7 @@ function newSong(){
   };
 
   selected=null;
+  resetHistory();
 
   $("lyricsInput").value="";
 
@@ -1178,8 +1385,13 @@ $("closeEdit").addEventListener("click",closeEditPanels);
 
 /* 歌詞 */
 $("lyricsInput").addEventListener("input",()=>{
+  recordHistory();
   reconcileText($("lyricsInput").value);
 });
+
+/* 戻る・やり直す */
+$("undoButton").addEventListener("click",undo);
+$("redoButton").addEventListener("click",redo);
 
 /* コード */
 $("addChord").addEventListener("click",addChord);
@@ -1253,6 +1465,7 @@ loadMeta();
 applySettings();
 renderEditor();
 renderSongList();
+resetHistory();
 
 })();
 </script>
