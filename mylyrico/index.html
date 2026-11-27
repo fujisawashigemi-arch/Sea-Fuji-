@@ -24,10 +24,17 @@ body{
 header{
   padding:13px 15px 10px;background:var(--panel);
   border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
 }
+.brand-area{min-width:0}
 .brand{color:var(--green-dark);font-size:18px;font-weight:bold}
 .version{color:var(--muted);font-size:10px;margin-left:7px;font-weight:normal}
 .subtitle{font-size:10px;color:var(--muted);margin-top:3px}
+.header-new-button{
+  flex-shrink:0;padding:9px 12px;font-size:11px;
+  background:#e9ece7;color:#526456;font-weight:bold;
+}
 main{max-width:950px;margin:auto;padding:12px}
 button{
   border:0;border-radius:9px;padding:10px 13px;
@@ -179,6 +186,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   .menu-btn{font-size:10px}
   .meta-grid{grid-template-columns:1fr}
   .meta-grid .wide{grid-column:auto}
+  .header-new-button{padding:8px 9px;font-size:10px}
 }
 
 @media print{
@@ -220,8 +228,11 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 
 <body>
 <header>
-  <div class="brand">マイリリコ <span class="version">Ver.1.6</span></div>
-  <div class="subtitle">LYRICS & CHORDS · OTOLIS</div>
+  <div class="brand-area">
+    <div class="brand">マイリリコ <span class="version">Ver.1.7</span></div>
+    <div class="subtitle">LYRICS & CHORDS · OTOLIS</div>
+  </div>
+  <button class="header-new-button" id="newSongTop">＋ 新規作成</button>
 </header>
 
 <main>
@@ -358,7 +369,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   <h2>保存した曲</h2>
   <div class="song-list" id="songList"></div>
   <div class="button-row" style="margin-top:10px">
-    <button class="light" id="newSong">新規作成</button>
+    <button class="light" id="newSong">＋ 新規作成</button>
   </div>
   <div class="small-note">新規作成すると、現在の編集画面を空にして新しい曲を入力できるよ。未保存の変更がある場合は、切り替える前に確認するよ。</div>
 </section>
@@ -949,14 +960,11 @@ function saveSong(){
   localStorage.setItem(STORE_KEY,JSON.stringify(songs));
   renderSongList();
 
-  /* 保存した状態を記録 */
   markAsSaved();
-
   setStatus("保存したよ。");
 }
 
 function loadSong(id){
-  /* 現在の編集内容が未保存なら、切り替え前に確認 */
   if(!confirmDiscardChanges("別の曲を開く"))return;
 
   const found=getSongs().find(s=>s.id===id);
@@ -969,7 +977,6 @@ function loadSong(id){
   applySettings();
   renderEditor();
 
-  /* 読み込んだ曲を保存済み状態として扱う */
   markAsSaved();
 
   setStatus("曲を読み込んだよ。");
@@ -1181,7 +1188,6 @@ function importJsonFile(file){
       if(data.format!=="otolis-mylyrico"||!Array.isArray(data.songs))
         throw new Error("形式が違います");
 
-      /* 復元で現在の編集内容が置き換わる場合も確認 */
       if(data.current&&!confirmDiscardChanges("バックアップを復元"))return;
 
       if(!confirm("バックアップの曲を取り込む？同じIDの曲は上書きされるよ。"))
@@ -1201,7 +1207,6 @@ function importJsonFile(file){
         applySettings();
         renderEditor();
 
-        /* 復元した状態を保存済みとして扱う */
         markAsSaved();
       }
       setStatus("復元したよ。");
@@ -1231,13 +1236,14 @@ function newSong(){
   applySettings();
   renderEditor();
 
-  /* 空の新規状態を基準にする */
   markAsSaved();
 
   $("infoPanel").classList.add("open");
   $("infoToggle").setAttribute("aria-expanded","true");
   closeEditPanels();
   setStatus("新しい曲を作成中。");
+
+  window.scrollTo({top:0,behavior:"smooth"});
 }
 
 function closeEditPanels(){
@@ -1285,7 +1291,11 @@ $("down").addEventListener("click",()=>transposeAll(-1));
 $("resetTranspose").addEventListener("click",resetTranspose);
 
 $("saveSong").addEventListener("click",saveSong);
+
+/* 画面上部と保存メニュー内、どちらの新規作成ボタンも同じ処理 */
 $("newSong").addEventListener("click",newSong);
+$("newSongTop").addEventListener("click",newSong);
+
 $("printSong").addEventListener("click",()=>{
   syncMeta();
   makePrint();
@@ -1344,7 +1354,6 @@ applySettings();
 renderEditor();
 renderSongList();
 
-/* 起動時の空の編集画面を保存済み状態として登録 */
 markAsSaved();
 resetHistory();
 
