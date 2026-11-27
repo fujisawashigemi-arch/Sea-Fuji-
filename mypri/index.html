@@ -219,11 +219,15 @@ select {
   pointer-events: none;
 }
 
-/* 印刷設定 */
+/* 印刷専用エリア */
+#printArea {
+  display: none;
+}
+
 @media print {
 
   @page {
-    size: 210mm 297mm;
+    size: A4 portrait;
     margin: 0;
   }
 
@@ -235,37 +239,34 @@ select {
     background: white !important;
   }
 
-  body {
+  body.printing {
     display: block !important;
   }
 
-  header,
-  .toolbar,
-  .footer {
+  body.printing > :not(#printArea) {
     display: none !important;
   }
 
-  .workspace {
+  body.printing #printArea {
     display: block !important;
     width: 210mm !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
   }
 
-  .page {
+  .print-sheet {
     display: block !important;
     position: relative !important;
+    box-sizing: border-box !important;
     width: 210mm !important;
     height: 296mm !important;
     min-height: 296mm !important;
     max-height: 296mm !important;
     margin: 0 !important;
     padding: 12.7mm !important;
-    aspect-ratio: auto !important;
-    flex: none !important;
-    box-shadow: none !important;
     overflow: hidden !important;
+    background: white !important;
+    box-shadow: none !important;
 
     break-inside: avoid !important;
     page-break-inside: avoid !important;
@@ -273,20 +274,14 @@ select {
     page-break-after: auto !important;
   }
 
-  /* 2ページ目以降だけ改ページ */
-  .page:not(:first-child) {
+  .print-sheet + .print-sheet {
     break-before: page !important;
     page-break-before: always !important;
   }
 
-  /* 最後のページの後ろには改ページを作らない */
-  .page:last-child {
-    break-after: auto !important;
-    page-break-after: auto !important;
-  }
-
-  .editor {
+  .print-editor {
     display: block !important;
+    box-sizing: border-box !important;
     width: 100% !important;
     height: 100% !important;
     min-height: 0 !important;
@@ -294,15 +289,16 @@ select {
     margin: 0 !important;
     padding: 0 !important;
     overflow: hidden !important;
+    outline: none !important;
+    border: none !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    color: #333 !important;
   }
 
-  .editor:empty::before {
+  .print-editor:empty::before {
     display: none !important;
     content: none !important;
-  }
-
-  .page-number {
-    display: none !important;
   }
 }
 </style>
@@ -312,7 +308,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.2</div>
+  <div class="version">おとりす / Ver. 1.4.3</div>
 </header>
 
 <!-- 編集ツール -->
@@ -402,6 +398,8 @@ select {
     ></div>
   </section>
 </main>
+
+<!-- 印刷専用エリアはPDF保存時に作成 -->
 
 <script>
 
@@ -496,7 +494,6 @@ pageCountSelect.addEventListener("change", e => {
 
   if (newCount < oldCount) {
 
-    // 削除されるページに文章があるか確認
     const removedEditors = editors.slice(newCount);
 
     const hasContent = removedEditors.some(editor => {
@@ -516,7 +513,6 @@ pageCountSelect.addEventListener("change", e => {
       }
     }
 
-    // 末尾ページから削除
     const pages = [...workspace.querySelectorAll(".page")];
 
     pages.slice(newCount).forEach(page => {
@@ -526,7 +522,6 @@ pageCountSelect.addEventListener("change", e => {
 
   if (newCount > oldCount) {
 
-    // 必要なページを追加
     for (let i = oldCount; i < newCount; i++) {
       createPage(i + 1);
     }
@@ -709,6 +704,56 @@ function getPdfFileName() {
   return name;
 }
 
+/* 印刷専用ページを作成 */
+function createPrintArea() {
+
+  // 前回の印刷エリアが残っていたら削除
+  const oldArea = document.getElementById("printArea");
+
+  if (oldArea) {
+    oldArea.remove();
+  }
+
+  const printArea = document.createElement("div");
+  printArea.id = "printArea";
+
+  const editors = getEditors();
+
+  editors.forEach(sourceEditor => {
+
+    const sheet = document.createElement("section");
+    sheet.className = "print-sheet";
+
+    const printEditor = document.createElement("div");
+    printEditor.className = "print-editor";
+
+    // 入力内容を複製
+    printEditor.innerHTML = sourceEditor.innerHTML;
+
+    // 編集欄の文字設定を印刷側へ引き継ぐ
+    const computed = window.getComputedStyle(sourceEditor);
+
+    printEditor.style.fontFamily = computed.fontFamily;
+    printEditor.style.fontSize = computed.fontSize;
+    printEditor.style.fontWeight = computed.fontWeight;
+    printEditor.style.lineHeight = computed.lineHeight;
+    printEditor.style.letterSpacing = computed.letterSpacing;
+    printEditor.style.color = computed.color;
+    printEditor.style.textAlign = computed.textAlign;
+    printEditor.style.setProperty(
+      "--paragraph-spacing",
+      computed.getPropertyValue("--paragraph-spacing") || "0px"
+    );
+
+    sheet.appendChild(printEditor);
+    printArea.appendChild(sheet);
+  });
+
+  document.body.appendChild(printArea);
+
+  return printArea;
+}
+
 /* PDF保存 */
 document.getElementById("printBtn").addEventListener("click", function(e) {
 
@@ -740,21 +785,39 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
 
   const originalTitle = document.title;
 
-  document.title = fileName.replace(/\.pdf$/i, "");
-
   // 編集欄からフォーカスを外す
   if (activeEditor) {
     activeEditor.blur();
   }
 
+  // 印刷専用ページを作成
+  createPrintArea();
+
+  // 印刷時だけ専用レイアウトへ切り替える
+  document.title = fileName.replace(/\.pdf$/i, "");
+  document.body.classList.add("printing");
+
+  // 印刷終了後に元の画面へ戻す
+  function restoreAfterPrint() {
+
+    document.body.classList.remove("printing");
+
+    const printArea = document.getElementById("printArea");
+
+    if (printArea) {
+      printArea.remove();
+    }
+
+    document.title = originalTitle;
+
+    window.removeEventListener("afterprint", restoreAfterPrint);
+  }
+
+  window.addEventListener("afterprint", restoreAfterPrint);
+
   setTimeout(() => {
     window.print();
-  }, 300);
-
-  window.addEventListener("afterprint", function restoreTitle() {
-    document.title = originalTitle;
-    window.removeEventListener("afterprint", restoreTitle);
-  });
+  }, 400);
 
 });
 
