@@ -220,7 +220,7 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
 
 <body>
 <header>
-  <div class="brand">マイリリコ <span class="version">Ver.1.5</span></div>
+  <div class="brand">マイリリコ <span class="version">Ver.1.6</span></div>
   <div class="subtitle">LYRICS & CHORDS · OTOLIS</div>
 </header>
 
@@ -358,8 +358,9 @@ hr{border:0;border-top:1px solid var(--line);margin:12px 0}
   <h2>保存した曲</h2>
   <div class="song-list" id="songList"></div>
   <div class="button-row" style="margin-top:10px">
-    <button class="light" id="newSong">新しい曲</button>
+    <button class="light" id="newSong">新規作成</button>
   </div>
+  <div class="small-note">新規作成すると、現在の編集画面を空にして新しい曲を入力できるよ。未保存の変更がある場合は、切り替える前に確認するよ。</div>
 </section>
 
 <section class="panel" id="editorPanel">
@@ -421,8 +422,38 @@ let undoStack=[];
 let redoStack=[];
 const HISTORY_LIMIT=60;
 
+/*
+  最後に保存した状態を記録する。
+  曲情報・歌詞・コード・小節線・移調・レイアウト設定を含めて比較する。
+*/
+let savedSnapshot="";
+
 function cloneData(data){
   return JSON.parse(JSON.stringify(data));
+}
+
+function getCurrentSnapshot(){
+  syncMeta();
+  return JSON.stringify(song);
+}
+
+function markAsSaved(){
+  syncMeta();
+  savedSnapshot=JSON.stringify(song);
+}
+
+function hasUnsavedChanges(){
+  return getCurrentSnapshot()!==savedSnapshot;
+}
+
+function confirmDiscardChanges(actionName){
+  if(!hasUnsavedChanges())return true;
+
+  return confirm(
+    "現在の曲には、まだ保存されていない変更があります。\n\n"+
+    actionName+"すると、現在の編集内容は失われます。\n\n"+
+    "保存せずに続けてもいい？"
+  );
 }
 
 function updateHistoryButtons(){
@@ -917,10 +948,17 @@ function saveSong(){
   else songs.push(copy);
   localStorage.setItem(STORE_KEY,JSON.stringify(songs));
   renderSongList();
+
+  /* 保存した状態を記録 */
+  markAsSaved();
+
   setStatus("保存したよ。");
 }
 
 function loadSong(id){
+  /* 現在の編集内容が未保存なら、切り替え前に確認 */
+  if(!confirmDiscardChanges("別の曲を開く"))return;
+
   const found=getSongs().find(s=>s.id===id);
   if(!found)return;
   song=normalizeSong(cloneData(found));
@@ -930,6 +968,10 @@ function loadSong(id){
   loadMeta();
   applySettings();
   renderEditor();
+
+  /* 読み込んだ曲を保存済み状態として扱う */
+  markAsSaved();
+
   setStatus("曲を読み込んだよ。");
   $("infoPanel").classList.remove("open");
   $("infoToggle").setAttribute("aria-expanded","false");
@@ -999,7 +1041,6 @@ function createBackupText(){
 
   const json=JSON.stringify(data,null,2);
 
-  /* 生成したJSONをその場で検査 */
   if(!json||json.length<10){
     throw new Error("バックアップデータが空です。");
   }
@@ -1067,7 +1108,6 @@ async function confirmBackup(){
       throw new Error("作成したファイルの中身が空です。");
     }
 
-    /* ファイル内容を読み戻して再検査 */
     const readBack=await file.text();
     const parsed=JSON.parse(readBack);
 
@@ -1079,7 +1119,6 @@ async function confirmBackup(){
     return;
   }
 
-  /* Web Share APIが利用可能か確認 */
   if(!navigator.share){
     alert(
       "この画面ではファイル共有機能が使えないみたい。\n\n"+
@@ -1142,6 +1181,9 @@ function importJsonFile(file){
       if(data.format!=="otolis-mylyrico"||!Array.isArray(data.songs))
         throw new Error("形式が違います");
 
+      /* 復元で現在の編集内容が置き換わる場合も確認 */
+      if(data.current&&!confirmDiscardChanges("バックアップを復元"))return;
+
       if(!confirm("バックアップの曲を取り込む？同じIDの曲は上書きされるよ。"))
         return;
 
@@ -1158,6 +1200,9 @@ function importJsonFile(file){
         loadMeta();
         applySettings();
         renderEditor();
+
+        /* 復元した状態を保存済みとして扱う */
+        markAsSaved();
       }
       setStatus("復元したよ。");
     }catch(e){
@@ -1168,6 +1213,12 @@ function importJsonFile(file){
 }
 
 function newSong(){
+  /*
+    未保存の変更があるときだけ確認する。
+    キャンセルされた場合は、現在の曲を一切変更しない。
+  */
+  if(!confirmDiscardChanges("新規作成"))return;
+
   song={
     id:null,title:"",artist:"",originalKey:"",currentKey:"",
     memo:"",lyrics:"",lines:[],transpose:0,
@@ -1179,6 +1230,10 @@ function newSong(){
   loadMeta();
   applySettings();
   renderEditor();
+
+  /* 空の新規状態を基準にする */
+  markAsSaved();
+
   $("infoPanel").classList.add("open");
   $("infoToggle").setAttribute("aria-expanded","true");
   closeEditPanels();
@@ -1288,6 +1343,9 @@ loadMeta();
 applySettings();
 renderEditor();
 renderSongList();
+
+/* 起動時の空の編集画面を保存済み状態として登録 */
+markAsSaved();
 resetHistory();
 
 })();
