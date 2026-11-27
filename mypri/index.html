@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -174,7 +175,7 @@ select {
   aspect-ratio: 210 / 297;
   flex: 0 0 auto;
   margin: 0 auto;
-  padding: 12.7mm;
+  padding: 3mm;
   background: white;
   box-shadow: 0 3px 15px rgba(70,55,40,.12);
   position: relative;
@@ -206,15 +207,6 @@ select {
 .editor:empty::before {
   content: "ここをタップして文章を入力";
   color: #c5bdb4;
-  pointer-events: none;
-}
-
-.page-number {
-  position: absolute;
-  bottom: 4px;
-  right: 12.7mm;
-  color: #c5bdb4;
-  font-size: 10px;
   pointer-events: none;
 }
 
@@ -270,12 +262,12 @@ select {
     box-sizing: border-box !important;
 
     width: 210mm !important;
-    height: 290mm !important;
-    min-height: 290mm !important;
-    max-height: 290mm !important;
+    height: 297mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
 
     margin: 0 !important;
-    padding: 12.7mm !important;
+    padding: 3mm !important;
 
     overflow: hidden !important;
     background: white !important;
@@ -321,7 +313,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.4.12</div>
+  <div class="version">おとりす / Ver. 1.4.14</div>
 </header>
 
 <!-- 編集ツール -->
@@ -472,30 +464,11 @@ function createPage(number) {
     paragraphSpacing + "px"
   );
 
-  const pageNumber = document.createElement("div");
-  pageNumber.className = "page-number";
-  pageNumber.textContent = number + " / " + pageCountSelect.value;
-
   page.appendChild(editor);
-  page.appendChild(pageNumber);
 
   workspace.appendChild(page);
 
   return editor;
-}
-
-/* ページ番号を更新 */
-function updatePageNumbers() {
-  const pages = [...workspace.querySelectorAll(".page")];
-
-  pages.forEach((page, index) => {
-    const number = page.querySelector(".page-number");
-
-    if (number) {
-      number.textContent =
-        (index + 1) + " / " + pages.length;
-    }
-  });
 }
 
 /* ページ数変更 */
@@ -541,8 +514,6 @@ pageCountSelect.addEventListener("change", e => {
   }
 
   activeEditor = getEditors()[0];
-
-  updatePageNumbers();
 });
 
 /* 文字サイズ */
@@ -881,9 +852,6 @@ document.getElementById("printBtn").addEventListener("click", function(e) {
   });
 
 });
-
-/* 初期ページ番号 */
-updatePageNumbers();
 
 </script>
 
