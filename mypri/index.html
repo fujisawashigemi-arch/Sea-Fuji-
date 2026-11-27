@@ -95,10 +95,6 @@ button.active {
   border-color: var(--accent);
 }
 
-button:disabled {
-  opacity: .6;
-}
-
 select {
   padding-right: 18px;
   min-width: 77px;
@@ -222,56 +218,101 @@ select {
   pointer-events: none;
 }
 
-/* 旧印刷エリア用 */
+/* 印刷専用エリア */
 #printArea {
-  display: none;
-}
-
-/* PDF生成専用エリア */
-.pdf-render-area {
+  display: block;
   position: absolute;
-  left: -12000px;
+  left: -10000px;
   top: 0;
   width: 210mm;
   margin: 0;
   padding: 0;
-  background: white;
+  visibility: hidden;
   pointer-events: none;
 }
 
-.pdf-render-sheet {
-  display: block;
-  position: relative;
-  box-sizing: border-box;
-  width: 210mm;
-  height: 297mm;
-  margin: 0;
-  padding: 12.7mm;
-  overflow: hidden;
-  background: white;
-  color: #333;
-}
+/* 印刷設定 */
+@media print {
 
-.pdf-render-editor {
-  display: block;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  max-height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  outline: none;
-  border: none;
-  white-space: pre-wrap;
-  overflow-wrap: break-word;
-  color: #333;
-}
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
 
-.pdf-render-editor p,
-.pdf-render-editor div {
-  margin-top: 0;
+  html,
+  body {
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  body > * {
+    display: none !important;
+  }
+
+  body > #printArea {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    width: 210mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .print-sheet {
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+
+    width: 210mm !important;
+    height: 294mm !important;
+    min-height: 294mm !important;
+    max-height: 294mm !important;
+
+    margin: 0 !important;
+    padding: 12.7mm !important;
+
+    overflow: hidden !important;
+    background: white !important;
+    box-shadow: none !important;
+
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    break-after: auto !important;
+    page-break-after: auto !important;
+  }
+
+  .print-sheet + .print-sheet {
+    break-before: page !important;
+    page-break-before: always !important;
+  }
+
+  .print-editor {
+    display: block !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    max-height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    outline: none !important;
+    border: none !important;
+    white-space: pre-wrap !important;
+    overflow-wrap: break-word !important;
+    color: #333 !important;
+  }
+
+  .print-editor:empty::before {
+    display: none !important;
+    content: none !important;
+  }
 }
 </style>
 </head>
@@ -280,7 +321,7 @@ select {
 
 <header>
   <h1>マイプリ</h1>
-  <div class="version">おとりす / Ver. 1.5.0</div>
+  <div class="version">おとりす / Ver. 1.4.9</div>
 </header>
 
 <!-- 編集ツール -->
@@ -370,6 +411,8 @@ select {
     ></div>
   </section>
 </main>
+
+<!-- 印刷専用エリアはPDF保存時に作成 -->
 
 <script>
 
@@ -674,195 +717,110 @@ function getPdfFileName() {
   return name;
 }
 
-/* 外部ライブラリ読み込み */
-function loadScript(src, test) {
+/* 印刷専用ページを作成 */
+function createPrintArea() {
 
-  if (test()) {
-    return Promise.resolve();
+  const oldArea = document.getElementById("printArea");
+
+  if (oldArea) {
+    oldArea.remove();
   }
 
-  return new Promise((resolve, reject) => {
-
-    const existing = document.querySelector(
-      'script[src="' + src + '"]'
-    );
-
-    if (existing) {
-      existing.addEventListener("load", resolve, { once: true });
-      existing.addEventListener("error", reject, { once: true });
-      return;
-    }
-
-    const script = document.createElement("script");
-
-    script.src = src;
-    script.onload = resolve;
-    script.onerror = () => reject(
-      new Error("ライブラリを読み込めませんでした")
-    );
-
-    document.head.appendChild(script);
-  });
-}
-
-async function loadPdfLibraries() {
-
-  await loadScript(
-    "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
-    () => typeof window.html2canvas === "function"
-  );
-
-  await loadScript(
-    "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js",
-    () => !!(window.jspdf && window.jspdf.jsPDF)
-  );
-}
-
-/* PDF用ページを作成 */
-function createPdfRenderArea() {
-
-  const area = document.createElement("div");
-  area.className = "pdf-render-area";
+  const printArea = document.createElement("div");
+  printArea.id = "printArea";
 
   const editors = getEditors();
 
   editors.forEach(sourceEditor => {
 
     const sheet = document.createElement("section");
-    sheet.className = "pdf-render-sheet";
+    sheet.className = "print-sheet";
 
-    const editor = document.createElement("div");
-    editor.className = "pdf-render-editor";
+    const printEditor = document.createElement("div");
+    printEditor.className = "print-editor";
 
-    editor.innerHTML = sourceEditor.innerHTML;
+    printEditor.innerHTML = sourceEditor.innerHTML;
 
     const computed = window.getComputedStyle(sourceEditor);
 
-    editor.style.fontFamily = computed.fontFamily;
-    editor.style.fontSize = computed.fontSize;
-    editor.style.fontWeight = computed.fontWeight;
-    editor.style.lineHeight = computed.lineHeight;
-    editor.style.letterSpacing = computed.letterSpacing;
-    editor.style.color = computed.color;
-    editor.style.textAlign = computed.textAlign;
-    editor.style.whiteSpace = "pre-wrap";
-    editor.style.overflowWrap = "break-word";
+    printEditor.style.fontFamily = computed.fontFamily;
+    printEditor.style.fontSize = computed.fontSize;
+    printEditor.style.fontWeight = computed.fontWeight;
+    printEditor.style.lineHeight = computed.lineHeight;
+    printEditor.style.letterSpacing = computed.letterSpacing;
+    printEditor.style.color = computed.color;
+    printEditor.style.textAlign = computed.textAlign;
 
-    const paragraphSpacing =
-      computed.getPropertyValue("--paragraph-spacing") || "0px";
+    printEditor.style.setProperty(
+      "--paragraph-spacing",
+      computed.getPropertyValue("--paragraph-spacing") || "0px"
+    );
 
-    editor.querySelectorAll("p, div").forEach(element => {
-      element.style.marginTop = "0";
-      element.style.marginBottom = paragraphSpacing;
-    });
-
-    sheet.appendChild(editor);
-    area.appendChild(sheet);
+    sheet.appendChild(printEditor);
+    printArea.appendChild(sheet);
   });
 
-  document.body.appendChild(area);
+  document.body.appendChild(printArea);
 
-  return area;
+  return printArea;
 }
 
-/* PDF生成 */
-async function generatePdf(fileName) {
+/*
+  印刷前のレイアウト再計算
+  印刷エリアを一度非表示にしてから表示し直し、
+  Safariにレイアウトの再計算を促す
+*/
+function preparePrintLayout(printArea) {
 
-  let renderArea = null;
+  return new Promise(resolve => {
 
-  try {
+    requestAnimationFrame(() => {
 
-    await loadPdfLibraries();
+      /* 一度非表示にする */
+      printArea.style.display = "none";
 
-    if (document.fonts && document.fonts.ready) {
-      await document.fonts.ready;
-    }
+      /* 非表示状態を強制的に反映 */
+      void printArea.offsetHeight;
 
-    renderArea = createPdfRenderArea();
+      /* 表示状態に戻す */
+      printArea.style.display = "block";
 
-    await new Promise(resolve => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(resolve);
-      });
-    });
 
-    const jsPDF = window.jspdf.jsPDF;
+        /* 各ページのレイアウトを再取得 */
+        const sheets =
+          printArea.querySelectorAll(".print-sheet");
 
-    const pdf = new jsPDF({
-      orientation: "portrait",
-      unit: "mm",
-      format: "a4",
-      compress: true
-    });
+        sheets.forEach(sheet => {
+          void sheet.offsetHeight;
+          sheet.getBoundingClientRect();
+        });
 
-    pdf.setProperties({
-      title: fileName.replace(/\.pdf$/i, ""),
-      subject: "マイプリで作成した書類",
-      creator: "おとりす / マイプリ"
-    });
+        /* 印刷領域全体も再計算 */
+        void printArea.offsetHeight;
+        printArea.getBoundingClientRect();
 
-    const sheets = [
-      ...renderArea.querySelectorAll(".pdf-render-sheet")
-    ];
+        /* ドキュメント全体の再計算 */
+        void document.documentElement.offsetHeight;
 
-    for (let i = 0; i < sheets.length; i++) {
-
-      const sheet = sheets[i];
-
-      const canvas = await window.html2canvas(sheet, {
-        scale: 2,
-        backgroundColor: "#ffffff",
-        useCORS: true,
-        logging: false,
-        scrollX: 0,
-        scrollY: 0
+        resolve();
       });
 
-      const imageData = canvas.toDataURL("image/png");
+    });
 
-      if (i > 0) {
-        pdf.addPage("a4", "portrait");
-      }
-
-      pdf.addImage(
-        imageData,
-        "PNG",
-        0,
-        0,
-        210,
-        297,
-        undefined,
-        "FAST"
-      );
-
-      canvas.width = 0;
-      canvas.height = 0;
-    }
-
-    const blob = pdf.output("blob");
-
-    return blob;
-
-  } finally {
-
-    if (renderArea) {
-      renderArea.remove();
-    }
-  }
+  });
 }
 
-/* PDF保存ボタン */
-document.getElementById("printBtn").addEventListener("click", async function(e) {
+/* PDF保存 */
+document.getElementById("printBtn").addEventListener("click", function(e) {
 
   e.preventDefault();
-
-  const button = this;
-  const originalText = button.textContent;
 
   const defaultName = getPdfFileName();
 
   const inputName = window.prompt(
-    "PDFのファイル名を確認・変更してね。",
+    "PDFのファイル名を確認・変更してね。\n\n" +
+    "保存先は次の印刷画面から選択できるよ。",
     defaultName
   );
 
@@ -882,71 +840,45 @@ document.getElementById("printBtn").addEventListener("click", async function(e) 
     fileName += ".pdf";
   }
 
+  const originalTitle = document.title;
+
   if (activeEditor) {
     activeEditor.blur();
   }
 
-  /* iOSのポップアップ制限に備えて先に開く */
-  let pdfWindow = null;
+  const printArea = createPrintArea();
 
-  try {
-    pdfWindow = window.open("about:blank", "_blank");
-  } catch (error) {
-    pdfWindow = null;
-  }
+  document.title = fileName.replace(/\.pdf$/i, "");
 
-  button.disabled = true;
-  button.textContent = "PDF作成中…";
+  function restoreAfterPrint() {
 
-  try {
+    const currentPrintArea =
+      document.getElementById("printArea");
 
-    const blob = await generatePdf(fileName);
-
-    const url = URL.createObjectURL(blob);
-
-    if (pdfWindow && !pdfWindow.closed) {
-
-      pdfWindow.location.href = url;
-
-    } else {
-
-      const link = document.createElement("a");
-
-      link.href = url;
-      link.download = fileName;
-      link.style.display = "none";
-
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-
+    if (currentPrintArea) {
+      currentPrintArea.remove();
     }
 
-    /* PDF表示に必要な時間を確保してからURLを解放 */
-    setTimeout(() => {
-      URL.revokeObjectURL(url);
-    }, 60000);
+    document.title = originalTitle;
 
-  } catch (error) {
-
-    if (pdfWindow && !pdfWindow.closed) {
-      pdfWindow.close();
-    }
-
-    console.error(error);
-
-    alert(
-      "PDFを作成できなかったよ。\n\n" +
-      "インターネット接続を確認して、もう一度試してみてね。\n\n" +
-      "エラー：" + (error.message || error)
+    window.removeEventListener(
+      "afterprint",
+      restoreAfterPrint
     );
-
-  } finally {
-
-    button.disabled = false;
-    button.textContent = originalText;
-
   }
+
+  window.addEventListener(
+    "afterprint",
+    restoreAfterPrint
+  );
+
+  preparePrintLayout(printArea).then(() => {
+
+    setTimeout(() => {
+      window.print();
+    }, 200);
+
+  });
 
 });
 
