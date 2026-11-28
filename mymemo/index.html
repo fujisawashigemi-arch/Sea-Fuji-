@@ -433,19 +433,16 @@ const OLD_STORAGE_KEY = "myMemoList_v1";
 const FORMAT = "otolis-encrypted-v1";
 const PBKDF2_ITERATIONS = 600000;
 
-/* 最後の操作から24時間で自動ロック */
-const AUTO_LOCK_MS = 24 * 60 * 60 * 1000;
-
-/* 24時間セッション保存 */
+/* 端末内セッション保存 */
 const SESSION_DB_NAME = "otolis-mymemo-session";
 const SESSION_STORE_NAME = "sessions";
 const SESSION_ID = "active";
+
+/* 別タブでの手動ロックを検知するためのキー */
 const SESSION_EXPIRY_KEY = "otolis-mymemo-session-expiry";
 
 let cryptoKey = null;
 let vaultSalt = null;
-let lockTimer = null;
-let sessionExpiresAt = 0;
 
 let memos = [];
 let allTags = [];
@@ -475,7 +472,7 @@ function openSessionDB(){
   });
 }
 
-/* ログイン状態を端末内に保存 */
+/* ログイン状態を期限なしで端末内に保存 */
 async function savePersistentSession(){
   if(!cryptoKey || !vaultSalt){
     throw new Error("保管庫がロックされています");
@@ -499,19 +496,12 @@ async function savePersistentSession(){
     db.close();
   }
 
-  sessionExpiresAt = Date.now() + AUTO_LOCK_MS;
-  localStorage.setItem(SESSION_EXPIRY_KEY,String(sessionExpiresAt));
+  /* 24時間の有効期限は設定しない */
+  localStorage.removeItem(SESSION_EXPIRY_KEY);
 }
 
 /* 保存済みログイン状態を読み込む */
 async function loadPersistentSession(){
-  const expiry = Number(localStorage.getItem(SESSION_EXPIRY_KEY) || 0);
-
-  if(!expiry || Date.now() >= expiry){
-    await clearPersistentSession();
-    return false;
-  }
-
   const db = await openSessionDB();
 
   let session;
@@ -541,7 +531,6 @@ async function loadPersistentSession(){
     const data = await decryptVault(record,cryptoKey);
     normalizeData(data);
 
-    sessionExpiresAt = expiry;
     return true;
   }catch(error){
     cryptoKey = null;
@@ -554,8 +543,8 @@ async function loadPersistentSession(){
 
 /* ログイン状態を完全に削除 */
 async function clearPersistentSession(){
+  /* このキーの削除で別タブにも手動ロックを知らせる */
   localStorage.removeItem(SESSION_EXPIRY_KEY);
-  sessionExpiresAt = 0;
 
   try{
     const db = await openSessionDB();
@@ -809,7 +798,6 @@ function enterApp(){
   $("appShell").hidden = false;
   resetForm();
   renderAll();
-  startAutoLock();
   window.scrollTo(0,0);
 }
 
@@ -838,7 +826,6 @@ function clearSensitiveScreen(){
 async function lockApp(){
   if(!cryptoKey) return;
 
-  clearTimeout(lockTimer);
   cryptoKey = null;
   vaultSalt = null;
 
@@ -858,33 +845,6 @@ async function lockApp(){
 
   await clearPersistentSession();
 }
-
-/* 24時間の自動ロック */
-function startAutoLock(){
-  clearTimeout(lockTimer);
-
-  const remaining = sessionExpiresAt - Date.now();
-
-  if(remaining <= 0){
-    lockApp();
-    return;
-  }
-
-  lockTimer = setTimeout(lockApp,remaining);
-}
-
-/* 操作があれば期限を24時間先に延長 */
-function registerActivity(){
-  if(!cryptoKey) return;
-
-  sessionExpiresAt = Date.now() + AUTO_LOCK_MS;
-  localStorage.setItem(SESSION_EXPIRY_KEY,String(sessionExpiresAt));
-  startAutoLock();
-}
-
-["pointerdown","keydown","touchstart","scroll"].forEach(type => {
-  document.addEventListener(type,registerActivity,{passive:true});
-});
 
 /* 別タブで手動ロックされた場合もロック */
 window.addEventListener("storage",event => {
