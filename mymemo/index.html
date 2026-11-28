@@ -1,13 +1,14 @@
+
 <!doctype html>
 <html lang="ja">
 <head>
 <link rel="apple-touch-icon" href="./mymemoicon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">  
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f6f3ee">
-<title>マイメモ｜オトリス</title>
+<title>メモル｜オトリス</title>
 
 <style>
 :root{
@@ -59,7 +60,7 @@ main{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 h2{font-size:16px;margin:0 0 12px}
 h3{font-size:14px;margin:16px 0 8px}
 label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}
-input[type="text"],input[type="password"],textarea,select{
+input[type="text"],textarea,select{
   width:100%;border:1px solid var(--line);border-radius:9px;
   padding:10px 11px;background:#fff;color:var(--ink);outline:none;
 }
@@ -76,34 +77,6 @@ button.ghost{background:transparent;color:var(--muted);border:1px solid var(--li
 button.danger{background:#f8ecea;color:var(--danger)}
 button.small{font-size:12px;padding:6px 9px}
 button:disabled{opacity:.4;cursor:not-allowed}
-
-.auth-screen{
-  min-height:100vh;display:flex;align-items:center;
-  justify-content:center;padding:22px;
-}
-.auth-panel{
-  width:100%;max-width:390px;background:#fff;
-  border:1px solid var(--line);border-radius:18px;padding:25px;
-  box-shadow:0 8px 30px rgba(50,40,25,.05);
-}
-.auth-brand{text-align:center;font-size:25px;font-weight:800;letter-spacing:.05em}
-.auth-brand small{
-  display:block;font-size:10px;color:var(--muted);
-  letter-spacing:.2em;font-weight:500;
-}
-.auth-icon{text-align:center;font-size:32px;margin:18px 0 8px}
-.auth-panel h2{text-align:center;margin:8px 0 12px}
-.auth-description{font-size:13px;color:var(--muted);text-align:center}
-.auth-panel button{width:100%;margin-top:17px}
-.auth-message{
-  color:var(--danger);font-size:13px;margin-top:12px;
-  min-height:20px;text-align:center;
-}
-.security-note{
-  font-size:11px;color:var(--muted);line-height:1.7;
-  background:#f8f7f4;padding:11px;border-radius:9px;margin-top:18px;
-}
-.auth-panel .password-hint{font-size:11px;color:var(--muted);margin-top:5px}
 
 .filter-toggle{
   width:100%;display:flex;align-items:center;
@@ -254,54 +227,13 @@ footer{text-align:center;color:#aaa399;font-size:11px;padding:24px 0 8px}
 
 <body>
 
-<section class="auth-screen" id="authScreen">
-  <div class="auth-panel">
-    <div class="auth-brand">マイメモ<small>OTOLIS</small></div>
-    <div class="auth-icon">🔐</div>
-    <h2 id="authHeading">マイメモを開く</h2>
-    <p class="auth-description" id="authDescription">
-      パスワードを入力してね。
-    </p>
-
-    <div id="setupFields" hidden>
-      <label for="passwordInput">新しいパスワード</label>
-      <input type="password" id="passwordInput"
-        autocomplete="new-password" placeholder="12文字以上">
-      <p class="password-hint">英字・数字・記号を組み合わせた長いパスワードがおすすめ。</p>
-
-      <label for="passwordConfirm">パスワードの確認</label>
-      <input type="password" id="passwordConfirm"
-        autocomplete="new-password" placeholder="もう一度入力">
-    </div>
-
-    <div id="unlockFields">
-      <label for="unlockPassword">パスワード</label>
-      <input type="password" id="unlockPassword"
-        autocomplete="current-password" placeholder="パスワードを入力">
-    </div>
-
-    <button id="authButton">開く</button>
-    <div class="auth-message" id="authMessage"></div>
-
-    <div class="security-note" id="setupWarning" hidden>
-      初回設定では、新しい暗号化保管庫を作成するよ。以前のテストメモは削除されるよ。<br>
-      パスワードを忘れると、メモを復元できないので必ず控えてね。
-    </div>
-    <div class="security-note" id="unlockWarning">
-      メモはこの端末のブラウザ内に暗号化して保存されているよ。
-      パスワードはサーバーには送信されないよ。
-    </div>
-  </div>
-</section>
-
-<div id="appShell" hidden>
+<div id="appShell">
 <header>
   <div class="header-inner">
-    <div class="brand">マイメモ<small>OTOLIS</small><span class="version">Ver.1.0.0</span></div>
+    <div class="brand">メモル<small>OTOLIS</small><span class="version">Ver.1.1.0</span></div>
     <div class="header-actions">
       <button class="secondary small" id="backupBtn">バックアップ</button>
       <button class="ghost small" id="restoreBtn">復元</button>
-      <button class="ghost small" id="lockBtn">ロック</button>
       <input type="file" id="restoreFile" accept=".json,application/json" hidden>
     </div>
   </div>
@@ -420,29 +352,30 @@ footer{text-align:center;color:#aaa399;font-size:11px;padding:24px 0 8px}
       </details>
     </section>
   </section>
-  <footer>OTOLIS · MY MEMO</footer>
+  <footer>OTOLIS · MEMORU</footer>
 </main>
 </div>
 
 <script>
 "use strict";
 
-/* 暗号化設定 */
-const STORAGE_KEY = "myMemoEncrypted_v1";
+/*
+  メモル Ver.1.1.0
+  パスワードなし・端末内保存版
+
+  新しい保存先：
+  myMemoruLocal_v1
+
+  旧バージョンの暗号化データ：
+  myMemoEncrypted_v1
+
+  旧バージョンの通常データ：
+  myMemoList_v1
+*/
+
+const STORAGE_KEY = "myMemoruLocal_v1";
+const OLD_ENCRYPTED_KEY = "myMemoEncrypted_v1";
 const OLD_STORAGE_KEY = "myMemoList_v1";
-const FORMAT = "otolis-encrypted-v1";
-const PBKDF2_ITERATIONS = 600000;
-
-/* 端末内セッション保存 */
-const SESSION_DB_NAME = "otolis-mymemo-session";
-const SESSION_STORE_NAME = "sessions";
-const SESSION_ID = "active";
-
-/* 別タブでの手動ロックを検知するためのキー */
-const SESSION_EXPIRY_KEY = "otolis-mymemo-session-expiry";
-
-let cryptoKey = null;
-let vaultSalt = null;
 
 let memos = [];
 let allTags = [];
@@ -455,213 +388,29 @@ let selectedMemoIds = [];
 
 const $ = id => document.getElementById(id);
 
-/* IndexedDB：解除用の暗号鍵を端末内に保存 */
-function openSessionDB(){
-  return new Promise((resolve,reject) => {
-    const request = indexedDB.open(SESSION_DB_NAME,1);
+/* ID作成 */
+function makeId(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
 
-    request.onupgradeneeded = () => {
-      const db = request.result;
-      if(!db.objectStoreNames.contains(SESSION_STORE_NAME)){
-        db.createObjectStore(SESSION_STORE_NAME,{keyPath:"id"});
-      }
-    };
+/* HTMLエスケープ */
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g,char => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
 
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
+/* 日付表示 */
+function formatDate(time){
+  return new Date(time).toLocaleString("ja-JP",{
+    year:"numeric",month:"2-digit",day:"2-digit",
+    hour:"2-digit",minute:"2-digit"
   });
-}
-
-/* ログイン状態を期限なしで端末内に保存 */
-async function savePersistentSession(){
-  if(!cryptoKey || !vaultSalt){
-    throw new Error("保管庫がロックされています");
-  }
-
-  const db = await openSessionDB();
-
-  try{
-    await new Promise((resolve,reject) => {
-      const tx = db.transaction(SESSION_STORE_NAME,"readwrite");
-      tx.objectStore(SESSION_STORE_NAME).put({
-        id:SESSION_ID,
-        key:cryptoKey,
-        salt:toBase64(vaultSalt)
-      });
-      tx.oncomplete = resolve;
-      tx.onerror = () => reject(tx.error);
-      tx.onabort = () => reject(tx.error);
-    });
-  }finally{
-    db.close();
-  }
-
-  /* 24時間の有効期限は設定しない */
-  localStorage.removeItem(SESSION_EXPIRY_KEY);
-}
-
-/* 保存済みログイン状態を読み込む */
-async function loadPersistentSession(){
-  const db = await openSessionDB();
-
-  let session;
-  try{
-    session = await new Promise((resolve,reject) => {
-      const tx = db.transaction(SESSION_STORE_NAME,"readonly");
-      const request = tx.objectStore(SESSION_STORE_NAME).get(SESSION_ID);
-      request.onsuccess = () => resolve(request.result || null);
-      request.onerror = () => reject(request.error);
-    });
-  }finally{
-    db.close();
-  }
-
-  if(!session || !session.key || !session.salt){
-    await clearPersistentSession();
-    return false;
-  }
-
-  try{
-    cryptoKey = session.key;
-    vaultSalt = fromBase64(session.salt);
-
-    const record = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if(!record) throw new Error("保管庫が見つかりません");
-
-    const data = await decryptVault(record,cryptoKey);
-    normalizeData(data);
-
-    return true;
-  }catch(error){
-    cryptoKey = null;
-    vaultSalt = null;
-    await clearPersistentSession();
-    console.error("保存済みセッションを復元できませんでした",error);
-    return false;
-  }
-}
-
-/* ログイン状態を完全に削除 */
-async function clearPersistentSession(){
-  /* このキーの削除で別タブにも手動ロックを知らせる */
-  localStorage.removeItem(SESSION_EXPIRY_KEY);
-
-  try{
-    const db = await openSessionDB();
-
-    try{
-      await new Promise((resolve,reject) => {
-        const tx = db.transaction(SESSION_STORE_NAME,"readwrite");
-        tx.objectStore(SESSION_STORE_NAME).delete(SESSION_ID);
-        tx.oncomplete = resolve;
-        tx.onerror = () => reject(tx.error);
-        tx.onabort = () => reject(tx.error);
-      });
-    }finally{
-      db.close();
-    }
-  }catch(error){
-    console.error("セッション情報の削除に失敗しました",error);
-  }
-}
-
-/* バイト列とBase64の変換 */
-function toBase64(bytes){
-  let binary = "";
-  const chunk = 0x8000;
-  for(let i=0;i<bytes.length;i+=chunk){
-    binary += String.fromCharCode(...bytes.subarray(i,i+chunk));
-  }
-  return btoa(binary);
-}
-
-function fromBase64(value){
-  const binary = atob(value);
-  const bytes = new Uint8Array(binary.length);
-  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
-  return bytes;
-}
-
-/* パスワードから暗号鍵を作る */
-async function deriveEncryptionKey(password,salt){
-  const encoder = new TextEncoder();
-  const baseKey = await crypto.subtle.importKey(
-    "raw",encoder.encode(password),"PBKDF2",false,["deriveKey"]
-  );
-
-  return crypto.subtle.deriveKey(
-    {
-      name:"PBKDF2",
-      salt,
-      iterations:PBKDF2_ITERATIONS,
-      hash:"SHA-256"
-    },
-    baseKey,
-    {name:"AES-GCM",length:256},
-    false,
-    ["encrypt","decrypt"]
-  );
-}
-
-/* データを暗号化 */
-async function encryptVault(data,key,salt){
-  const iv = crypto.getRandomValues(new Uint8Array(12));
-  const encoded = new TextEncoder().encode(JSON.stringify(data));
-  const encrypted = await crypto.subtle.encrypt(
-    {name:"AES-GCM",iv},
-    key,
-    encoded
-  );
-
-  return {
-    format:FORMAT,
-    version:1,
-    kdf:"PBKDF2-SHA-256",
-    iterations:PBKDF2_ITERATIONS,
-    cipher:"AES-256-GCM",
-    salt:toBase64(salt),
-    iv:toBase64(iv),
-    ciphertext:toBase64(new Uint8Array(encrypted))
-  };
-}
-
-/* 暗号化データを復号 */
-async function decryptVault(record,key){
-  if(!record || record.format !== FORMAT ||
-     !record.salt || !record.iv || !record.ciphertext){
-    throw new Error("暗号化データの形式が違います");
-  }
-
-  const decrypted = await crypto.subtle.decrypt(
-    {name:"AES-GCM",iv:fromBase64(record.iv)},
-    key,
-    fromBase64(record.ciphertext)
-  );
-
-  const data = JSON.parse(new TextDecoder().decode(decrypted));
-
-  if(!data || !Array.isArray(data.memos)){
-    throw new Error("メモデータの形式が違います");
-  }
-
-  return data;
-}
-
-/* 暗号化保管庫の保存 */
-async function saveData(){
-  if(!cryptoKey || !vaultSalt) throw new Error("保管庫がロックされています");
-
-  const record = await encryptVault({
-    memos,
-    tags:allTags
-  },cryptoKey,vaultSalt);
-
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(record));
 }
 
 /* データ整形 */
 function normalizeData(data){
-  memos = data.memos.map(m => ({
+  memos = (Array.isArray(data.memos) ? data.memos : []).map(m => ({
     id:String(m.id || makeId()),
     title:String(m.title || ""),
     body:String(m.body || ""),
@@ -674,197 +423,240 @@ function normalizeData(data){
   syncAllTags();
 }
 
-function makeId(){
-  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
-}
-
-function escapeHTML(value){
-  return String(value ?? "").replace(/[&<>"']/g,char => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[char]);
-}
-
+/* タグを同期 */
 function syncAllTags(){
   const used = memos.flatMap(m => m.tags || []);
   allTags = [...new Set([...allTags,...used])].filter(Boolean);
 }
 
-function formatDate(time){
-  return new Date(time).toLocaleString("ja-JP",{
-    year:"numeric",month:"2-digit",day:"2-digit",
-    hour:"2-digit",minute:"2-digit"
+/* 端末内へ通常保存 */
+function saveData(){
+  const data = {
+    version:1,
+    app:"otolis-memor u",
+    memos,
+    tags:allTags,
+    updatedAt:new Date().toISOString()
+  };
+
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
+
+/* 端末内データ読み込み */
+function loadLocalData(){
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if(!stored) return false;
+
+  const data = JSON.parse(stored);
+  normalizeData(data);
+  return true;
+}
+
+/* Base64変換 */
+function fromBase64(value){
+  const binary = atob(value);
+  const bytes = new Uint8Array(binary.length);
+  for(let i=0;i<binary.length;i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+/* 旧暗号化データの復号 */
+async function decryptOldVault(record,key){
+  if(!record || !record.iv || !record.ciphertext){
+    throw new Error("旧データの形式が違います");
+  }
+
+  const decrypted = await crypto.subtle.decrypt(
+    {name:"AES-GCM",iv:fromBase64(record.iv)},
+    key,
+    fromBase64(record.ciphertext)
+  );
+
+  const data = JSON.parse(new TextDecoder().decode(decrypted));
+
+  if(!data || !Array.isArray(data.memos)){
+    throw new Error("旧メモデータの形式が違います");
+  }
+
+  return data;
+}
+
+/* 旧バージョンのIndexedDBから解除キーを取得 */
+function getOldSessionKey(){
+  return new Promise((resolve,reject) => {
+    const request = indexedDB.open("otolis-mymemo-session",1);
+
+    request.onupgradeneeded = () => {
+      request.transaction.abort();
+      resolve(null);
+    };
+
+    request.onsuccess = () => {
+      const db = request.result;
+
+      if(!db.objectStoreNames.contains("sessions")){
+        db.close();
+        resolve(null);
+        return;
+      }
+
+      const tx = db.transaction("sessions","readonly");
+      const get = tx.objectStore("sessions").get("active");
+
+      get.onsuccess = () => {
+        const session = get.result;
+        db.close();
+        resolve(session && session.key ? session.key : null);
+      };
+
+      get.onerror = () => {
+        db.close();
+        reject(get.error);
+      };
+    };
+
+    request.onerror = () => reject(request.error);
   });
 }
 
-/* 初回設定・ロック解除 */
-function showAuth(isSetup){
-  $("authScreen").hidden = false;
-  $("appShell").hidden = true;
-  $("authMessage").textContent = "";
+/* 旧データの自動移行 */
+async function migrateOldData(){
+  /*
+    1. 旧バージョンの通常データがあれば移行
+  */
+  const oldPlain = localStorage.getItem(OLD_STORAGE_KEY);
 
-  $("setupFields").hidden = !isSetup;
-  $("unlockFields").hidden = isSetup;
-  $("setupWarning").hidden = !isSetup;
-  $("unlockWarning").hidden = isSetup;
+  if(oldPlain){
+    try{
+      const data = JSON.parse(oldPlain);
+      if(data && Array.isArray(data.memos)){
+        normalizeData(data);
+        saveData();
+        return true;
+      }
+    }catch(error){
+      console.error("旧通常データの移行に失敗",error);
+    }
+  }
 
-  $("authHeading").textContent = isSetup ? "パスワードを設定" : "マイメモを開く";
-  $("authDescription").textContent = isSetup
-    ? "マイメモを守るパスワードを決めてね。"
-    : "パスワードを入力してね。";
-  $("authButton").textContent = isSetup ? "保管庫を作成" : "開く";
+  /*
+    2. 旧暗号化データがあれば、端末内に保存済みの
+       暗号鍵を使って自動復号を試みる
+  */
+  const oldEncrypted = localStorage.getItem(OLD_ENCRYPTED_KEY);
+
+  if(oldEncrypted){
+    try{
+      const record = JSON.parse(oldEncrypted);
+      const key = await getOldSessionKey();
+
+      if(!key){
+        throw new Error("旧データの解除キーが見つかりません");
+      }
+
+      const data = await decryptOldVault(record,key);
+      normalizeData(data);
+      saveData();
+
+      return true;
+    }catch(error){
+      console.error("旧暗号化データの移行に失敗",error);
+      throw new Error(
+        "以前の暗号化メモを自動で開けなかったよ。旧データは消さずに残してあるよ。"
+      );
+    }
+  }
+
+  return false;
 }
 
-/* 初回の保管庫作成 */
-async function setupVault(){
-  const password = $("passwordInput").value;
-  const confirmPassword = $("passwordConfirm").value;
+/* バックアップ用ファイル名の日付 */
+function getFileDate(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth()+1).padStart(2,"0");
+  const day = String(now.getDate()).padStart(2,"0");
+  return `${year}${month}${day}`;
+}
 
-  if(password.length < 12){
-    $("authMessage").textContent = "パスワードは12文字以上にしてね。";
-    return;
-  }
-  if(password !== confirmPassword){
-    $("authMessage").textContent = "確認用パスワードが一致しないよ。";
-    return;
-  }
+/* JSONダウンロード */
+function downloadJSON(data,filename){
+  const blob = new Blob([JSON.stringify(data,null,2)],{
+    type:"application/json"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),1000);
+}
 
-  $("authButton").disabled = true;
-  $("authMessage").textContent = "暗号化保管庫を作成中…";
-
+/* バックアップ */
+function backupData(){
   try{
-    vaultSalt = crypto.getRandomValues(new Uint8Array(16));
-    cryptoKey = await deriveEncryptionKey(password,vaultSalt);
+    saveData();
 
-    memos = [];
-    allTags = [];
-    await saveData();
-    await savePersistentSession();
+    const backup = {
+      app:"オトリス・メモル",
+      backupVersion:1,
+      exportedAt:new Date().toISOString(),
+      memos,
+      tags:allTags
+    };
 
-    localStorage.removeItem(OLD_STORAGE_KEY);
+    downloadJSON(
+      backup,
+      "メモル_"+getFileDate()+".json"
+    );
 
-    $("passwordInput").value = "";
-    $("passwordConfirm").value = "";
-    enterApp();
+    alert("バックアップを作成したよ！");
   }catch(error){
-    cryptoKey = null;
-    vaultSalt = null;
-    $("authMessage").textContent =
-      "作成できなかったよ。もう一度試してね。";
     console.error(error);
-  }finally{
-    $("authButton").disabled = false;
+    alert("バックアップを作成できなかったよ。");
   }
 }
 
-/* パスワードでロック解除 */
-async function unlockVault(){
-  const password = $("unlockPassword").value;
-  if(!password){
-    $("authMessage").textContent = "パスワードを入力してね。";
-    return;
-  }
-
-  $("authButton").disabled = true;
-  $("authMessage").textContent = "確認中…";
+/* バックアップ復元 */
+async function restoreData(file){
+  if(!file) return;
 
   try{
-    const record = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-    if(!record) throw new Error("保管庫が見つかりません");
+    const text = await file.text();
+    const backup = JSON.parse(text);
 
-    vaultSalt = fromBase64(record.salt);
-    cryptoKey = await deriveEncryptionKey(password,vaultSalt);
+    let data;
 
-    const data = await decryptVault(record,cryptoKey);
+    if(Array.isArray(backup.memos)){
+      data = backup;
+    }else if(backup.data && Array.isArray(backup.data.memos)){
+      data = backup.data;
+    }else{
+      throw new Error("バックアップ形式が違います");
+    }
+
+    if(!confirm("現在のメモをバックアップデータで置き換えるよ。よろしい？")){
+      return;
+    }
+
     normalizeData(data);
+    saveData();
 
-    await savePersistentSession();
+    selectedTags = [];
+    selectedMemoIds = [];
+    selectionMode = false;
+    resetForm();
+    renderAll();
+    showList();
 
-    $("unlockPassword").value = "";
-    enterApp();
+    alert("バックアップから復元したよ！");
   }catch(error){
-    cryptoKey = null;
-    vaultSalt = null;
-    $("authMessage").textContent =
-      "開けなかったよ。パスワードか保管データを確認してね。";
     console.error(error);
-  }finally{
-    $("authButton").disabled = false;
+    alert("復元できなかったよ。バックアップファイルを確認してね。");
   }
 }
-
-/* アプリ表示 */
-function enterApp(){
-  $("authScreen").hidden = true;
-  $("appShell").hidden = false;
-  resetForm();
-  renderAll();
-  window.scrollTo(0,0);
-}
-
-/* 画面上のメモ情報を消す */
-function clearSensitiveScreen(){
-  $("viewTitle").textContent = "";
-  $("viewBody").textContent = "";
-  $("viewTags").innerHTML = "";
-  $("viewDate").textContent = "";
-  $("memoTitle").value = "";
-  $("memoBody").value = "";
-  $("memoTagInput").value = "";
-  $("keyword").value = "";
-  $("memoList").innerHTML = "";
-  $("filterTagList").innerHTML = "";
-  $("manageTagList").innerHTML = "";
-  $("memoTagPicker").innerHTML = "";
-  $("bulkAddTag").innerHTML = "";
-  $("bulkRemoveTag").innerHTML = "";
-  $("editor").hidden = true;
-  $("detailView").hidden = true;
-  $("listScreen").hidden = true;
-}
-
-/* 手動ロック */
-async function lockApp(){
-  if(!cryptoKey) return;
-
-  cryptoKey = null;
-  vaultSalt = null;
-
-  memos = [];
-  allTags = [];
-  draftTags = [];
-  selectedTags = [];
-  selectedMemoIds = [];
-  editingId = null;
-  viewingId = null;
-  selectionMode = false;
-
-  clearSensitiveScreen();
-  $("appShell").hidden = true;
-  $("unlockPassword").value = "";
-  showAuth(false);
-
-  await clearPersistentSession();
-}
-
-/* 別タブで手動ロックされた場合もロック */
-window.addEventListener("storage",event => {
-  if(event.key === SESSION_EXPIRY_KEY && event.newValue === null){
-    lockApp();
-  }
-});
-
-$("authButton").addEventListener("click",async () => {
-  const isSetup = $("setupFields").hidden === false;
-  if(isSetup) await setupVault();
-  else await unlockVault();
-});
-
-$("passwordConfirm").addEventListener("keydown",event => {
-  if(event.key === "Enter") setupVault();
-});
-$("unlockPassword").addEventListener("keydown",event => {
-  if(event.key === "Enter") unlockVault();
-});
 
 /* 画面切り替え */
 function showList(){
@@ -897,13 +689,14 @@ function showDetail(id){
   $("viewTags").innerHTML = memo.tags.map(tag =>
     `<span class="tag">${escapeHTML(tag)}</span>`
   ).join("");
+
   $("viewDate").textContent =
     `追加：${formatDate(memo.createdAt)}　／　更新：${formatDate(memo.updatedAt)}`;
 
   window.scrollTo({top:0,behavior:"smooth"});
 }
 
-/* 本文をすべてコピー */
+/* 本文コピー */
 function copyTextFallback(text){
   const textarea = document.createElement("textarea");
   textarea.value = text;
@@ -980,17 +773,22 @@ function toggleDraftTag(tag){
   renderDraftTags();
 }
 
-async function addDraftTag(){
+function addDraftTag(){
   const tag = $("memoTagInput").value.trim();
   if(!tag) return;
+
   if(!allTags.includes(tag)) allTags.push(tag);
   if(!draftTags.includes(tag)) draftTags.push(tag);
+
   $("memoTagInput").value = "";
+
   try{
-    await saveData();
+    saveData();
     renderDraftTags();
     renderAll();
-  }catch(error){alert("保存できなかったよ。");}
+  }catch(error){
+    alert("保存できなかったよ。");
+  }
 }
 
 function resetForm(){
@@ -1012,17 +810,20 @@ function startNewMemo(){
 function startEditMemo(id){
   const memo = memos.find(m => m.id === id);
   if(!memo) return;
+
   editingId = id;
   draftTags = [...memo.tags];
   $("memoTitle").value = memo.title;
   $("memoBody").value = memo.body;
   $("formHeading").textContent = "メモを編集";
   $("saveMemo").textContent = "変更を保存";
+
   renderDraftTags();
   showEditor();
 }
 
-async function saveMemo(){
+/* メモ保存 */
+function saveMemo(){
   const title = $("memoTitle").value.trim();
   const body = $("memoBody").value.trim();
 
@@ -1039,6 +840,7 @@ async function saveMemo(){
   if(editingId){
     const memo = memos.find(m => m.id === editingId);
     if(!memo) return;
+
     memo.title = title;
     memo.body = body;
     memo.tags = [...draftTags];
@@ -1047,46 +849,64 @@ async function saveMemo(){
   }else{
     savedId = makeId();
     memos.unshift({
-      id:savedId,title,body,tags:[...draftTags],
-      createdAt:now,updatedAt:now
+      id:savedId,
+      title,
+      body,
+      tags:[...draftTags],
+      createdAt:now,
+      updatedAt:now
     });
   }
 
   syncAllTags();
+
   try{
-    await saveData();
+    saveData();
     resetForm();
     renderAll();
+
     if(wasEditing) showDetail(savedId);
     else showList();
-  }catch(error){alert("保存できなかったよ。もう一度試してね。");}
+  }catch(error){
+    alert("保存できなかったよ。もう一度試してね。");
+  }
 }
 
-async function deleteMemo(id){
+/* メモ削除 */
+function deleteMemo(id){
   if(!confirm("このメモを削除する？")) return;
+
   memos = memos.filter(m => m.id !== id);
   selectedMemoIds = selectedMemoIds.filter(x => x !== id);
   syncAllTags();
+
   try{
-    await saveData();
+    saveData();
     resetForm();
     renderAll();
     showList();
-  }catch(error){alert("削除を保存できなかったよ。");}
+  }catch(error){
+    alert("削除を保存できなかったよ。");
+  }
 }
 
-/* 一覧・検索・並べ替え */
+/* 検索・並べ替え */
 function getFilteredMemos(){
   const keyword = $("keyword").value.trim().toLowerCase();
   const mode = document.querySelector('input[name="tagMode"]:checked').value;
 
   const filtered = memos.filter(memo => {
-    const text = (memo.title+"\n"+memo.body+"\n"+memo.tags.join(" ")).toLowerCase();
+    const text = (
+      memo.title+"\n"+memo.body+"\n"+memo.tags.join(" ")
+    ).toLowerCase();
+
     const matchesKeyword = !keyword || text.includes(keyword);
+
     const matchesTags = selectedTags.length === 0 ||
       (mode === "and"
         ? selectedTags.every(tag => memo.tags.includes(tag))
         : selectedTags.some(tag => memo.tags.includes(tag)));
+
     return matchesKeyword && matchesTags;
   });
 
@@ -1095,6 +915,7 @@ function getFilteredMemos(){
 
   filtered.sort((a,b) => {
     let result = 0;
+
     if(sortKey === "title"){
       result = (a.title || "タイトルなし").localeCompare(
         b.title || "タイトルなし","ja",
@@ -1103,12 +924,18 @@ function getFilteredMemos(){
     }else{
       result = Number(a[sortKey] || 0)-Number(b[sortKey] || 0);
     }
-    if(result === 0) result = Number(a.createdAt || 0)-Number(b.createdAt || 0);
+
+    if(result === 0){
+      result = Number(a.createdAt || 0)-Number(b.createdAt || 0);
+    }
+
     return result*direction;
   });
+
   return filtered;
 }
 
+/* タグ表示 */
 function renderFilterTags(){
   $("filterTagList").innerHTML = allTags.map(tag => `
     <button type="button"
@@ -1135,33 +962,46 @@ function renderBulkTagOptions(){
   const removeValue = remove.value;
 
   add.innerHTML = '<option value="">追加するタグを選択</option>' +
-    allTags.map(tag => `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`).join("");
+    allTags.map(tag =>
+      `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`
+    ).join("");
+
   remove.innerHTML = '<option value="">外すタグを選択</option>' +
-    allTags.map(tag => `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`).join("");
+    allTags.map(tag =>
+      `<option value="${escapeHTML(tag)}">${escapeHTML(tag)}</option>`
+    ).join("");
 
   if(allTags.includes(addValue)) add.value = addValue;
   if(allTags.includes(removeValue)) remove.value = removeValue;
 }
 
+/* 複数選択表示 */
 function renderSelectionTools(){
   const count = selectedMemoIds.length;
-  $("toggleSelectBtn").textContent = selectionMode ? "選択を終了" : "複数選択";
+
+  $("toggleSelectBtn").textContent =
+    selectionMode ? "選択を終了" : "複数選択";
+
   $("selectedCount").hidden = !selectionMode;
   $("selectedCount").textContent = `${count}件選択中`;
   $("selectAllBtn").hidden = !selectionMode;
   $("clearSelectionBtn").hidden = !selectionMode;
   $("bulkPanel").hidden = !selectionMode;
+
   $("bulkAddBtn").disabled = count === 0;
   $("bulkNewTagBtn").disabled = count === 0;
   $("bulkRemoveBtn").disabled = count === 0;
 }
 
+/* メモ一覧 */
 function renderMemos(){
   const filtered = getFilteredMemos();
   $("memoCount").textContent = `${filtered.length} / ${memos.length} 件`;
 
   if(filtered.length === 0){
-    $("memoList").innerHTML = '<div class="table-empty">メモが見つからなかったよ。</div>';
+    $("memoList").innerHTML =
+      '<div class="table-empty">メモが見つからなかったよ。</div>';
+
     renderSelectionTools();
     return;
   }
@@ -1170,8 +1010,10 @@ function renderMemos(){
     const tags = memo.tags.slice(0,3).map(tag =>
       `<span class="tag">${escapeHTML(tag)}</span>`
     ).join("");
+
     const extra = memo.tags.length > 3
-      ? `<span class="tag">+${memo.tags.length-3}</span>` : "";
+      ? `<span class="tag">+${memo.tags.length-3}</span>`
+      : "";
 
     return `
       <tr>
@@ -1208,6 +1050,7 @@ function renderMemos(){
       <tbody>${rows}</tbody>
     </table>
   `;
+
   renderSelectionTools();
 }
 
@@ -1224,171 +1067,131 @@ function toggleSelectionMode(){
   selectedMemoIds = [];
   renderMemos();
 }
+
 function toggleMemoSelection(id){
   selectedMemoIds = selectedMemoIds.includes(id)
     ? selectedMemoIds.filter(x => x !== id)
     : [...selectedMemoIds,id];
+
   renderMemos();
 }
+
 function selectAllFiltered(){
   selectedMemoIds = getFilteredMemos().map(m => m.id);
   renderMemos();
 }
+
 function clearSelection(){
   selectedMemoIds = [];
   renderMemos();
 }
 
-async function bulkAddTag(tag){
+/* タグ一括追加 */
+function bulkAddTag(tag){
   if(!tag || selectedMemoIds.length === 0) return;
+
   selectedMemoIds.forEach(id => {
     const memo = memos.find(m => m.id === id);
     if(memo && !memo.tags.includes(tag)) memo.tags.push(tag);
   });
+
   syncAllTags();
+
   try{
-    await saveData();
+    saveData();
     renderAll();
     alert(`選択したメモに「${tag}」を追加したよ。`);
-  }catch(error){alert("保存できなかったよ。");}
+  }catch(error){
+    alert("保存できなかったよ。");
+  }
 }
 
-async function bulkRemoveTag(tag){
+/* タグ一括解除 */
+function bulkRemoveTag(tag){
   if(!tag || selectedMemoIds.length === 0) return;
+
   selectedMemoIds.forEach(id => {
     const memo = memos.find(m => m.id === id);
     if(memo) memo.tags = memo.tags.filter(t => t !== tag);
   });
+
   try{
-    await saveData();
+    saveData();
     renderAll();
     alert(`選択したメモから「${tag}」を外したよ。`);
-  }catch(error){alert("保存できなかったよ。");}
+  }catch(error){
+    alert("保存できなかったよ。");
+  }
 }
 
-async function bulkCreateAndAddTag(){
+/* 新規タグ作成・一括追加 */
+function bulkCreateAndAddTag(){
   const tag = $("bulkNewTag").value.trim();
   if(!tag || selectedMemoIds.length === 0) return;
+
   if(!allTags.includes(tag)) allTags.push(tag);
   $("bulkNewTag").value = "";
-  await bulkAddTag(tag);
+
+  bulkAddTag(tag);
 }
 
-/* タグ管理 */
-async function renameTag(oldTag){
+/* タグ名変更 */
+function renameTag(oldTag){
   const newTag = prompt("新しいタグ名を入力してね。",oldTag);
   if(newTag === null) return;
+
   const name = newTag.trim();
-  if(!name){alert("タグ名を空にはできないよ。");return;}
+
+  if(!name){
+    alert("タグ名を空にはできないよ。");
+    return;
+  }
+
   if(name !== oldTag && allTags.includes(name)){
-    alert("そのタグ名はすでにあるよ。");return;
+    alert("そのタグ名はすでにあるよ。");
+    return;
   }
 
   allTags = allTags.map(tag => tag === oldTag ? name : tag);
+
   memos.forEach(memo => {
     memo.tags = memo.tags.map(tag => tag === oldTag ? name : tag);
   });
+
   draftTags = draftTags.map(tag => tag === oldTag ? name : tag);
   selectedTags = selectedTags.map(tag => tag === oldTag ? name : tag);
 
   try{
-    await saveData();
+    saveData();
     renderAll();
     renderDraftTags();
     if(viewingId) showDetail(viewingId);
-  }catch(error){alert("保存できなかったよ。");}
+  }catch(error){
+    alert("保存できなかったよ。");
+  }
 }
 
-async function deleteTag(tag){
-  if(!confirm(`「${tag}」を削除する？\nこのタグはメモからも外れるよ。`)) return;
+/* タグ削除 */
+function deleteTag(tag){
+  if(!confirm(`「${tag}」を削除する？\nこのタグはメモからも外れるよ。`)){
+    return;
+  }
+
   allTags = allTags.filter(t => t !== tag);
-  memos.forEach(memo => {memo.tags = memo.tags.filter(t => t !== tag);});
+  memos.forEach(memo => {
+    memo.tags = memo.tags.filter(t => t !== tag);
+  });
+
   draftTags = draftTags.filter(t => t !== tag);
   selectedTags = selectedTags.filter(t => t !== tag);
 
   try{
-    await saveData();
+    saveData();
     renderAll();
     renderDraftTags();
     if(viewingId) showDetail(viewingId);
-  }catch(error){alert("保存できなかったよ。");}
-}
-
-/* 暗号化バックアップ */
-function downloadJSON(data,filename){
-  const blob = new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url),1000);
-}
-
-function getFileDate(){
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth()+1).padStart(2,"0");
-  const day = String(now.getDate()).padStart(2,"0");
-  return `${year}${month}${day}`;
-}
-
-async function backupData(){
-  try{
-    await saveData();
-    const record = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    downloadJSON({
-      app:"オトリス・マイメモ",
-      backupVersion:1,
-      exportedAt:new Date().toISOString(),
-      encryptedVault:record
-    },"マイメモ"+getFileDate()+".json");
-    alert("暗号化バックアップを作成したよ。");
   }catch(error){
-    alert("バックアップを作成できなかったよ。");
-  }
-}
-
-/* 暗号化バックアップから復元 */
-async function restoreData(file){
-  if(!file) return;
-
-  try{
-    const text = await file.text();
-    const backup = JSON.parse(text);
-    const record = backup.encryptedVault;
-
-    if(!record || record.format !== FORMAT){
-      throw new Error("バックアップ形式が違います");
-    }
-
-    const password = prompt("このバックアップを作成したときのパスワードを入力してね。");
-    if(password === null) return;
-
-    const salt = fromBase64(record.salt);
-    const restoreKey = await deriveEncryptionKey(password,salt);
-    const data = await decryptVault(record,restoreKey);
-
-    if(!confirm("現在のマイメモをバックアップデータで置き換えるよ。よろしい？")) return;
-
-    cryptoKey = restoreKey;
-    vaultSalt = salt;
-    normalizeData(data);
-    await saveData();
-    await savePersistentSession();
-
-    selectedTags = [];
-    selectedMemoIds = [];
-    selectionMode = false;
-    resetForm();
-    renderAll();
-    showList();
-    alert("暗号化バックアップから復元したよ！");
-  }catch(error){
-    console.error(error);
-    alert("復元できなかったよ。パスワードかバックアップファイルを確認してね。");
+    alert("保存できなかったよ。");
   }
 }
 
@@ -1399,8 +1202,12 @@ $("cancelEdit").addEventListener("click",showList);
 $("addMemoTag").addEventListener("click",addDraftTag);
 
 $("memoTagInput").addEventListener("keydown",event => {
-  if(event.key === "Enter"){event.preventDefault();addDraftTag();}
+  if(event.key === "Enter"){
+    event.preventDefault();
+    addDraftTag();
+  }
 });
+
 $("memoTagPicker").addEventListener("click",event => {
   const button = event.target.closest("[data-draft-tag]");
   if(button) toggleDraftTag(button.dataset.draftTag);
@@ -1408,7 +1215,9 @@ $("memoTagPicker").addEventListener("click",event => {
 
 $("filterToggle").addEventListener("click",() => {
   const content = $("filterContent");
-  const expanded = $("filterToggle").getAttribute("aria-expanded") === "true";
+  const expanded =
+    $("filterToggle").getAttribute("aria-expanded") === "true";
+
   content.hidden = expanded;
   $("filterToggle").setAttribute("aria-expanded",String(!expanded));
   $("filterToggleIcon").textContent = expanded ? "▼" : "▲";
@@ -1417,41 +1226,62 @@ $("filterToggle").addEventListener("click",() => {
 $("filterTagList").addEventListener("click",event => {
   const button = event.target.closest("[data-filter-tag]");
   if(!button) return;
+
   const tag = button.dataset.filterTag;
+
   selectedTags = selectedTags.includes(tag)
     ? selectedTags.filter(t => t !== tag)
     : [...selectedTags,tag];
+
   renderAll();
 });
 
 $("manageTagList").addEventListener("click",event => {
   const rename = event.target.closest("[data-rename-tag]");
   const remove = event.target.closest("[data-delete-tag]");
+
   if(rename) renameTag(rename.dataset.renameTag);
   if(remove) deleteTag(remove.dataset.deleteTag);
 });
 
 $("memoList").addEventListener("click",event => {
   const checkbox = event.target.closest("[data-select-id]");
+
   if(checkbox){
     event.stopPropagation();
     toggleMemoSelection(checkbox.dataset.selectId);
     return;
   }
+
   const cell = event.target.closest("[data-open-id]");
   if(!cell) return;
-  if(selectionMode) toggleMemoSelection(cell.dataset.openId);
-  else showDetail(cell.dataset.openId);
+
+  if(selectionMode){
+    toggleMemoSelection(cell.dataset.openId);
+  }else{
+    showDetail(cell.dataset.openId);
+  }
 });
 
 $("toggleSelectBtn").addEventListener("click",toggleSelectionMode);
 $("selectAllBtn").addEventListener("click",selectAllFiltered);
 $("clearSelectionBtn").addEventListener("click",clearSelection);
-$("bulkAddBtn").addEventListener("click",() => bulkAddTag($("bulkAddTag").value));
-$("bulkRemoveBtn").addEventListener("click",() => bulkRemoveTag($("bulkRemoveTag").value));
+
+$("bulkAddBtn").addEventListener("click",() => {
+  bulkAddTag($("bulkAddTag").value);
+});
+
+$("bulkRemoveBtn").addEventListener("click",() => {
+  bulkRemoveTag($("bulkRemoveTag").value);
+});
+
 $("bulkNewTagBtn").addEventListener("click",bulkCreateAndAddTag);
+
 $("bulkNewTag").addEventListener("keydown",event => {
-  if(event.key === "Enter"){event.preventDefault();bulkCreateAndAddTag();}
+  if(event.key === "Enter"){
+    event.preventDefault();
+    bulkCreateAndAddTag();
+  }
 });
 
 $("copyBodyBtn").addEventListener("click",copyMemoBody);
@@ -1459,68 +1289,98 @@ $("copyBodyBtn").addEventListener("click",copyMemoBody);
 $("viewEditBtn").addEventListener("click",() => {
   if(viewingId) startEditMemo(viewingId);
 });
+
 $("backToListBtn").addEventListener("click",showList);
+
 $("viewDeleteBtn").addEventListener("click",() => {
   if(viewingId) deleteMemo(viewingId);
 });
 
 $("keyword").addEventListener("input",renderMemos);
+
 $("clearSearch").addEventListener("click",() => {
   $("keyword").value = "";
   renderMemos();
 });
+
 $("clearTags").addEventListener("click",() => {
   selectedTags = [];
   renderAll();
 });
+
 document.querySelectorAll('input[name="tagMode"]').forEach(radio => {
   radio.addEventListener("change",renderMemos);
 });
+
 $("sortKey").addEventListener("change",renderMemos);
 $("sortOrder").addEventListener("change",renderMemos);
 
 $("backupBtn").addEventListener("click",backupData);
-$("restoreBtn").addEventListener("click",() => $("restoreFile").click());
+
+$("restoreBtn").addEventListener("click",() => {
+  $("restoreFile").click();
+});
+
 $("restoreFile").addEventListener("change",async event => {
   await restoreData(event.target.files[0]);
   event.target.value = "";
 });
-$("lockBtn").addEventListener("click",lockApp);
 
 /* 起動 */
 async function initialize(){
-  if(!window.crypto || !crypto.subtle){
-    $("authHeading").textContent = "安全な接続が必要です";
-    $("authDescription").textContent =
-      "暗号化機能を使うにはHTTPS接続が必要だよ。GitHub PagesのURLで開いてね。";
-    $("authButton").hidden = true;
-    $("setupFields").hidden = true;
-    $("unlockFields").hidden = true;
-    return;
-  }
-
-  const stored = localStorage.getItem(STORAGE_KEY);
-
-  if(!stored){
-    await clearPersistentSession();
-    showAuth(true);
-    return;
-  }
-
-  showAuth(false);
-
   try{
-    const restored = await loadPersistentSession();
-
-    if(restored){
-      enterApp();
-    }else{
-      showAuth(false);
+    /*
+      新しい保存先にデータがあれば、そのまま読み込む
+    */
+    if(loadLocalData()){
+      renderAll();
+      return;
     }
+
+    /*
+      新しい保存先が空なら旧データの移行を試みる
+    */
+    const migrated = await migrateOldData();
+
+    if(migrated){
+      renderAll();
+      alert("以前のメモを新しい保存方式に移行したよ！");
+      return;
+    }
+
+    /*
+      旧データもない場合は空のメモ帳として起動
+    */
+    memos = [];
+    allTags = [];
+    saveData();
+    renderAll();
+
   }catch(error){
-    console.error("セッションの復元に失敗しました",error);
-    await clearPersistentSession();
-    showAuth(false);
+    console.error("起動時の読み込みエラー",error);
+
+    /*
+      暗号化された旧データを復号できない場合は、
+      空データで上書きしないようにする
+    */
+    $("listScreen").hidden = true;
+
+    const warning = document.createElement("section");
+    warning.className = "panel";
+    warning.innerHTML = `
+      <h2>以前のメモを読み込めなかったよ</h2>
+      <p class="note">
+        以前の暗号化データは消さずに残してあるよ。
+        旧バージョンで一度メモを開いてから、
+        バックアップを作成する必要があるよ。
+      </p>
+      <p class="note">
+        新しい保存データで上書きしていないので、
+        以前のメモは失われていないよ。
+      </p>
+    `;
+
+    $("appShell").querySelector("main").prepend(warning);
   }
 }
 
